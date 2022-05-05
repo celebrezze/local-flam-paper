@@ -1,0 +1,422 @@
+---
+title: "Breakpoint Analysis Attempts"
+author: "Indra Boving"
+date: "4/15/2021"
+output: html_document
+---
+
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+#lots of extra here, but oh well... 
+library(ggplot2)
+library(gapminder)
+library(tidyverse)
+library(lme4)
+library(here)
+library(segmented)
+library(nlme)
+filter = dplyr::filter 
+
+source(here("source-code", "source-segmented.lme.R"))
+```
+
+
+```{r}
+myd<-myd[order(myd$id),]
+
+plot(groupedData(y~x|id,data=myd))
+
+o<-lme(y~x, random=list(id=pdDiag(~1+x)), data=myd)
+o
+
+oseg<-segmented.lme(o, Z=x, random=list(id=pdDiag(~1+x+U)))
+```
+
+# Data Wrangling
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+mem.data <- read_csv(here("processed-data", "mem.data.local.epi.csv"), show_col_types = FALSE)
+
+mem.data.raw <- mem.data %>%
+  mutate(mpa = (-1*mpa)) %>% 
+  mutate(year = as.factor(year)) %>%
+  mutate(month = as.factor(month)) %>% 
+  mutate(mpa.unscaled = mpa)
+
+clean.mem.data.all <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'temp.max','flam.index', 'precip.2mo')] 
+
+clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'temp.max','flam.index', 'precip.2mo', 'mpa.unscaled')] %>%
+  #na.omit() %>%
+  filter(year.month == "2020_September")
+#Parsing out the variables of interest for the mixed effects modelling
+
+clean.mem.data.dependant <- clean.mem.data[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'temp.max', 'flam.index', 'year', 'month', 'mpa.unscaled')] 
+  
+scaled.mem.data.predictors <- clean.mem.data %>%
+    dplyr::select('spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp', 'precip.2mo') %>%
+    mutate_if(is.numeric, scale)
+
+scaled.mem.data <- cbind(scaled.mem.data.predictors, clean.mem.data.dependant) 
+  
+#For sept. 2020 only: 
+scaled.mem.data.2020 <- scaled.mem.data %>%
+  #na.omit() %>%
+  filter(year.month == "2020_September")
+```
+
+
+```{r}
+seg.data.subset <- clean.mem.data %>% 
+  mutate(lfm = lfm.NAs.imputed, 
+         id = individual) %>% 
+ dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti) 
+
+seg.data.subset<-seg.data.subset[order(seg.data.subset$id),]
+```
+
+Plot segmented regression onto scatterplot: https://rpubs.com/MarkusLoew/12164 
+
+Muggeo, Vito, 2016/02/01, Segmented mixed models with random changepoints in R, 10.13140/RG.2.1.4180.8402
+
+# BOTH SPP: 
+
+#### MPA x PC1
+```{r}
+plot(groupedData(PC1~mpa|id,data=seg.data.subset))
+
+#specify lme
+o<-lme(PC1~mpa, random=list(id=pdDiag(~1)), data=seg.data.subset)
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.data.subset)
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+#### LFM x PC1
+
+```{r}
+plot(groupedData(PC1~lfm|id,data=seg.data.subset))
+
+#specify lme
+o<-lme(PC1~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.data.subset)
+o
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + U + G0)))
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+#specify lme
+o<-lme(PC1~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.data.subset)
+o
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + U + G0)))
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+#ADFA only: 
+
+```{r}
+seg.adfa.subset <- seg.data.subset %>% 
+  filter(spp == "ADFA")
+```
+
+#### MPA x PC1
+```{r}
+plot(groupedData(PC1~mpa|id,data=seg.adfa.subset))
+
+#specify lme
+o<-lme(PC1~mpa, random=list(id=pdDiag(~1+mpa)), data=seg.adfa.subset)
+
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.adfa.subset)
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+#### LFM x PC1
+
+```{r}
+plot(groupedData(PC1~lfm|id,data=seg.adfa.subset))
+
+#specify lme
+o<-lme(PC1~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.adfa.subset)
+o
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + lfm + U + G0)), data = seg.adfa.subset)
+
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+#CEME only: 
+
+```{r}
+seg.ceme.subset <- seg.data.subset %>% 
+  filter(spp == "CEME")
+```
+
+
+#### MPA x PC1
+```{r}
+plot(groupedData(PC1~mpa|id,data=seg.ceme.subset))
+
+#specify lme
+o<-lme(PC1~mpa, random=list(id=pdDiag(~1+mpa)), data=seg.ceme.subset)
+
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.ceme.subset)
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+####LFM x PC1
+
+```{r}
+plot(groupedData(PC1~lfm|id,data=seg.ceme.subset))
+
+#specify lme
+o<-lme(PC1~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.ceme.subset)
+o
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + lfm + U + G0)))
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+
+# Time to Ignition
+
+## BOTH SPP: 
+
+#### MPA x tti
+```{r}
+plot(groupedData(tti~mpa|id,data=seg.data.subset))
+
+#specify lme
+o<-lme(tti~mpa, random=list(id=pdDiag(~1+mpa)), data=seg.data.subset)
+
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + U + G0)), data=seg.data.subset)
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+#### LFM x tti
+
+```{r}
+plot(groupedData(tti~lfm|id,data=seg.data.subset))
+
+#specify lme
+o<-lme(tti~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.data.subset)
+o
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + U + G0)))
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+## ADFA only: 
+
+```{r}
+seg.adfa.subset <- seg.data.subset %>% 
+  filter(spp == "ADFA")
+```
+
+#### MPA x tti
+```{r}
+plot(groupedData(tti~mpa|id,data=seg.adfa.subset))
+
+#specify lme
+
+o<-lme(tti~mpa, random=list(id=pdDiag(~1+ mpa)), data=seg.adfa.subset)
+
+
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+
+oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.adfa.subset)
+
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+#### LFM x tti
+
+```{r}
+plot(groupedData(tti~lfm|id,data=seg.adfa.subset))
+
+#specify lme
+o<-lme(tti~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.adfa.subset)
+o
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + lfm + U + G0)))
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+## CEME only: 
+
+```{r}
+seg.ceme.subset <- seg.data.subset %>% 
+  filter(spp == "CEME")
+```
+
+
+#### MPA x tti
+```{r}
+plot(groupedData(tti~mpa|id,data=seg.ceme.subset))
+
+#specify lme
+o<-lme(tti~mpa, random=list(id=pdDiag(~1+mpa)), data=seg.ceme.subset)
+
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.ceme.subset)
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+####LFM x tti
+
+```{r}
+plot(groupedData(tti~lfm|id,data=seg.ceme.subset))
+
+#specify lme
+o<-lme(tti~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.ceme.subset)
+o
+
+### Call segmented: 
+
+# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
+# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+
+oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + lfm + U + G0)))
+
+oseg
+#G0 is the changepoint estimate
+
+confint(oseg)
+
+plot(oseg, n.plot=c(2,10), pop=TRUE)
+```
+
+
+
+

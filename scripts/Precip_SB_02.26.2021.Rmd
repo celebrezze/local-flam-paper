@@ -1,0 +1,144 @@
+---
+title: "Precipitation_Data"
+author: "Indra Boving & JC"
+date: "2/26/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r include=FALSE}
+library(ggplot2) #install and run packages, dont need to do this every time though....also, say "no" to restarting. 
+#install.packages("gapminder")
+library(gapminder)
+#install.packages("data.table")
+library(data.table)
+#install.packages("purrr")
+library(purrr) #for visualizing all variables in one big plot
+#install.packages("naniar")
+library(naniar) #deal with NAs
+library(dplyr)
+library(tidyverse)
+#install.packages("ggpubr")
+library(ggpubr)
+#tidyverse_update()
+filter = dplyr::filter #correct filter problem (gets confused with stats::filter)
+```
+
+Monthly data from SBBG's website: 
+
+#2 months prior: 
+
+```{r eval=FALSE, include=FALSE}
+precip <- read.csv("Precip_SBBG.csv") %>%
+  filter(year > 2014) %>%
+  unite(year.month, c("year", "month"), remove = FALSE) %>%
+  group_by(year.month) %>%
+  mutate(rainfall = sum(daily.rain))
+precip 
+
+Sept2020 <- precip %>%
+  filter(year.month == "2020_8" | year.month == "2020_7") %>%
+  group_by(year) %>%
+  mutate(rainfall.2mo = sum(daily.rain))
+Sept2020
+
+Jan2020 <- precip %>%
+  filter(year.month == "2020_01" | year.month == "2019_12") %>%
+  group_by(year) %>%
+  mutate(rainfall.2mo = sum(daily.rain))
+Jan2020
+
+Dec20191 <- precip %>%
+  filter(year.month == "2019_12") %>%
+  filter(day < 10) %>%
+  group_by(year) %>%
+  mutate(rainfall.2mo = sum(daily.rain)) %>%
+  ungroup()
+Dec20191
+
+Dec20192 <- precip %>%
+  filter(year.month == "2019_11") %>%
+  group_by(year) %>%
+  mutate(rainfall.2mo = sum(daily.rain)) %>%
+  ungroup()
+Dec20192
+
+Dec2019 <- rbind(Dec20191, Dec20192) %>%
+  mutate(rainfall.2mo = sum(daily.rain))
+Dec2019
+  
+
+Jan2018 <- precip %>%
+  filter(year.month == "2017_12" | year.month == "2017_11") %>%
+  group_by(year) %>%
+  mutate(rainfall.2mo = sum(daily.rain))
+Jan2018
+
+
+Dec2016 <- precip %>%
+  filter(year.month == "2015_12" | year.month == "2015_11") %>%
+  group_by(year) %>%
+  mutate(rainfall.2mo = sum(daily.rain))
+Dec2016
+
+precip.filtered <- rbind(Dec2016, Dec2019, Jan2018, Jan2019, Sept2020) %>%
+  select(water.year, year.month, day, daily.rain, rainfall.2mo)
+precip.filtered
+
+write.csv(precip.filtered, "precip.clean.csv")
+```
+
+#4 months prior: 
+
+```{r eval=FALSE, include=FALSE}
+Sept2020 <- precip %>%
+  filter(year.month == "2020_8" | year.month == "2020_7" | year.month == "2020_6" | year.month == "2020_5") %>%
+  group_by(year) %>%
+  mutate(rainfall.4mo = sum(daily.rain))
+Sept2020
+
+Jan2020 <- precip %>%
+  filter(year.month == "2020_1" | year.month == "2019_12" | year.month == "2019_11" | year.month == "2019_10") %>%
+  group_by(year) %>%
+  mutate(rainfall.4mo = sum(daily.rain))
+Jan2020
+
+Dec20191 <- precip %>%
+  filter(year.month == "2019_12") %>%
+  filter(day < 10) 
+Dec20191
+
+Dec20192 <- precip %>%
+  filter(year.month == "2019_11" | year.month == "2019_10" | year.month == "2019_9")
+Dec20192
+
+Dec2019 <- rbind(Dec20191, Dec20192) %>%
+  group_by(year) %>%
+  mutate(rainfall.4mo = sum(daily.rain))
+Dec2019
+  
+
+Jan2018 <- precip %>%
+  filter(year.month == "2017_12" | year.month == "2017_11" | year.month == "2017_10" | year.month == "2017_9") %>%
+  group_by(water.year) %>%
+  mutate(rainfall.4mo = sum(daily.rain))
+Jan2018
+
+
+Dec2016 <- precip %>%
+  filter(year.month == "2015_12" | year.month == "2015_11" | year.month == "2015_10" | year.month == "2015_9") %>%
+  group_by(year) %>%
+  mutate(rainfall.4mo = sum(daily.rain))
+Dec2016
+
+precip.filtered <- rbind(Dec2016, Dec2019, Jan2018, Jan2019, Sept2020) %>%
+  select(water.year, year.month, day, daily.rain, rainfall.4mo)
+precip.filtered
+
+summarise(precip.filtered)
+
+write.csv(precip.filtered, "precip.clean.csv")
+```
