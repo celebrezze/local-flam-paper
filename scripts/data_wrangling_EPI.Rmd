@@ -15,7 +15,6 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 #NOTES
 - do we use proportion ignited?
   - if so, which metric or proportion ignited is used?
-- we don't need hot plate stuff right?
 - is there some way to streamline code so we don't have so many lines of code to look at outliers?
 
 #SETUP
@@ -47,9 +46,19 @@ In addition to measured metrics, it also computes other metrics from the data: f
 raw.data <- read.csv(here("raw-data", "flam.local.alldates.csv")) 
 ```
 
-# Clean up data:
+# 1. Initial Data Cleaning
 
-### Deal with outliers in LFM: 
+### Filter out hot plate burns
+
+For this analysis, we were only concerned with burn trials using the 
+epiradiator design.
+
+```{r}
+raw.data.epi <- raw.data %>% 
+  filter(model == "EPI") 
+```
+
+### NAs and non-ignitions
 
 First, deal with values that don't make sense due to missingness (for
 example, if the temp probe turned off and temp.max is listed as 0, or if
@@ -61,7 +70,7 @@ as with flammability metrics.
 
 ```{r}
 #(need weird extra 0 types here for some reason?)
-data.with.na <- raw.data %>% 
+data.with.na <- raw.data.epi %>% 
   replace_with_na(replace = list(temp.max = c(0, 0.0))) %>% #for missing temp maxs, make NA
   replace_with_na(replace = list(ignition.temp = c(0, 0.0))) %>% #for missing temp at ignition, make NA (all 2016 & 2018 trials)
   replace_with_na(replace = list(start.temp = c(0, 0.0))) %>% #for missing starting temp, make na
@@ -73,6 +82,8 @@ data.with.na[c("ttfg", "tti", "fd", "gd", "pfg", "fh", "mpa",  "prop.new", "wate
 data.with.na[c("ttfg", "tti", "fd", "gd", "pfg", "gti",  "dry.wt", "water.wt", "fresh.wt", "lfm")][(data.with.na[c("ttfg", "tti", "fd", "gd", "pfg", "gti",  "dry.wt", "water.wt", "fresh.wt", "lfm")] < 0)] <- NA
 data.with.na[c("ttfg", "tti", "fd", "gd", "pfg", "gti")][(data.with.na[c("ttfg", "tti", "fd", "gd", "pfg", "gti")] > 1000)] <- NA
 ```
+
+### LFM Outliers
 
 Next, visualize the impact of outliers in LFM with outlierKD function
 
@@ -92,6 +103,7 @@ data.with.na.outs <- data.with.na %>%
   unite(year.month.spp, c("year", "month", "spp"), remove = FALSE)
 ```
 
+#### OutlierKD2 Function
 ```{r}
 source("http://goo.gl/UUyEzD") #outlier KD (original function)
 
@@ -130,8 +142,6 @@ outlierKD2 <- function(dt, var) {
 data.with.na.ceme <- data.with.na.outs %>% 
   filter(spp == "CEME")
 
-#should not be difference between HP and EPI
-
 outlierKD2(data.with.na.ceme, lfm.outliers.out) #check for outliers and remove (happens in outliers.out column, lfm column still contains outliers)
 
 data.with.na.ceme <- data.with.na.ceme %>% 
@@ -154,8 +164,9 @@ data.with.na.adfa <- data.with.na.adfa %>%
 data.with.na.new <- rbind(data.with.na.adfa, data.with.na.ceme)
 ```
 
-# Impute missing values:
+# 2. Impute missing values
 
+### LFM
 ```{r}
 #impute rlm for each spp. 
 data.with.na.imputed <- data.with.na.new %>%
@@ -163,7 +174,19 @@ data.with.na.imputed <- data.with.na.new %>%
   impute_rlm(lfm.NAs.imputed ~ mpa + dry.wt + fresh.wt | year.month.spp)
 ```
 
-# Add new variables:
+### Weights and Temps
+```{r include=FALSE}
+#view: 
+#impute values for missing weights:
+data <- data %>%
+  unite(individual, c("year", "month", "spp", "sample"), remove = FALSE) %>% #create 'individual' column
+  dplyr::group_by(model.spp.gr) %>%
+  impute_median_at(c("dry.wt", "fresh.wt", "water.wt", "sample.wt")) %>%
+  ungroup() %>%
+  impute_median_at("start.temp") %>%
+  mutate(temp.change = temp.max - start.temp)
+```
+# 3. Add new variables:
 
 Add some columns to the dataframe and manipulate some variables:
 
@@ -173,8 +196,9 @@ Add some columns to the dataframe and manipulate some variables:
 -   Proportion ignite columns: for each increase in LFM of 10% or 5%, what
     proportion of the attempted burns ignited?
 
-### Prop ignite: 
+### Proportion Ignited 
 
+#### LFM bins of 10
 ```{r ,include=FALSE}
 data <- data.with.na.imputed %>% 
   #group_by(gr = cut(lfm.NAs.imputed, breaks= seq(0, 400, by = 10))) %>% #create 10 lfm.NAs.imputed segments, indicate these in new column called "gr"
@@ -198,14 +222,12 @@ setDT(data)[,total:=sum(ignition),by=model.spp.gr][] #add column called "total" 
 data <-  data %>%
   mutate(prop.ignite = paste0(round(100 * total/n))) %>% #for each group, divide total ignitions ("total" column) by total number burn attempts (n column), as a percentage
   ungroup() %>% #ungroup so r doesnt get confused
-  #create Rate of Spread column (only relevant for HP metrics, but we'll do it for all and just ignore that column when we do EPI analysis):
-  mutate(ros = 10/fd) %>% ##this returns Inf for those missing flame duration (i.e., no burn columns. Shouldnt be an issue when we filter out only those that burned); not relevant for Epiradiator samples, but we'll do it to those anyway and then ignore or filter out that column later. 
   dplyr::select(-n, -total, lfm) #remove columns we aren't interested in anymore
 
 data$prop.ignite <- as.numeric(data$prop.ignite) #Since, otherwise, it would be a character vector
 ```
 
-#prop.ignite with bins of 5 
+#### LFM bins of 5
 
 ```{r}
 data.5bins <- data %>% 
@@ -224,7 +246,6 @@ setDT(data.5bins)[,total_bins5lfm_gr:=sum(ignition),by=model.spp.bins5lfm_gr][] 
 data.5bins <-  data.5bins %>%
   mutate(prop.ignite.bins5 = paste0(round(100 * total_bins5lfm_gr/n))) %>% #for each group, divide total ignitions ("total" column) by total number burn attempts (n column), as a percentage
   ungroup() %>% #ungroup so r doesnt get confused
-  #create Rate of Spread column (only relevant for HP metrics, but we'll do it for all and just ignore that column when we do EPI analysis):
   select(-n, -total_bins5lfm_gr) #remove columns we aren't interested in anymore
 
 data.5bins$prop.ignite.bins5 <- as.numeric(data.5bins$prop.ignite.bins5) #Since, otherwise, it would be a character vector
@@ -248,7 +269,6 @@ setDT(data.5bins_nodate)[,total_bins5lfm_gr_nodate:=sum(ignition),by=model.spp.b
 data.5bins_nodate <-  data.5bins_nodate %>%
   mutate(prop.ignite.bins5_nodate = paste0(round(100 * total_bins5lfm_gr_nodate/n))) %>% #for each group, divide total ignitions ("total" column) by total number burn attempts (n column), as a percentage
   ungroup() %>% #ungroup so r doesnt get confused
-  #create Rate of Spread column (only relevant for HP metrics, but we'll do it for all and just ignore that column when we do EPI analysis):
   select(-n, -total_bins5lfm_gr_nodate) #remove columns we aren't interested in anymore
 
 data.5bins_nodate$prop.ignite.bins5_nodate <- as.numeric(data.5bins_nodate$prop.ignite.bins5_nodate) #Since, otherwise, it would be a character vector
@@ -271,7 +291,6 @@ setDT(data.10bins_nodate)[,total_bins10lfm_gr_nodate:=sum(ignition),by=model.spp
 data.10bins_nodate <-  data.10bins_nodate %>%
   mutate(prop.ignite.bins10_nodate = paste0(round(100 * total_bins10lfm_gr_nodate/n))) %>% #for each group, divide total ignitions ("total" column) by total number burn attempts (n column), as a percentage
   ungroup() %>% #ungroup so r doesnt get confused
-  #create Rate of Spread column (only relevant for HP metrics, but we'll do it for all and just ignore that column when we do EPI analysis):
   select(-n, -total_bins10lfm_gr_nodate) #remove columns we aren't interested in anymore
 
 data.10bins_nodate$prop.ignite.bins10_nodate <- as.numeric(data.10bins_nodate$prop.ignite.bins10_nodate) #Since, otherwise, it would be a character vector
@@ -305,29 +324,11 @@ data <- data %>%
   ungroup() 
 ```
 
-
-### Other missing values: weights and temps
-
-```{r include=FALSE}
-#view: 
-#impute values for missing weights:
-data <- data %>%
-  unite(individual, c("year", "month", "spp", "sample"), remove = FALSE) %>% #create 'individual' column
-  dplyr::group_by(model.spp.gr) %>%
-  impute_median_at(c("dry.wt", "fresh.wt", "water.wt", "sample.wt")) %>%
-  ungroup() %>%
-  impute_median_at("start.temp") %>%
-  mutate(temp.change = temp.max - start.temp)
-```
-
-We also make a dataset to use in PV curve from flam curve analysis.
-
+### Dry Weight vs. Fresh Weight Metrics
 ```{r}
-# # Make dry weight columns, etc. for PV comparison: 
+# Make dry weight columns, etc. for PV comparison: 
 
-# (EDIT: PV Sat.weight stuff needs to happen in excel due to need for extrapolation..this is still interesting though)
-
-#calculate metrics for weight values (read . as "per", i.e. gdw.gfw is "gram dry weight per gram fresh weight"):
+# calculate metrics for weight values (read . as "per", i.e. gdw.gfw is "gram dry weight per gram fresh weight"):
 data <- data %>%
   dplyr::mutate(gdw.gfw = dry.wt/fresh.wt) %>%
   dplyr:::mutate(gww.gdw = lfm.NAs.imputed/100) %>%
@@ -337,43 +338,28 @@ data <- data %>%
          ww.outs = ww.flam.sample,
          dw.outs = dw.flam.sample) %>%
   replace_with_na_at(.vars = c("ww.flam.sample"), condition = ~.x < 0) # oe was below 0 (due to missing lfm), so remove that one 
-
 ```
 #### wet weights
 
 ```{r}
-#to filter out different values for HP or EPI: 
-groupkind <- c('EPI', 'HP')
-
-for(model in groupkind) {
-          if(model == 'EPI') outlierKD2(data, ww.outs)
-          else if(model == 'HP') outlierKD2(data, ww.outs)
-}
+outlierKD2(data, ww.outs)
 ```
 
 Remove very high ww
 
 ```{r}
-###just seperate: 
-
-data.hp <- data %>% 
-  filter(model == "HP", 
-         ww.flam.sample < 1.6)
-
-data.epi <- data %>% 
-  filter(model == "EPI", 
-         ww.flam.sample < .75)
+data <- data %>% 
+        filter(ww.flam.sample < .75)
 ```
 
 #### dry weights
 
 ```{r}
-outlierKD2(data.hp, dw.outs)
-outlierKD2(data.epi, dw.outs)
+outlierKD2(data, dw.outs)
 ```
 
 ```{r}
-data.epi %>% 
+data %>% 
 ggplot() +
   geom_point(aes(y = dw.flam.sample, x = mpa), color = "blue") +
   geom_point(aes(y = dw.outs, x = mpa), color = "goldenrod")
@@ -381,25 +367,11 @@ ggplot() +
 Remove very high: 
 
 ```{r}
-data.epi <- data.epi %>% 
+data <- data %>% 
   filter(dw.flam.sample < 0.46)
 ```
 
-```{r}
-data.hp %>% 
-ggplot() +
-  geom_point(aes(y = dw.flam.sample, x = mpa), color = "blue") +
-  geom_point(aes(y = dw.outs, x = mpa), color = "goldenrod")
-```
-Remove very high: 
-
-```{r}
-data.hp <- data.hp %>% 
-  filter(dw.flam.sample < 2)
-
-data <- rbind(data.hp, data.epi)
-```
-
+# DO WE NEED?
 ```{r}
 #deal with weight values from the above (should actually not be needed)
 data <- data %>%
@@ -432,8 +404,9 @@ data_flam_outs <- data %>%
          )
 ```
 
+# 4. Outliers: Flam. Metrics
 
-# CEME only:
+## CEME only:
 
 ```{r}
 data.ceme <- data_flam_outs %>% 
@@ -441,149 +414,90 @@ data.ceme <- data_flam_outs %>%
 ```
 
 ```{r}
-ignite.only.ceme.epi <- data.ceme %>%
-  filter(ignition == "1") %>% #only look at ignited samples
-  filter(model == "EPI")
-
-ignite.only.ceme.hp <- data.ceme %>%
-  filter(ignition == "1") %>% #only look at ignited samples
-  filter(model == "HP")
+ignite.only.ceme <- data.ceme %>%
+  filter(ignition == "1")
 ```
-
-
-## Other missing values: Flam metrics
-
-### EPI and HP
-
-### Outliers in flam metrics:
 
 These run and remove outliers automatically, need to quiet the code if
 that is not what we want.
 
 #### tti
-
 ```{r}
-outlierKD2(ignite.only.ceme.epi, tti.outs)
-outlierKD2(ignite.only.ceme.hp, tti.outs)
+outlierKD2(ignite.only.ceme, tti.outs)
 ```
 
 ```{r}
-ignite.only.ceme.epi %>% 
+ignite.only.ceme %>% 
 ggplot() +
   geom_point(aes(y = tti, x = mpa), color = "blue") +
   geom_point(aes(y = tti.outs, x = mpa), color = "goldenrod")
 ```
 Don't remove any 
 
-```{r}
-ignite.only.ceme.hp %>% 
-ggplot() +
-  geom_point(aes(y = tti, x = mpa), color = "blue") +
-  geom_point(aes(y = tti.outs, x = mpa), color = "goldenrod")
-```
-Dont remove any
 #### gti
 
 ```{r}
-outlierKD2(ignite.only.ceme.epi, gti.outs)
-outlierKD2(ignite.only.ceme.hp, gti.outs)
+outlierKD2(ignite.only.ceme, gti.outs)
 ```
 ```{r}
-ignite.only.ceme.epi %>% 
+ignite.only.ceme %>% 
 ggplot() +
   geom_point(aes(y = gti, x = mpa), color = "blue") +
   geom_point(aes(y = gti.outs, x = mpa), color = "goldenrod")
 ```
 Dont remove
 
-```{r}
-ignite.only.ceme.hp %>% 
-ggplot() +
-  geom_point(aes(y = gti, x = mpa), color = "blue") +
-  geom_point(aes(y = gti.outs, x = mpa), color = "goldenrod")
-```
 #### gd
 
 ```{r}
-outlierKD2(ignite.only.ceme.epi, gd.outs)
-outlierKD2(ignite.only.ceme.hp, gd.outs)
+outlierKD2(ignite.only.ceme, gd.outs)
 ```
 ```{r}
-ignite.only.ceme.epi %>% 
+ignite.only.ceme %>% 
 ggplot() +
   geom_point(aes(y = gd, x = mpa), color = "blue") +
   geom_point(aes(y = gd.outs, x = mpa), color = "goldenrod")
 ```
 Dont remove
-
-```{r}
-ignite.only.ceme.hp %>% 
-ggplot() +
-  geom_point(aes(y = gd, x = mpa), color = "blue") +
-  geom_point(aes(y = gd.outs, x = mpa), color = "goldenrod")
-```
 
 #### fd
 
 ```{r}
-outlierKD2(ignite.only.ceme.epi, fd.outs)
-outlierKD2(ignite.only.ceme.hp, fd.outs)
+outlierKD2(ignite.only.ceme, fd.outs)
 ```
 ```{r}
-ignite.only.ceme.epi %>% 
+ignite.only.ceme %>% 
 ggplot() +
   geom_point(aes(y = fd, x = mpa), color = "blue") +
   geom_point(aes(y = fd.outs, x = mpa), color = "goldenrod")
 ```
 Remove the point that is an obvious outlier at 0 mpa:
 ```{r}
-ignite.only.ceme.epi <- ignite.only.ceme.epi %>% 
+ignite.only.ceme <- ignite.only.ceme %>% 
  mutate(fd = ifelse(fd > 30 | mpa > -1, NA, fd))
 ```
 
-```{r}
-ignite.only.ceme.hp %>% 
-ggplot() +
-  geom_point(aes(y = fd, x = mpa), color = "blue") +
-  geom_point(aes(y = fd.outs, x = mpa), color = "goldenrod")
-```
 #### pfg
 
 ```{r}
-outlierKD2(ignite.only.ceme.epi, pfg.outs)
-outlierKD2(ignite.only.ceme.hp, pfg.outs)
+outlierKD2(ignite.only.ceme, pfg.outs)
 ```
 ```{r}
-ignite.only.ceme.epi %>% 
+ignite.only.ceme %>% 
 ggplot() +
   geom_point(aes(y = pfg, x = mpa), color = "blue") +
   geom_point(aes(y = pfg.outs, x = mpa), color = "goldenrod")
 ```
 Dont remove
 
-```{r}
-ignite.only.ceme.hp %>% 
-ggplot() +
-  geom_point(aes(y = pfg, x = mpa), color = "blue") +
-  geom_point(aes(y = pfg.outs, x = mpa), color = "goldenrod")
-```
-remove one weirdly high value (did not ignite? probably miscoded)
-
-```{r}
-ignite.only.ceme.hp <- ignite.only.ceme.hp %>% 
-  filter(pfg < 199)
-```
-
-
 #### fh
 
 ```{r}
-outlierKD2(ignite.only.ceme.epi, fh.outs)
-outlierKD2(ignite.only.ceme.hp, fh.outs)
+outlierKD2(ignite.only.ceme, fh.outs)
 ```
 
 ```{r}
-ignite.only.ceme.epi %>% 
+ignite.only.ceme %>% 
 ggplot() +
   geom_point(aes(y = fh, x = mpa), color = "blue") +
   geom_point(aes(y = fh.outs, x = mpa), color = "goldenrod")
@@ -591,58 +505,36 @@ ggplot() +
 Remove high value at ~0 MPa
 
 ```{r}
-ignite.only.ceme.epi <- ignite.only.ceme.epi %>% 
+ignite.only.ceme <- ignite.only.ceme %>% 
   mutate(fh = ifelse(fh > 20 | mpa > -1, NA, fh))
-```
-
-```{r}
-ignite.only.ceme.hp %>% 
-ggplot() +
-  geom_point(aes(y = fh, x = mpa), color = "blue") +
-  geom_point(aes(y = fh.outs, x = mpa), color = "goldenrod")
 ```
 
 #### temp max
 
 ```{r}
-outlierKD2(ignite.only.ceme.epi, temp.max.outs)
-outlierKD2(ignite.only.ceme.hp, temp.max.outs)
+outlierKD2(ignite.only.ceme, temp.max.outs)
 ```
 ```{r}
-ignite.only.ceme.epi %>% 
+ignite.only.ceme %>% 
 ggplot() +
   geom_point(aes(y = temp.max, x = mpa), color = "blue") +
   geom_point(aes(y = temp.max.outs, x = mpa), color = "goldenrod")
 ```
 Dont remove
 
-```{r}
-ignite.only.ceme.hp %>% 
-ggplot() +
-  geom_point(aes(y = temp.max, x = mpa), color = "blue") +
-  geom_point(aes(y = temp.max.outs, x = mpa), color = "goldenrod")
-```
 #### ignition temp
 
 ```{r}
-outlierKD2(ignite.only.ceme.epi, ignition.temp.outs)
-outlierKD2(ignite.only.ceme.hp, ignition.temp.outs)
+outlierKD2(ignite.only.ceme, ignition.temp.outs)
 ```
 ```{r}
-ignite.only.ceme.epi %>% 
+ignite.only.ceme %>% 
 ggplot() +
   geom_point(aes(y = ignition.temp, x = mpa), color = "blue") +
   geom_point(aes(y = ignition.temp.outs, x = mpa), color = "goldenrod")
 ```
 Look at distributions of flammability metrics so we can think about how
 to deal with NAs in those variables, and then deal with them.
-
-```{r}
-ignite.only.ceme.hp %>% 
-ggplot() +
-  geom_point(aes(y = ignition.temp, x = mpa), color = "blue") +
-  geom_point(aes(y = ignition.temp.outs, x = mpa), color = "goldenrod")
-```
 
 ### Outliers in flam metrics:
 
@@ -651,57 +543,22 @@ ggplot() +
 ```{r, include=FALSE}
 ### Subset data and perform imputations (median):
 #str(data)
-ignite.only.ceme.epi %>%
+ignite.only.ceme %>%
   mutate(gti = as.numeric(gti)) 
 
-ignite.only.ceme.epi <- ignite.only.ceme.epi %>%
+ignite.only.ceme <- ignite.only.ceme %>%
   group_by(year.month) %>% 
   group_by(spp) %>% #this makes us take the median of based on the species, the model, and the lfm bins (of 10 lfm) the missing value is in. Preserves species differences, and lfm impact. 
-  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ros", "ignition.temp", "temp.change", "prop.ignite", "fh", "tti")) 
-```
-
-```{r, include=FALSE}
-### Subset data and perform imputations (median):
-#str(data)
-ignite.only.ceme.hp %>%
-  mutate(gti = as.numeric(gti)) 
-
-ignite.only.ceme.hp <- ignite.only.ceme.hp %>%
-  group_by(year.month) %>% 
-  group_by(spp) %>% #this makes us take the median of based on the species, the model, and the lfm bins (of 10 lfm) the missing value is in. Preserves species differences, and lfm impact. 
-  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ros", "ignition.temp", "temp.change", "prop.ignite", "fh", "tti")) %>% 
-  dplyr::mutate(gti = replace(gti, gti == "0", "0.5")) %>% #replace when gti is zero to .5 seconds, so we can take the log later
-  mutate(gti = as.numeric(gti))%>% 
-  impute_lm(fh ~ spp + lfm.NAs.imputed)
+  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ignition.temp", "temp.change", "prop.ignite", "fh", "tti")) 
 ```
 
 
 # Look at flam characteristics to see if they make sense:
 
-#### For EPI only:
-
 ```{r, include=FALSE}
-ignite.only.ceme.epi <- ignite.only.ceme.epi %>%
+ignite.only.ceme <- ignite.only.ceme %>%
   mutate(flam.index = 3*((75+tti)/(12.5+tti))*exp(fh/(fh+27))) #using max tti and max fh, becomes a scale of least (1) to most (20) flammable 
 ```
-
-#### For HP only:
-
-```{r, include = FALSE}
-ignite.only.ceme.hp <- ignite.only.ceme.hp %>%
-  mutate(flam.index = 3.45*((214+tti)/(12.5+tti))*exp(fh/(fh+38))) #using max tti and max fh, becomes a scale of least (1) to most (20) flammable
-```
-
-
-
-Combine both EPI and HP back into master dataset called
-"ignite.only.ceme.all"
-
-```{r, include=FALSE}
-ignite.only.ceme.all <- rbind(ignite.only.ceme.epi, ignite.only.ceme.hp)
-```
-
-### EPI only:
 
 Here we are normalizing by the dry weight of the flammability sample,
 which was calculated by multiplying the weight of the burned sample by
@@ -712,32 +569,32 @@ measurements.
 lfm samples was the same)
 
 ```{r}
-distributions.lfm <- ignite.only.ceme.epi %>%
+distributions.lfm <- ignite.only.ceme %>%
   ggplot() +
   geom_density(aes(x = sample.wt, color = spp)) 
 distributions.lfm  
 
-ignite.only.ceme.epi <- ignite.only.ceme.epi %>%  #Dealing with only EPI trials that ignited (can change later)
+ignite.only.ceme <- ignite.only.ceme %>%  #Dealing with trials that ignited
   dplyr::mutate(mean.wt = mean(sample.wt, na.rm = TRUE)) %>% #take the mean of all sample weights for each model
   ungroup() %>% 
   mutate_if(is.integer, as.numeric) 
 
-ignite.only.ceme.epi$gti <- as.numeric(as.character(ignite.only.ceme.epi$gti)) #not sure why this became a character...
-#str(ignite.only.ceme.epi)
+ignite.only.ceme$gti <- as.numeric(as.character(ignite.only.ceme$gti)) #not sure why this became a character...
+#str(ignite.only.ceme)
 
-distributions.lfm <- ignite.only.ceme.epi %>%
+distributions.lfm <- ignite.only.ceme %>%
   ggplot() +
   geom_density(aes(x = lfm.NAs.imputed, color = spp))
 distributions.lfm 
 
-distributions.lfm <- ignite.only.ceme.epi %>%
+distributions.lfm <- ignite.only.ceme %>%
   ggplot() +
   geom_density(aes(x = ww.flam.sample, color = spp))
 distributions.lfm
 ```
 
 ```{r, include=FALSE}
-ignite.only.ceme.epi <- ignite.only.ceme.epi %>%
+ignite.only.ceme <- ignite.only.ceme %>%
   mutate(gti = replace(gti, gti == "0", "0.5")) %>% 
   mutate(gti = as.numeric(gti)) %>%
   mutate("dry.norm.fh" = fh/dw.flam.sample) %>% #create new columns, etc.
@@ -747,63 +604,17 @@ ignite.only.ceme.epi <- ignite.only.ceme.epi %>%
   mutate("dry.norm.ttfg" = ttfg/dw.flam.sample) %>%
   mutate("dry.norm.tti" = tti/dw.flam.sample) %>% 
   mutate("dry.norm.gti" = gti/dw.flam.sample) 
-#str(ignite.only.ceme.epi)
+#str(ignite.only.ceme)
 ```
 
 
-### EPI (USE THIS FOR PCA): Mirroring Max's PCA dataset (Mac_PCA_DATE.Rmd)
+### USE THIS FOR PCA: Mirroring Max's PCA dataset (Mac_PCA_DATE.Rmd)
 
 ```{r, include=FALSE}
-epi.ignite.only.ceme.PCA <- ignite.only.ceme.epi %>%
+ignite.only.ceme.PCA <- ignite.only.ceme %>%
   mutate(mpa = mpa * -1) 
 ```
 
-### HP only:
-
-Here we are normalizing by the dry weight of the flammability sample,
-which was calculated by multiplying the weight of the burned sample by
-the ratio of dry weight to fresh weight in the samples used for lfm
-measurements. (Assumptions here: that the ratio of water to dry weight
-in burned and lfm samples was the same)
-
-```{r}
-#colSums(is.na(ignite.only.ceme.hp))
-#str(ignite.only.ceme.hp)
-ignite.only.ceme.hp <- ignite.only.ceme.hp %>%  #Dealing with only EPI trials that ignited (can change later)
-  dplyr::mutate(mean.wt = mean(sample.wt, na.rm = TRUE)) %>% #take the mean of all sample weights for each model
-  ungroup() %>% 
-  mutate_if(is.integer, as.numeric) 
-
-ignite.only.ceme.hp$gti <- as.numeric(as.character(ignite.only.ceme.hp$gti)) #not sure why this became a character...
-#str(ignite.only.ceme.hp)
-
-#range(ignite.only.ceme.hp$dw.flam.sample) #range gets low for some samples (with very low lfm, maybe?)
-```
-
-```{r, include=FALSE}
-ignite.only.ceme.hp <- ignite.only.ceme.hp %>%
-  mutate(gti = replace(gti, gti == "0", "0.5")) %>% 
-  mutate(gti = as.numeric(gti)) %>%
-  mutate("dry.norm.fh" = fh/dw.flam.sample) %>% #create new columns, etc.
-  mutate("dry.norm.gd" = gd/dw.flam.sample) %>%
-  mutate("dry.norm.fd" = fd/dw.flam.sample) %>%
-  mutate("dry.norm.pfg" = pfg/dw.flam.sample) %>%
-  mutate("dry.norm.ttfg" = ttfg/dw.flam.sample) %>%
-  mutate("dry.norm.tti" = tti/dw.flam.sample) %>% 
-  mutate("dry.norm.gti" = gti/dw.flam.sample) %>%
-  mutate("temp.change" = temp.max - start.temp) 
-
-#str(ignite.only.ceme.hp)
-```
-
-
-### HP (USE THIS FOR PCA): Mirroring Max's PCA dataset (Mac_PCA_DATE.Rmd)
-
-```{r, include=FALSE}
-hp.ignite.only.ceme.pca <- ignite.only.ceme.hp %>%
-  mutate(mpa = mpa * -1) %>%
-  relocate("hydration")
-```
 
 ------------------------------------------------------------------------
 
@@ -811,17 +622,14 @@ hp.ignite.only.ceme.pca <- ignite.only.ceme.hp %>%
 
 ## Other missing values: Flam metrics
 
-### EPI: only
-
 ```{r}
 data.adfa <- data_flam_outs %>% 
   filter(spp == "ADFA")
 ```
 
 ```{r}
-ignite.only.adfa.epi <- data.adfa %>%
-  filter(ignition == "1") %>% #only look at ignited samples
-  filter(model == "EPI")
+ignite.only.adfa <- data.adfa %>%
+  filter(ignition == "1") #only look at ignited samples
 ```
 
 ### Outliers in flam metrics:
@@ -832,10 +640,11 @@ that is not what we want.
 #### tti
 
 ```{r}
-outlierKD2(ignite.only.adfa.epi, tti.outs)
+outlierKD2(ignite.only.adfa, tti.outs)
 ```
+
 ```{r}
-ignite.only.adfa.epi %>% 
+ignite.only.adfa %>% 
 ggplot() +
   geom_point(aes(y = tti, x = mpa), color = "blue") +
   geom_point(aes(y = tti.outs, x = mpa), color = "goldenrod")
@@ -843,10 +652,10 @@ ggplot() +
 #### gti
 
 ```{r}
-outlierKD2(ignite.only.adfa.epi, gti.outs)
+outlierKD2(ignite.only.adfa, gti.outs)
 ```
 ```{r}
-ignite.only.adfa.epi %>% 
+ignite.only.adfa %>% 
 ggplot() +
   geom_point(aes(y = gti, x = mpa), color = "blue") +
   geom_point(aes(y = gti.outs, x = mpa), color = "goldenrod")
@@ -854,11 +663,11 @@ ggplot() +
 #### gd
 
 ```{r}
-outlierKD2(ignite.only.adfa.epi, gd.outs)
+outlierKD2(ignite.only.adfa, gd.outs)
 ```
 
 ```{r}
-ignite.only.adfa.epi %>% 
+ignite.only.adfa %>% 
 ggplot() +
   geom_point(aes(y = gd, x = mpa), color = "blue") +
   geom_point(aes(y = gd.outs, x = mpa), color = "goldenrod")
@@ -867,10 +676,10 @@ ggplot() +
 #### fd
 
 ```{r}
-outlierKD2(ignite.only.adfa.epi, fd.outs)
+outlierKD2(ignite.only.adfa, fd.outs)
 ```
 ```{r}
-ignite.only.adfa.epi %>% 
+ignite.only.adfa %>% 
 ggplot() +
   geom_point(aes(y = fd, x = mpa), color = "blue") +
   geom_point(aes(y = fd.outs, x = mpa), color = "goldenrod")
@@ -878,17 +687,17 @@ ggplot() +
 
 Remove the point that is an obvious outlier at 0 mpa:
 ```{r}
-ignite.only.adfa.epi <- ignite.only.adfa.epi %>% 
+ignite.only.adfa <- ignite.only.adfa %>% 
  mutate(fd = ifelse(fd > 30, NA, fd))
 ```
 
 #### pfg
 
 ```{r}
-outlierKD2(ignite.only.adfa.epi, pfg.outs)
+outlierKD2(ignite.only.adfa, pfg.outs)
 ```
 ```{r}
-ignite.only.adfa.epi %>% 
+ignite.only.adfa %>% 
 ggplot() +
   geom_point(aes(y =pfg, x = mpa), color = "blue") +
   geom_point(aes(y = pfg.outs, x = mpa), color = "goldenrod")
@@ -897,10 +706,10 @@ Dont remove
 #### fh
 
 ```{r}
-outlierKD2(ignite.only.adfa.epi, fh.outs)
+outlierKD2(ignite.only.adfa, fh.outs)
 ```
 ```{r}
-ignite.only.adfa.epi %>% 
+ignite.only.adfa %>% 
 ggplot() +
   geom_point(aes(y = fh, x = mpa), color = "blue") +
   geom_point(aes(y = fh.outs, x = mpa), color = "goldenrod")
@@ -908,10 +717,10 @@ ggplot() +
 #### temp max
 
 ```{r}
-outlierKD2(ignite.only.adfa.epi, temp.max.outs)
+outlierKD2(ignite.only.adfa, temp.max.outs)
 ```
 ```{r}
-ignite.only.adfa.epi %>% 
+ignite.only.adfa %>% 
 ggplot() +
   geom_point(aes(y = temp.max, x = mpa), color = "blue") +
   geom_point(aes(y = temp.max.outs, x = mpa), color = "goldenrod")
@@ -921,10 +730,10 @@ Dont remove
 #### ignition temp
 
 ```{r}
-outlierKD2(ignite.only.adfa.epi, ignition.temp.outs)
+outlierKD2(ignite.only.adfa, ignition.temp.outs)
 ```
 ```{r}
-ignite.only.adfa.epi %>% 
+ignite.only.adfa %>% 
 ggplot() +
   geom_point(aes(y = ignition.temp, x = mpa), color = "blue") +
   geom_point(aes(y = ignition.temp.outs, x = mpa), color = "goldenrod")
@@ -939,131 +748,26 @@ both models
 
 ```{r, include=FALSE}
 #str(data)
-ignite.only.adfa.epi %>%
+ignite.only.adfa %>%
   mutate(gti = as.numeric(gti)) 
 
-ignite.only.adfa.epi <- ignite.only.adfa.epi %>%
+ignite.only.adfa <- ignite.only.adfa %>%
   group_by(year.month) %>% 
   group_by(spp) %>% #this makes us take the median of based on the species, the model, and the lfm bins (of 10 lfm) the missing value is in. Preserves species differences, and lfm impact. 
-  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ros", "ignition.temp", "temp.change", "prop.ignite", "fh", "tti")) 
+  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ignition.temp", "temp.change", "prop.ignite", "fh", "tti")) 
 
 ```
-
-# Repeat with hotplate trials:
-
-```{r}
-ignite.only.adfa.hp <- data.adfa %>%
-  filter(model == "HP") %>% 
-  filter(ignition == "1") %>% 
-  dplyr::mutate(gti = replace(gti, gti == "0", "0.5")) %>% #replace when gti is zero to .5 seconds, so we can take the log later
-  mutate(gti = as.numeric(gti))
-```
-
-### Outliers in flam metrics:
-
-These run and remove outliers automatically, need to quiet the code if
-that is not what we want.
-
-#### tti
-
-```{r}
-outlierKD2(ignite.only.adfa.hp, tti)
-```
-
-#### gti
-
-```{r}
-outlierKD2(ignite.only.adfa.hp, gti)
-```
-
-#### gd
-
-```{r}
-outlierKD2(ignite.only.adfa.hp, gd)
-```
-
-#### fd
-
-```{r}
-outlierKD2(ignite.only.adfa.hp, fd)
-```
-
-#### pfg
-
-```{r}
-outlierKD2(ignite.only.adfa.hp, pfg)
-```
-
-#### fd
-
-```{r}
-outlierKD2(ignite.only.adfa.hp, fh)
-```
-
-#### temp.max
-
-```{r}
-outlierKD2(ignite.only.adfa.hp, temp.max)
-```
-
-#### ignition.temp
-
-```{r}
-outlierKD2(ignite.only.adfa.hp, ignition.temp)
-```
-
-#### prop.ignite
-
-```{r}
-#outlierKD2(ignite.only.adfa.hp, prop.ignite)
-```
-
-### Deal with NAs for hotplate:
-
--   impute medians at each missing flam metric
-
-```{r, include = FALSE}
-#str(data)
-ignite.only.adfa.hp %>%
-  mutate(gti = as.numeric(gti)) 
-
-ignite.only.adfa.hp <- ignite.only.adfa.hp %>%
-  group_by(year.month) %>% 
-  group_by(spp) %>% #this makes us take the median of based on the species, the model, and the lfm bins (of 10 lfm) the missing value is in. Preserves species differences, and lfm impact. 
-  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ros", "ignition.temp", "temp.change", "prop.ignite", "fh", "ros")) %>% 
-  impute_lm(fh ~ spp + lfm + fh)  #since fh may have gone out of top of frame for some larger flame height trials, use existing information to impute those values (BUT doesn't really matter since so few fh's are actually missing)
-```
-# Look at flam characteristics to see if they make sense:
-
-#### For EPI only:
 
 ```{r, include=FALSE}
 
-range(ignite.only.adfa.epi$tti)
-range(ignite.only.adfa.epi$fh)
+range(ignite.only.adfa$tti)
+range(ignite.only.adfa$fh)
 #chack for NAs
-ignite.only.adfa.epi <- ignite.only.adfa.epi %>%
+ignite.only.adfa <- ignite.only.adfa %>%
   mutate(flam.index = 3.1*((86+tti)/(12.5+tti))*exp(fh/(fh+19.5))) #using max tti and max fh, becomes a scale of least (1) to most (20) flammable 
 
-range(ignite.only.adfa.epi$flam.index)
+range(ignite.only.adfa$flam.index)
 ```
-
-
-#### For HP only:
-
-```{r, include = FALSE}
-ignite.only.adfa.hp <- ignite.only.adfa.hp %>%
-  mutate(flam.index = 3.45*((214+tti)/(12.5+tti))*exp(fh/(fh+38))) #using max tti and max fh, becomes a scale of least (1) to most (20) flammable
-```
-
-Combine both EPI and HP back into master dataset called
-"ignite.only.adfa.all"
-
-```{r, include=FALSE}
-ignite.only.adfa.all <- rbind(ignite.only.adfa.epi, ignite.only.adfa.hp)
-```
-
-### EPI only:
 
 Here we are normalizing by the dry weight of the flammability sample,
 which was calculated by multiplying the weight of the burned sample by
@@ -1074,16 +778,16 @@ measurements.
 lfm samples was the same)
 
 ```{r}
-ignite.only.adfa.epi <- ignite.only.adfa.epi %>%  #Dealing with only EPI trials that ignited (can change later)
+ignite.only.adfa <- ignite.only.adfa %>%  #Dealing with trials that ignited (can change later)
   dplyr::mutate(mean.wt = mean(sample.wt, na.rm = TRUE)) %>% #take the mean of all sample weights for each model
   ungroup() %>% 
   mutate_if(is.integer, as.numeric) 
 
-ignite.only.adfa.epi$gti <- as.numeric(as.character(ignite.only.adfa.epi$gti)) #not sure why this became a character...
+ignite.only.adfa$gti <- as.numeric(as.character(ignite.only.adfa$gti)) #not sure why this became a character...
 ```
 
 ```{r, include=FALSE}
-ignite.only.adfa.epi <- ignite.only.adfa.epi %>%
+ignite.only.adfa <- ignite.only.adfa %>%
   mutate(gti = replace(gti, gti == "0", "0.5")) %>% 
   mutate(gti = as.numeric(gti)) %>%
   mutate("dry.norm.fh" = fh/dw.flam.sample) %>% #create new columns, etc.
@@ -1096,115 +800,39 @@ ignite.only.adfa.epi <- ignite.only.adfa.epi %>%
 ```
 
 
-### EPI (USE THIS FOR PCA): Mirroring Max's PCA dataset (Mac_PCA_DATE.Rmd)
+### USE THIS FOR PCA: Mirroring Max's PCA dataset (Mac_PCA_DATE.Rmd)
 
 ```{r, include=FALSE}
-epi.ignite.only.adfa.PCA <- ignite.only.adfa.epi %>%
+ignite.only.adfa.PCA <- ignite.only.adfa %>%
   mutate(mpa = mpa * -1)
-colSums(is.na(epi.ignite.only.adfa.PCA))
+colSums(is.na(ignite.only.adfa.PCA))
 ```
 
-### HP only:
-
-Here we are normalizing by the dry weight of the flammability sample,
-which was calculated by multiplying the weight of the burned sample by
-the ratio of dry weight to fresh weight in the samples used for lfm
-measurements. (Assumptions here: that the ratio of water to dry weight
-in burned and lfm samples was the same)
-
-```{r}
-ignite.only.adfa.hp <- ignite.only.adfa.hp %>%  #Dealing with only EPI trials that ignited (can change later)
-  dplyr::mutate(mean.wt = mean(sample.wt, na.rm = TRUE)) %>% #take the mean of all sample weights for each model
-  ungroup() %>% 
-  mutate_if(is.integer, as.numeric) 
-
-ignite.only.adfa.hp$gti <- as.numeric(as.character(ignite.only.adfa.hp$gti)) #not sure why this became a character...
-```
-
-```{r, include=FALSE}
-ignite.only.adfa.hp <- ignite.only.adfa.hp %>%
-  mutate(gti = replace(gti, gti == "0", "0.5")) %>% 
-  mutate(gti = as.numeric(gti)) %>%
-  mutate("dry.norm.fh" = fh/dw.flam.sample) %>% #create new columns, etc.
-  mutate("dry.norm.gd" = gd/dw.flam.sample) %>%
-  mutate("dry.norm.fd" = fd/dw.flam.sample) %>%
-  mutate("dry.norm.pfg" = pfg/dw.flam.sample) %>%
-  mutate("dry.norm.ttfg" = ttfg/dw.flam.sample) %>%
-  mutate("dry.norm.tti" = tti/dw.flam.sample) %>% 
-  mutate("dry.norm.gti" = gti/dw.flam.sample) %>%
-  mutate("temp.change" = temp.max - start.temp) 
-
-#str(ignite.only.adfa.hp)
-```
-
-### HP (USE THIS FOR PCA): Mirroring Max's PCA dataset (Mac_PCA_DATE.Rmd)
-
-```{r, include=FALSE}
-hp.ignite.only.adfa.pca <- ignite.only.adfa.hp %>%
-  mutate(mpa = mpa * -1) %>%
-  relocate("hydration")
-
-```
 
 ------------------------------------------------------------------------
 
 # Combine back into main datasets:
 
-- separated by method
-
 ```{r}
-no.ignites.ceme.epi <- data.ceme %>%
-  filter(ignition == "0") %>% #only look at ignited samples
-  filter(model == "EPI")
+no.ignites.ceme <- data.ceme %>%
+  filter(ignition == "0") #only look at non-ignited samples
 
-no.ignites.adfa.epi <- data.adfa %>%
-  filter(ignition == "0") %>% #only look at ignited samples
-  filter(model == "EPI")
+no.ignites.adfa <- data.adfa %>%
+  filter(ignition == "0") #only look at non-ignited samples
 
-no.ignites.all.epi <- rbind(no.ignites.adfa.epi, no.ignites.ceme.epi)
+no.ignites.all <- rbind(no.ignites.adfa, no.ignites.ceme)
 
-pca.data.local.noignites <- rbind(no.ignites.adfa.epi, no.ignites.ceme.epi) %>%
-  mutate(mpa = mpa * -1) 
-```
-
-```{r}
-no.ignites.ceme.hp <- data.ceme %>%
-  filter(ignition == "0") %>% #only look at ignited samples
-  filter(model == "HP")
-
-no.ignites.adfa.hp <- data.adfa %>%
-  filter(ignition == "0") %>% #only look at ignited samples
-  filter(model == "HP")
-
-no.ignites.all.hp <- rbind(no.ignites.adfa.hp, no.ignites.ceme.hp)
-
-pca.data.local.noignites <- rbind(no.ignites.adfa.hp, no.ignites.ceme.hp) %>%
+pca.data.local.noignites <- rbind(no.ignites.adfa, no.ignites.ceme) %>%
   mutate(mpa = mpa * -1) 
 ```
 
 
 ```{r}
-pca.data.local.hp.ignited <- rbind(hp.ignite.only.ceme.pca, hp.ignite.only.adfa.pca)
+pca.data.local.ignites <- rbind(ignite.only.ceme.PCA, ignite.only.adfa.PCA)
 
-pca.data.local.hp <- pca.data.local.hp.ignited
+pca.data.local <- bind_rows(pca.data.local.ignites, no.ignites.all)
 
-colSums(is.na(pca.data.local.hp))
+colSums(is.na(pca.data.local))
 
-pca.data.local.epi.ignites <- rbind(epi.ignite.only.ceme.PCA, epi.ignite.only.adfa.PCA)
-
-pca.data.local.epi <- bind_rows(pca.data.local.epi.ignites, no.ignites.all.epi)
-
-#write.csv(pca.data.local.epi, here("processed-data", "epi.ignite.only.LOCAL.csv"))
-
-colSums(is.na(pca.data.local.epi))
-
-#write.csv(pca.data.local.hp, here("processed-data", "hp.ignite.only.LOCAL.csv"))
-
-#compiled dataset - all dates, all species: 
-
-local_data_all <- rbind(pca.data.local.epi, pca.data.local.hp)
-dlookr::diagnose(local_data_all
-                 )
-
-write_csv(local_data_all, here("processed-data",  "local_flam_data_all.csv"))
+write_csv(pca.data.local, here("processed-data",  "local_flam_data_all.csv"))
 ```
