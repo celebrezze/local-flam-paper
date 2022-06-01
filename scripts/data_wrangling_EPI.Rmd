@@ -165,7 +165,28 @@ data.with.na.adfa <- data.with.na.adfa %>%
 data.with.na.new <- rbind(data.with.na.adfa, data.with.na.ceme)
 ```
 
-# 2. Add new variables:
+# 2. Impute missing values
+
+### LFM
+```{r}
+#impute rlm for each spp. 
+data.with.na.imputed <- data.with.na.new %>%
+  mutate(lfm.NAs.imputed = lfm.outliers.out) %>%
+  impute_rlm(lfm.NAs.imputed ~ mpa + dry.wt + fresh.wt | year.month.spp)
+```
+
+### Weights and Temps
+```{r include=FALSE}
+#impute values for missing weights:
+data <- data.with.na.imputed %>%
+  unite(individual, c("year", "month", "spp", "sample"), remove = FALSE) %>% #create 'individual' column
+  impute_median_at(c("dry.wt", "fresh.wt", "water.wt", "sample.wt")) %>%
+  ungroup() %>%
+  impute_median_at("start.temp") %>%
+  mutate(temp.change = temp.max - start.temp)
+```
+
+# 3. Add new variables:
 
 Add some columns to the dataframe and manipulate some variables:
 
@@ -179,7 +200,7 @@ Add some columns to the dataframe and manipulate some variables:
 
 #### LFM bins of 10
 ```{r ,include=FALSE}
-data <- data.with.na.imputed %>% 
+data <- data %>% 
   #group_by(gr = cut(lfm.NAs.imputed, breaks= seq(0, 400, by = 10))) %>% #create 10 lfm.NAs.imputed segments, indicate these in new column called "gr"
   group_by(gr = cut(lfm, breaks= seq(0, 400, by = 10))) %>%
   ungroup() %>% #ungroup - this will stop issues in the future (we can always regroup again)
@@ -363,28 +384,6 @@ data_flam_outs <- data %>%
          temp.max.outs = temp.max, 
          ignition.temp.outs = ignition.temp
          )
-```
-
-# 3. Impute missing values
-
-### LFM
-```{r}
-#impute rlm for each spp. 
-data.with.na.imputed <- data.with.na.new %>%
-  mutate(lfm.NAs.imputed = lfm.outliers.out) %>%
-  impute_rlm(lfm.NAs.imputed ~ mpa + dry.wt + fresh.wt | year.month.spp)
-```
-
-### Weights and Temps
-```{r include=FALSE}
-#impute values for missing weights:
-data <- data %>%
-  unite(individual, c("year", "month", "spp", "sample"), remove = FALSE) %>% #create 'individual' column
-  dplyr::group_by(model.spp.gr) %>%
-  impute_median_at(c("dry.wt", "fresh.wt", "water.wt", "sample.wt")) %>%
-  ungroup() %>%
-  impute_median_at("start.temp") %>%
-  mutate(temp.change = temp.max - start.temp)
 ```
 
 # 4. Outliers: Flam. Metrics
