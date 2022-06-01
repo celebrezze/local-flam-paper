@@ -12,12 +12,12 @@ editor_options:
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```
 
-#NOTES
+# NOTES
 - do we use proportion ignited?
   - if so, which metric or proportion ignited is used?
-- is there some way to streamline code so we don't have so many lines of code to look at outliers?
+- do we use flam. index?
 
-#SETUP
+# SETUP
 
 ```{r}
 #To load in necessary packages:
@@ -32,6 +32,7 @@ library(visdat)
 library(here)
 library(psych)
 library(kableExtra)
+library(rlang) # for {{}} in function writing
 filter = dplyr::filter #correct filter problem (gets confused with stats::filter)
 here = here::here
 read_csv = readr::read_csv
@@ -164,29 +165,7 @@ data.with.na.adfa <- data.with.na.adfa %>%
 data.with.na.new <- rbind(data.with.na.adfa, data.with.na.ceme)
 ```
 
-# 2. Impute missing values
-
-### LFM
-```{r}
-#impute rlm for each spp. 
-data.with.na.imputed <- data.with.na.new %>%
-  mutate(lfm.NAs.imputed = lfm.outliers.out) %>%
-  impute_rlm(lfm.NAs.imputed ~ mpa + dry.wt + fresh.wt | year.month.spp)
-```
-
-### Weights and Temps
-```{r include=FALSE}
-#view: 
-#impute values for missing weights:
-data <- data %>%
-  unite(individual, c("year", "month", "spp", "sample"), remove = FALSE) %>% #create 'individual' column
-  dplyr::group_by(model.spp.gr) %>%
-  impute_median_at(c("dry.wt", "fresh.wt", "water.wt", "sample.wt")) %>%
-  ungroup() %>%
-  impute_median_at("start.temp") %>%
-  mutate(temp.change = temp.max - start.temp)
-```
-# 3. Add new variables:
+# 2. Add new variables:
 
 Add some columns to the dataframe and manipulate some variables:
 
@@ -371,24 +350,6 @@ data <- data %>%
   filter(dw.flam.sample < 0.46)
 ```
 
-# DO WE NEED?
-```{r}
-#deal with weight values from the above (should actually not be needed)
-data <- data %>%
-  dplyr::group_by(model.spp.gr) %>%
-  impute_median_at("ww.flam.sample") %>%
-  dplyr::group_by(model.spp.gr) %>%
-  dplyr::group_by(individual) %>% 
-  dplyr::mutate(gww.gdw.saturated = max((gww.gdw), na.rm = TRUE)) %>%
-  dplyr::mutate(gdw.gww.saturated = min((gdw.gww), na.rm = TRUE)) %>%
-  mutate(RWC = (gww.gdw/gww.gdw.saturated)*100) %>%
-  mutate(RWD = 100 - RWC) %>%
-  mutate(max.mpa.sample = max((mpa), na.rm = TRUE)) 
-
-
-rwc.data <- data %>% select(individual, year.month, dry.wt, spp, model, lfm.NAs.imputed, RWC, max.mpa.sample, mpa, gww.gdw, gww.gdw.saturated, fresh.wt, dry.wt, site, sample, lfm)
-```
-
 ------------------------------------------------------------------------
 
 ```{r}
@@ -404,16 +365,47 @@ data_flam_outs <- data %>%
          )
 ```
 
+# 3. Impute missing values
+
+### LFM
+```{r}
+#impute rlm for each spp. 
+data.with.na.imputed <- data.with.na.new %>%
+  mutate(lfm.NAs.imputed = lfm.outliers.out) %>%
+  impute_rlm(lfm.NAs.imputed ~ mpa + dry.wt + fresh.wt | year.month.spp)
+```
+
+### Weights and Temps
+```{r include=FALSE}
+#impute values for missing weights:
+data <- data %>%
+  unite(individual, c("year", "month", "spp", "sample"), remove = FALSE) %>% #create 'individual' column
+  dplyr::group_by(model.spp.gr) %>%
+  impute_median_at(c("dry.wt", "fresh.wt", "water.wt", "sample.wt")) %>%
+  ungroup() %>%
+  impute_median_at("start.temp") %>%
+  mutate(temp.change = temp.max - start.temp)
+```
+
 # 4. Outliers: Flam. Metrics
 
-## CEME only:
+## Outlier Visualization Function
+```{r}
+outlierVis <- function(df, metric, outlier, x.value = mpa) {
+  x <- ggplot2::ggplot(data = df)+
+                geom_point(aes(y = {{metric}}, x = {{x.value}}), color = "blue")+
+                geom_point(aes(y = {{outlier}}, x = {{x.value}}), color = "goldenrod")+
+                theme_bw()
+  x
+}
+```
 
+
+## CEME only:
 ```{r}
 data.ceme <- data_flam_outs %>% 
   filter(spp == "CEME")
-```
 
-```{r}
 ignite.only.ceme <- data.ceme %>%
   filter(ignition == "1")
 ```
@@ -424,13 +416,7 @@ that is not what we want.
 #### tti
 ```{r}
 outlierKD2(ignite.only.ceme, tti.outs)
-```
-
-```{r}
-ignite.only.ceme %>% 
-ggplot() +
-  geom_point(aes(y = tti, x = mpa), color = "blue") +
-  geom_point(aes(y = tti.outs, x = mpa), color = "goldenrod")
+outlierVis(ignite.only.ceme, tti, tti.outs)
 ```
 Don't remove any 
 
@@ -438,39 +424,23 @@ Don't remove any
 
 ```{r}
 outlierKD2(ignite.only.ceme, gti.outs)
-```
-```{r}
-ignite.only.ceme %>% 
-ggplot() +
-  geom_point(aes(y = gti, x = mpa), color = "blue") +
-  geom_point(aes(y = gti.outs, x = mpa), color = "goldenrod")
+outlierVis(ignite.only.ceme, gti, gti.outs)
 ```
 Dont remove
 
 #### gd
-
 ```{r}
 outlierKD2(ignite.only.ceme, gd.outs)
-```
-```{r}
-ignite.only.ceme %>% 
-ggplot() +
-  geom_point(aes(y = gd, x = mpa), color = "blue") +
-  geom_point(aes(y = gd.outs, x = mpa), color = "goldenrod")
+outlierVis(ignite.only.ceme, gd, gd.outs)
 ```
 Dont remove
 
 #### fd
-
 ```{r}
 outlierKD2(ignite.only.ceme, fd.outs)
+outlierVis(ignite.only.ceme, fd, fd.outs)
 ```
-```{r}
-ignite.only.ceme %>% 
-ggplot() +
-  geom_point(aes(y = fd, x = mpa), color = "blue") +
-  geom_point(aes(y = fd.outs, x = mpa), color = "goldenrod")
-```
+
 Remove the point that is an obvious outlier at 0 mpa:
 ```{r}
 ignite.only.ceme <- ignite.only.ceme %>% 
@@ -478,67 +448,41 @@ ignite.only.ceme <- ignite.only.ceme %>%
 ```
 
 #### pfg
-
 ```{r}
 outlierKD2(ignite.only.ceme, pfg.outs)
-```
-```{r}
-ignite.only.ceme %>% 
-ggplot() +
-  geom_point(aes(y = pfg, x = mpa), color = "blue") +
-  geom_point(aes(y = pfg.outs, x = mpa), color = "goldenrod")
+outlierVis(ignite.only.ceme, pfg, pfg.outs)
 ```
 Dont remove
 
 #### fh
-
 ```{r}
 outlierKD2(ignite.only.ceme, fh.outs)
+outlierVis(ignite.only.ceme, fh, fh.outs)
 ```
 
-```{r}
-ignite.only.ceme %>% 
-ggplot() +
-  geom_point(aes(y = fh, x = mpa), color = "blue") +
-  geom_point(aes(y = fh.outs, x = mpa), color = "goldenrod")
-```
-Remove high value at ~0 MPa
-
+Remove high value at ~0 MPa:
 ```{r}
 ignite.only.ceme <- ignite.only.ceme %>% 
   mutate(fh = ifelse(fh > 20 | mpa > -1, NA, fh))
 ```
 
-#### temp max
-
+#### max temp
 ```{r}
 outlierKD2(ignite.only.ceme, temp.max.outs)
-```
-```{r}
-ignite.only.ceme %>% 
-ggplot() +
-  geom_point(aes(y = temp.max, x = mpa), color = "blue") +
-  geom_point(aes(y = temp.max.outs, x = mpa), color = "goldenrod")
+outlierVis(ignite.only.ceme, temp.max, temp.max.outs)
 ```
 Dont remove
 
 #### ignition temp
-
 ```{r}
 outlierKD2(ignite.only.ceme, ignition.temp.outs)
+outlierVis(ignite.only.ceme, ignition.temp, ignition.temp.outs)
 ```
-```{r}
-ignite.only.ceme %>% 
-ggplot() +
-  geom_point(aes(y = ignition.temp, x = mpa), color = "blue") +
-  geom_point(aes(y = ignition.temp.outs, x = mpa), color = "goldenrod")
-```
+
 Look at distributions of flammability metrics so we can think about how
 to deal with NAs in those variables, and then deal with them.
 
-### Outliers in flam metrics:
-
-#### Distribution following imputation: 
+## Distribution following imputation: 
 
 ```{r, include=FALSE}
 ### Subset data and perform imputations (median):
@@ -549,11 +493,11 @@ ignite.only.ceme %>%
 ignite.only.ceme <- ignite.only.ceme %>%
   group_by(year.month) %>% 
   group_by(spp) %>% #this makes us take the median of based on the species, the model, and the lfm bins (of 10 lfm) the missing value is in. Preserves species differences, and lfm impact. 
-  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ignition.temp", "temp.change", "prop.ignite", "fh", "tti")) 
+  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ignition.temp", "prop.ignite", "fh", "tti")) 
 ```
 
 
-# Look at flam characteristics to see if they make sense:
+## Look at flam characteristics to see if they make sense:
 
 ```{r, include=FALSE}
 ignite.only.ceme <- ignite.only.ceme %>%
@@ -607,32 +551,15 @@ ignite.only.ceme <- ignite.only.ceme %>%
 #str(ignite.only.ceme)
 ```
 
-
-### USE THIS FOR PCA: Mirroring Max's PCA dataset (Mac_PCA_DATE.Rmd)
-
-```{r, include=FALSE}
-ignite.only.ceme.PCA <- ignite.only.ceme %>%
-  mutate(mpa = mpa * -1) 
-```
-
-
-------------------------------------------------------------------------
-
-# ADFA only:
-
-## Other missing values: Flam metrics
+## ADFA only:
 
 ```{r}
 data.adfa <- data_flam_outs %>% 
   filter(spp == "ADFA")
-```
 
-```{r}
 ignite.only.adfa <- data.adfa %>%
   filter(ignition == "1") #only look at ignited samples
 ```
-
-### Outliers in flam metrics:
 
 These run and remove outliers automatically, need to quiet the code if
 that is not what we want.
@@ -641,48 +568,29 @@ that is not what we want.
 
 ```{r}
 outlierKD2(ignite.only.adfa, tti.outs)
+outlierVis(ignite.only.adfa, tti, tti.outs)
 ```
 
-```{r}
-ignite.only.adfa %>% 
-ggplot() +
-  geom_point(aes(y = tti, x = mpa), color = "blue") +
-  geom_point(aes(y = tti.outs, x = mpa), color = "goldenrod")
-```
 #### gti
 
 ```{r}
 outlierKD2(ignite.only.adfa, gti.outs)
+outlierVis(ignite.only.adfa, gti, gti.outs)
 ```
-```{r}
-ignite.only.adfa %>% 
-ggplot() +
-  geom_point(aes(y = gti, x = mpa), color = "blue") +
-  geom_point(aes(y = gti.outs, x = mpa), color = "goldenrod")
-```
+
 #### gd
 
 ```{r}
 outlierKD2(ignite.only.adfa, gd.outs)
+outlierVis(ignite.only.adfa, gd, gd.outs)
 ```
 
-```{r}
-ignite.only.adfa %>% 
-ggplot() +
-  geom_point(aes(y = gd, x = mpa), color = "blue") +
-  geom_point(aes(y = gd.outs, x = mpa), color = "goldenrod")
-```
 
 #### fd
 
 ```{r}
 outlierKD2(ignite.only.adfa, fd.outs)
-```
-```{r}
-ignite.only.adfa %>% 
-ggplot() +
-  geom_point(aes(y = fd, x = mpa), color = "blue") +
-  geom_point(aes(y = fd.outs, x = mpa), color = "goldenrod")
+outlierVis(ignite.only.adfa, fd, fd.outs)
 ```
 
 Remove the point that is an obvious outlier at 0 mpa:
@@ -692,52 +600,32 @@ ignite.only.adfa <- ignite.only.adfa %>%
 ```
 
 #### pfg
-
 ```{r}
 outlierKD2(ignite.only.adfa, pfg.outs)
-```
-```{r}
-ignite.only.adfa %>% 
-ggplot() +
-  geom_point(aes(y =pfg, x = mpa), color = "blue") +
-  geom_point(aes(y = pfg.outs, x = mpa), color = "goldenrod")
+outlierVis(ignite.only.adfa, pfg, pfg.outs)
 ```
 Dont remove
-#### fh
 
+#### fh
 ```{r}
 outlierKD2(ignite.only.adfa, fh.outs)
+outlierVis(ignite.only.adfa, fh, fh.outs)
 ```
-```{r}
-ignite.only.adfa %>% 
-ggplot() +
-  geom_point(aes(y = fh, x = mpa), color = "blue") +
-  geom_point(aes(y = fh.outs, x = mpa), color = "goldenrod")
-```
+
 #### temp max
 
 ```{r}
 outlierKD2(ignite.only.adfa, temp.max.outs)
-```
-```{r}
-ignite.only.adfa %>% 
-ggplot() +
-  geom_point(aes(y = temp.max, x = mpa), color = "blue") +
-  geom_point(aes(y = temp.max.outs, x = mpa), color = "goldenrod")
+outlierVis(ignite.only.adfa, temp.max, temp.max.outs)
 ```
 Dont remove
 
 #### ignition temp
-
 ```{r}
 outlierKD2(ignite.only.adfa, ignition.temp.outs)
+outlierVis(ignite.only.adfa, ignition.temp, ignition.temp.outs)
 ```
-```{r}
-ignite.only.adfa %>% 
-ggplot() +
-  geom_point(aes(y = ignition.temp, x = mpa), color = "blue") +
-  geom_point(aes(y = ignition.temp.outs, x = mpa), color = "goldenrod")
-```
+
 Look at distributions of flammability metrics so we can think about how
 to deal with NAs in those variables, and then deal with them:
 
@@ -754,7 +642,7 @@ ignite.only.adfa %>%
 ignite.only.adfa <- ignite.only.adfa %>%
   group_by(year.month) %>% 
   group_by(spp) %>% #this makes us take the median of based on the species, the model, and the lfm bins (of 10 lfm) the missing value is in. Preserves species differences, and lfm impact. 
-  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ignition.temp", "temp.change", "prop.ignite", "fh", "tti")) 
+  impute_median_at(c("ttfg", "gd", "gti", "fd", "pfg","temp.max", "start.temp", "ignition.temp", "prop.ignite", "fh", "tti")) 
 
 ```
 
@@ -800,15 +688,6 @@ ignite.only.adfa <- ignite.only.adfa %>%
 ```
 
 
-### USE THIS FOR PCA: Mirroring Max's PCA dataset (Mac_PCA_DATE.Rmd)
-
-```{r, include=FALSE}
-ignite.only.adfa.PCA <- ignite.only.adfa %>%
-  mutate(mpa = mpa * -1)
-colSums(is.na(ignite.only.adfa.PCA))
-```
-
-
 ------------------------------------------------------------------------
 
 # Combine back into main datasets:
@@ -822,17 +701,11 @@ no.ignites.adfa <- data.adfa %>%
 
 no.ignites.all <- rbind(no.ignites.adfa, no.ignites.ceme)
 
-pca.data.local.noignites <- rbind(no.ignites.adfa, no.ignites.ceme) %>%
-  mutate(mpa = mpa * -1) 
-```
+data.local.ignites <- rbind(ignite.only.ceme, ignite.only.adfa)
 
+data.local <- bind_rows(data.local.ignites, no.ignites.all)
 
-```{r}
-pca.data.local.ignites <- rbind(ignite.only.ceme.PCA, ignite.only.adfa.PCA)
+colSums(is.na(data.local))
 
-pca.data.local <- bind_rows(pca.data.local.ignites, no.ignites.all)
-
-colSums(is.na(pca.data.local))
-
-write_csv(pca.data.local, here("processed-data",  "local_flam_data_all.csv"))
+write_csv(data.local, here("processed-data",  "local_flam_data_all.csv"))
 ```
