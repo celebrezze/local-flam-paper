@@ -1,0 +1,21 @@
+---
+title: "Goals for GitHub Repo Management"
+author: "Joe Celebrezze"
+date: "6/1/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+1. Get rid of redundancies or unnecessary scripts
+In progress
+
+2. Get data wrangling all in one "Data Wrangling" script
+
+3. Get main (and supplemental) figures all saved into "Figures" folder
+
+4. Divide 5.5_figures_local... mega-script into multiple scripts (one for each analysis)
+
+5. Make sure all code in every script is useful and relatively easy to interpret
