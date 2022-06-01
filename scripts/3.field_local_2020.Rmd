@@ -1,3 +1,12 @@
+---
+title: "Field Data Analysis"
+author: "Indra Boving & JC"
+date: "2/26/2021"
+output: html_document
+---
+
+# QUESTION
+Are we using any of this??
 
 ```{r}
 #install.packages("ggplot2")
@@ -5,7 +14,7 @@ library(ggplot2)
 library(dplyr)
 library(ggpubr)
 library(tidyverse)
-install.packages("segmented")
+#install.packages("segmented")
 library(segmented)
 #install.packages("cowplot")
 library(cowplot)
@@ -25,8 +34,7 @@ Organize data:
 ```{r}
 data.xpp <- df %>% 
   select(spp, age, site, pod, lfm, date, predawn, midday, type, LFMtlp, Mpatlp) %>% #filter out super high LFM (check that this is ok? Necessary?)
-  mutate(lfm.outliers.out = lfm) %>% #add a column that we can use to take out outliers
-  mutate(Mpatlp_ci = )
+  mutate(lfm.outliers.out = lfm) #add a column that we can use to take out outliers
   
   range(data.xpp$LFMtlp) 
   
@@ -115,16 +123,17 @@ ggplot(data = data.xpp, aes(x = midday, y = lfm, color = spp)) +
 
 ```{r}
 data.xpp %>% 
-  filter(age == "new") %>% 
-  ggplot(aes(midday, lfm)) +
-  geom_boxplot(fill = spp) +
+  filter(age == "New") %>% 
+  ggplot(aes(midday, lfm, fill = spp)) +
+  geom_boxplot() +
   ggtitle("Local, 2020, by age")
 ```
 
 Segmented regression: 
 
 1. Predawn: 
-```{r}
+# ERROR pops up in below chunk:
+
 ###Looks better with outliers in....300 lfm realistic?
 
 #####build lm model and find inflection point using 'segmented' package...do this with each spp? 
@@ -147,7 +156,7 @@ ggplot(df, aes(x = predawn, y = lfm, color = date)) +
 
 model_segmented.lfm <- segmented(lm(predawn~lfm, data=data.xpp), seg.Z = ~ lfm)
 model_segmented.lfm #get lfm breakpoint value....I think? Might actually be embedded in results above. 
-```
+
 
 2. Midday 
 ```{r}

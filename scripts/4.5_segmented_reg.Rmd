@@ -25,7 +25,7 @@ source(here("source-code", "source-segmented.lme.R"))
 
 ###All dates datasets
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
-mem.data.alldates <- read_csv(here("processed-data", "compiled-datasets", "LOCAL", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
+mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
 
 mem.data.raw.alldates <- mem.data.alldates %>%
   mutate(mpa = (-1*mpa)) %>% 
@@ -76,7 +76,7 @@ seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldate
 
 ###2020 datasets
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
-mem.data.2020 <- read_csv(here("processed-data", "compiled-datasets", "LOCAL", "mem.data.local.epi.2020.csv"), show_col_types = FALSE)
+mem.data.2020 <- read_csv(here("processed-data", "mem.data.local.epi.2020.csv"), show_col_types = FALSE)
 
 mem.data.raw.2020 <- mem.data.2020 %>%
   mutate(mpa = (-1*mpa)) %>% 
@@ -104,7 +104,7 @@ scaled.mem.data.predictors.2020 <- clean.mem.data.2020 %>%
 
 #dont scale these: 
 mem.data.predictors.2020 <- clean.mem.data.2020 %>%
-    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled') 
+    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'bins10lfm') 
 
 scaled.mem.data.2020 <- cbind(scaled.mem.data.predictors.2020, 
                          mem.data.predictors.2020,
@@ -253,7 +253,7 @@ o_CEME_lfm <-segmented(out.lm) #1 breakpoint for x
 o_CEME_lfm
 ```
 ```{r}
-plot(o_CEME_mpa, conf.level=.9, is=TRUE, isV=FALSE, col=2, shade = TRUE, res=TRUE, res.col=4, pch=3)
+plot(o_CEME_lfm, conf.level=.9, is=TRUE, isV=FALSE, col=2, shade = TRUE, res=TRUE, res.col=4, pch=3)
 ```
 # Mpa
 
@@ -377,6 +377,7 @@ plot(o_CEME_mpa, conf.level=.9, is=TRUE, isV=FALSE, col=2, shade = TRUE, res=TRU
 
 ###CEME: 
 
+#ERROR
 ```{r}
 o <-lme(prop.ignite.bins5 ~ mpa, 
          random=list(id=pdDiag(~1+mpa+id)), data = seg.CEME.subset)
