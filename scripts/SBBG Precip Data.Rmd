@@ -1,5 +1,5 @@
 ---
-title: "Precipitation_Data"
+title: "Precipitation Data"
 author: "Indra Boving & JC"
 date: "2/26/2021"
 output: html_document
@@ -10,20 +10,14 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r include=FALSE}
-library(ggplot2) #install and run packages, dont need to do this every time though....also, say "no" to restarting. 
-#install.packages("gapminder")
+library(ggplot2)
 library(gapminder)
-#install.packages("data.table")
 library(data.table)
-#install.packages("purrr")
 library(purrr) #for visualizing all variables in one big plot
-#install.packages("naniar")
 library(naniar) #deal with NAs
 library(dplyr)
 library(tidyverse)
-#install.packages("ggpubr")
 library(ggpubr)
-#tidyverse_update()
 filter = dplyr::filter #correct filter problem (gets confused with stats::filter)
 ```
 
