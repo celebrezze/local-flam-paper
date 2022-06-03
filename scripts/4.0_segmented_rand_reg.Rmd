@@ -18,19 +18,7 @@ library(nlme)
 library(lubridate)
 filter = dplyr::filter 
 
-source(here("source-code", "source-segmented.lme.R"))
-```
-
-# ERROR
-```{r}
-myd<-myd[order(myd$id),]
-
-plot(groupedData(y~x|id,data=myd))
-
-o<-lme(y~x, random=list(id=pdDiag(~1+x)), data=myd)
-o
-
-oseg<-segmented.lme(o, Z=x, random=list(id=pdDiag(~1+x+U)))
+#source(here("source-code", "source-segmented.lme.R"))
 ```
 
 # Data Wrangling
@@ -79,31 +67,45 @@ Plot segmented regression onto scatterplot: https://rpubs.com/MarkusLoew/12164
 
 Muggeo, Vito, 2016/02/01, Segmented mixed models with random changepoints in R, 10.13140/RG.2.1.4180.8402
 
+```{r}
+dati$g<-gl(10,10) #the cluster 'id' variable
+library(nlme)
+o<-lme(y~x+z, random=~1|g, data=dati)
+os<-segmented.default(o, ~x+z, npsi=list(x=2, z=1))
+
+#summarizing results (note the '.coef' argument)
+slope(os, .coef=fixef(os))
+plot.segmented(os, "x", .coef=fixef(os), conf.level=.95)
+confint.segmented(os, "x", .coef=fixef(os))
+dd<-data.frame(x=c(20,50),z=c(.2,.6), g=1:2)
+predict.segmented(os, newdata=dd, .coef=fixef(os)) 
+```
+
+```{r}
+o<-lme(tti~mpa, random=~1|id, data=seg.data.subset)
+os<-segmented.default(o, ~mpa, npsi=list(mpa=1))
+
+#summarizing results (note the '.coef' argument)
+slope(os, .coef=fixef(os))
+plot.segmented(os, "mpa", .coef=fixef(os), conf.level=.95)
+confint.segmented(os, "mpa", .coef=fixef(os))
+```
+
 # BOTH SPP: 
 
 #### MPA x PC1
 
-# ERROR: segmented.lme is not working!
 ```{r}
-plot(groupedData(PC1~mpa|id,data=seg.data.subset))
+o.pc1.mpa<-lme(PC1~mpa, random=~1|id, data=seg.data.subset)
+os.pc1.mpa<-segmented.default(o.pc1.mpa, ~mpa, npsi=list(mpa=1))
 
-#specify lme
-o<-lme(PC1~mpa, random=list(id=pdDiag(~1)), data=seg.data.subset)
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.data.subset)
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.pc1.mpa, .coef=fixef(os.pc1.mpa))
+plot.segmented(os.pc1.mpa, "mpa", .coef=fixef(os.pc1.mpa), conf.level=.95)
+confint.segmented(os.pc1.mpa, "mpa", .coef=fixef(os.pc1.mpa))
 ```
+
+
 
 #### LFM x PC1
 

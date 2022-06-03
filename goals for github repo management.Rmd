@@ -10,12 +10,16 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 1. Get rid of redundancies or unnecessary scripts
-In progress
+Mostly done
 
 2. Get data wrangling all in one "Data Wrangling" script
+Done
 
 3. Get main (and supplemental) figures all saved into "Figures" folder
 
 4. Divide 5.5_figures_local... mega-script into multiple scripts (one for each analysis)
 
 5. Make sure all code in every script is useful and relatively easy to interpret
+
+6. Segmented regression mess :(
+I *might* have figured out segmented reg. for mixed models??
