@@ -21,5 +21,8 @@ Done
 
 5. Make sure all code in every script is useful and relatively easy to interpret
 
-6. Segmented regression mess :(
-I *might* have figured out segmented reg. for mixed models??
+6. Segmented regression mess
+  a. Random effects
+    Done!
+  b. W/o random effects
+    It runs, but needs some tidying -- wait until we decide which seg reg to actually use
