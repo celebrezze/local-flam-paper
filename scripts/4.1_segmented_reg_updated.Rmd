@@ -4,11 +4,143 @@ author: "Indra Boving & Joe Celebrezze"
 date: "6/7/2022"
 output: html_document
 ---
+```{r}
+knitr::opts_chunk$set(echo = TRUE)
+#lots of extra here, but oh well... 
+library(ggplot2)
+library(gapminder)
+library(tidyverse)
+library(lme4)
+library(here)
+library(segmented)
+library(nlme)
+library(lubridate)
+library(MetBrewer)
+filter = dplyr::filter 
+```
 
-Work in progress...
+# Reading in Dataframes
+```{r}
+seg.data.subset <- read.csv(here('processed-data', 'seg.reg.data.local.csv'))
+
+scaled.mem.data.alldates <- read.csv(here('processed-data', 'mem.data.local.epi.alldates.csv'))
+```
+
+# Data Wrangling
+## Species Split
+```{r}
+seg.adfa.subset <- seg.data.subset %>% 
+  filter(spp == "ADFA")
+
+seg.ceme.subset <- seg.data.subset %>% 
+  filter(spp == "CEME")
+```
+
+## PV Data, TLP
+Getting PV data, TLP stuff all ready for segmented regression visualizations (comparing breakpoint in segmented regression to turgor loss point derived from pressure-volume curves)
+
+```{r}
+pv_summary_df_timing <- read_csv(here("processed-data", "pv_summary_df_timing.csv"))
+
+pv_local <- pv_summary_df_timing %>% 
+  filter(spp %in% c("ADFA", "CEME"))
+```
+
+```{r}
+mean_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(mean_lfm)) %>% 
+  pull()
+
+upr_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(upr_lfm)) %>% 
+  pull()
+
+lwr_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(lwr_lfm)) %>% 
+  pull()
+
+mean_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(mean_tlp)) %>% 
+  pull()
+
+upr_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(upr)) %>% 
+  pull()
+
+lwr_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(lwr)) %>% 
+  pull()
+```
+
+```{r}
+mean_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(mean_lfm)) %>% 
+  pull()
+
+upr_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(upr_lfm)) %>% 
+  pull()
+
+lwr_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(lwr_lfm)) %>% 
+  pull()
+
+mean_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(mean_tlp)) %>% 
+  pull()
+
+upr_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(upr)) %>% 
+  pull()
+
+lwr_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(lwr)) %>% 
+  pull()
+```
+
+```{r}
+scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
+  drop_na(mpa, lfm, PC1)
+
+tmp <- scaled.mem.data.alldates.noNAs %>% 
+  mutate(tlp = case_when(
+    spp == "ADFA" ~ mean_mpa_adfa, 
+    spp == "CEME" ~ mean_mpa_ceme
+  )) %>% 
+  mutate(tlp_split = case_when(
+    mpa > tlp ~ "tlp_above", 
+    mpa < tlp ~ "tlp_below"
+  )) 
+tmp
+```
+
+# Global Options: Colors, Themes
+```{r}
+th <- theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
+          panel.grid.major = element_blank(),  # Hide major gridlines
+          panel.grid.minor = element_blank())
+
+th.spp.wrap <- theme(legend.position = "bottom", 
+        strip.text = element_text(face = "italic", size = 12) +
+  scale_color_manual(values=met.brewer("Morgenstern", 7)))
+
+Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db8872", "#a56457"), c(7, 5, 4, 6, 3, 2, 1), colorblind=TRUE)
+```
 
 
-#Functions: 
+# Functions
 
 ```{r, eval=F}
 seg.setup <- function(x, y, df) {
@@ -63,6 +195,8 @@ segplot <- function(data, x, y, z, tlp_value, lwr, upr, lwr_seg, upr_seg) {
 
 }
 ```
+
+# INCLUDE?
 ###10% Changepoints
 ### ADFA
 
@@ -202,11 +336,12 @@ Trying to make a function to do this:
 
 ####ADFA
 
+
 ```{r}
 seg.adfa.subset <- seg.adfa.subset %>% 
-  filter(lfm.unscaled < 150)
+  filter(lfm < 150)
 
-out.lm<-lm(PC1 ~ lfm.unscaled, data = seg.adfa.subset)
+out.lm<-lm(PC1 ~ lfm, data = seg.adfa.subset)
 davies.test(out.lm, k = 50)
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -226,8 +361,7 @@ fit <- numeric(length(seg.adfa.subset$lfm.unscaled)) * NA
 
 fit[complete.cases(rowSums(cbind(seg.adfa.subset$PC1, seg.adfa.subset$lfm.unscaled)))] <- broken.line(segmented.mod)$fit
 
-segplot(seg.adfa.subset, lfm.unscaled, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
-
+segplot(seg.adfa.subset, lfm, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
 ```
 
 ```{r}

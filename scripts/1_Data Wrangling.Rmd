@@ -750,4 +750,85 @@ seg.data.subset<-seg.data.subset[order(seg.data.subset$id),]
 write_csv(seg.data.subset, here("processed-data", "seg.reg.data.local.csv"))
 ```
 
+## Mixed Effects Models
+Seasonal mins and maxs from 2016 - 2020:
+
+https://www.sbbg.org/about/onsite-weather-station-live-fuel-moisture 
+```{r}
+adfa_min <- 55
+adfa_max <- 110
+
+ceme_min <- 55
+ceme_max <- 140
+```
+
+All dates datasets
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
+
+mem.data.raw.alldates <- mem.data.alldates %>%
+  mutate(mpa = case_when(
+    mpa > 0 ~ (-1*mpa), 
+    mpa < 0 ~ mpa)) %>% 
+  mutate(year = as.factor(year)) %>%
+  mutate(month = as.factor(month)) %>% 
+  mutate(mpa.unscaled = mpa) %>% 
+  mutate(lfm.unscaled = lfm)%>% 
+  mutate(lfm.NAs.imputed.unscaled = lfm.NAs.imputed) %>% 
+  mutate(excess_water.scaled = ww.flam.sample - dw.flam.sample) %>% 
+  mutate(excess_water.unscaled = excess_water.scaled)
+ # mutate(lfm = lfm.NAs.imputed)
+
+clean.mem.data.alldates <- mem.data.raw.alldates
+  #na.omit() %>%
+  #filter(year.month == "2020_September")
+
+#Parsing out the variables of interest for the mixed effects modelling
+
+clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")] 
+ 
+scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
+  filter(spp == "ADFA") %>% 
+  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'lfm', 'excess_water.scaled') %>%
+ scale()
+  
+scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
+  filter(spp == "CEME") %>% 
+  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'lfm', 'excess_water.scaled') %>%
+ scale()
+  
+scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
+
+mem.data.predictors.alldates <- clean.mem.data.alldates %>%
+    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled') 
+
+scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates, 
+                         mem.data.predictors.alldates,
+                         clean.mem.data.dependant.alldates) 
+
+#For sept. 2020 only: 
+scaled.mem.data.alldates <- scaled.mem.data.alldates %>% 
+  mutate(Species = case_when(
+    spp == "ADFA" ~ "A. fasciculatum", 
+    spp == "CEME" ~ "C. megacarpus"
+  )) %>% 
+  mutate(id = individual)  %>% 
+  mutate(timing = case_when(
+    year.month == "2016_December" ~ "Dec. 2016", 
+    year.month == "2019_December" ~ "Dec. 2019",
+    year.month == "2018_January" ~ "Jan. 2018",
+    year.month == "2020_January" ~ "Jan. 2020",
+    year.month == "2020_September" ~ "Sept. 2020"
+  ))
+
+scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
+  drop_na(mpa, lfm, PC1)
+
+seg.data.subset.alldates <- scaled.mem.data.alldates.noNAs %>% 
+  mutate(id = individual) 
+
+seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldates$id),]
+
+write.csv(seg.data.subset.alldates, here('processed-data', 'mem.data.subset.alldates'))
+```
 
