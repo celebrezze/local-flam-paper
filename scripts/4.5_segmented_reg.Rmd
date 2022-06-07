@@ -16,14 +16,12 @@ library(here)
 library(segmented)
 library(nlme)
 filter = dplyr::filter 
-
-source(here("source-code", "source-segmented.lme.R"))
 ```
 
 #------------------------------------
-# 2. Data wrangling
+# Data wrangling
 
-###All dates datasets
+### All dates datasets
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
 
@@ -371,19 +369,6 @@ o_CEME_mpa
 
 ```{r}
 plot(o_CEME_mpa, conf.level=.9, is=TRUE, isV=FALSE, col=2, shade = TRUE, res=TRUE, res.col=4, pch=3)
-```
-
-####segmented.lme
-
-###CEME: 
-
-#ERROR
-```{r}
-o <-lme(prop.ignite.bins5 ~ mpa, 
-         random=list(id=pdDiag(~1+mpa+id)), data = seg.CEME.subset)
-
-o
-oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1+id+U)))
 ```
 
 ## prop.ignite.bins5 v LFM 
