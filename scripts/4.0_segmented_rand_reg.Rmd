@@ -1,6 +1,6 @@
 ---
-title: "Breakpoint Analysis Attempts"
-author: "Indra Boving"
+title: "Mixed Effects Model - Segmented Regression"
+author: "Indra Boving & Joe Celebrezze"
 date: "4/15/2021"
 output: html_document
 ---
@@ -58,43 +58,14 @@ scaled.mem.data.2020 <- scaled.mem.data %>%
 seg.data.subset <- clean.mem.data %>% 
   mutate(lfm = lfm.NAs.imputed, 
          id = individual) %>% 
- dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti) 
+ dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh) 
 
 seg.data.subset<-seg.data.subset[order(seg.data.subset$id),]
 ```
 
-Plot segmented regression onto scatterplot: https://rpubs.com/MarkusLoew/12164 
+# Both Species 
 
-Muggeo, Vito, 2016/02/01, Segmented mixed models with random changepoints in R, 10.13140/RG.2.1.4180.8402
-
-```{r}
-dati$g<-gl(10,10) #the cluster 'id' variable
-library(nlme)
-o<-lme(y~x+z, random=~1|g, data=dati)
-os<-segmented.default(o, ~x+z, npsi=list(x=2, z=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os, .coef=fixef(os))
-plot.segmented(os, "x", .coef=fixef(os), conf.level=.95)
-confint.segmented(os, "x", .coef=fixef(os))
-dd<-data.frame(x=c(20,50),z=c(.2,.6), g=1:2)
-predict.segmented(os, newdata=dd, .coef=fixef(os)) 
-```
-
-```{r}
-o<-lme(tti~mpa, random=~1|id, data=seg.data.subset)
-os<-segmented.default(o, ~mpa, npsi=list(mpa=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os, .coef=fixef(os))
-plot.segmented(os, "mpa", .coef=fixef(os), conf.level=.95)
-confint.segmented(os, "mpa", .coef=fixef(os))
-```
-
-# BOTH SPP: 
-
-#### MPA x PC1
-
+## MPa x PC1
 ```{r}
 o.pc1.mpa<-lme(PC1~mpa, random=~1|id, data=seg.data.subset)
 os.pc1.mpa<-segmented.default(o.pc1.mpa, ~mpa, npsi=list(mpa=1))
@@ -105,323 +76,210 @@ plot.segmented(os.pc1.mpa, "mpa", .coef=fixef(os.pc1.mpa), conf.level=.95)
 confint.segmented(os.pc1.mpa, "mpa", .coef=fixef(os.pc1.mpa))
 ```
 
-
-
-#### LFM x PC1
-
+## LFM x PC1
 ```{r}
-plot(groupedData(PC1~lfm|id,data=seg.data.subset))
+o.pc1.lfm<-lme(PC1~lfm, random=~1|id, data=seg.data.subset)
+os.pc1.lfm<-segmented.default(o.pc1.lfm, ~lfm, npsi=list(lfm=1))
 
-#specify lme
-o<-lme(PC1~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.data.subset)
-o
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + U + G0)))
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-#specify lme
-o<-lme(PC1~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.data.subset)
-o
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + U + G0)))
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.pc1.lfm, .coef=fixef(os.pc1.lfm))
+plot.segmented(os.pc1.lfm, "lfm", .coef=fixef(os.pc1.lfm), conf.level=.95)
+confint.segmented(os.pc1.lfm, "lfm", .coef=fixef(os.pc1.lfm))
 ```
 
-#ADFA only: 
-
+## MPa x TTI
 ```{r}
-seg.adfa.subset <- seg.data.subset %>% 
-  filter(spp == "ADFA")
+o.tti.mpa<-lme(tti~mpa, random=~1|id, data=seg.data.subset)
+os.tti.mpa<-segmented.default(o.tti.mpa, ~mpa, npsi=list(mpa=1))
+
+#summarizing results (note the '.coef' argument)
+slope(os.tti.mpa, .coef=fixef(os.tti.mpa))
+plot.segmented(os.tti.mpa, "mpa", .coef=fixef(os.tti.mpa), conf.level=.95)
+confint.segmented(os.tti.mpa, "mpa", .coef=fixef(os.tti.mpa))
 ```
 
-#### MPA x PC1
+## LFM x TTI
 ```{r}
-plot(groupedData(PC1~mpa|id,data=seg.adfa.subset))
+o.tti.lfm<-lme(tti~lfm, random=~1|id, data=seg.data.subset)
+os.tti.lfm<-segmented.default(o.tti.lfm, ~lfm, npsi=list(lfm=1))
 
-#specify lme
-o<-lme(PC1~mpa, random=list(id=pdDiag(~1+mpa)), data=seg.adfa.subset)
-?segmented.lme()
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.adfa.subset)
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.tti.lfm, .coef=fixef(os.tti.lfm))
+plot.segmented(os.tti.lfm, "lfm", .coef=fixef(os.tti.lfm), conf.level=.95)
+confint.segmented(os.tti.lfm, "lfm", .coef=fixef(os.tti.lfm))
 ```
 
-#### LFM x PC1
-
+## MPa x FH
 ```{r}
-plot(groupedData(PC1~lfm|id,data=seg.adfa.subset))
+o.fh.mpa<-lme(fh~mpa, random=~1|id, data=seg.data.subset)
+os.fh.mpa<-segmented.default(o.fh.mpa, ~mpa, npsi=list(mpa=1))
 
-#specify lme
-o<-lme(PC1~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.adfa.subset)
-o
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + lfm + U + G0)), data = seg.adfa.subset)
-
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.fh.mpa, .coef=fixef(os.fh.mpa))
+plot.segmented(os.fh.mpa, "mpa", .coef=fixef(os.fh.mpa), conf.level=.95)
+confint.segmented(os.fh.mpa, "mpa", .coef=fixef(os.fh.mpa))
 ```
 
-#CEME only: 
+## LFM x FH
+```{r}
+o.fh.lfm<-lme(fh~lfm, random=~1|id, data=seg.data.subset)
+os.fh.lfm<-segmented.default(o.fh.lfm, ~lfm, npsi=list(lfm=1))
 
+#summarizing results (note the '.coef' argument)
+slope(os.fh.lfm, .coef=fixef(os.fh.lfm))
+plot.segmented(os.fh.lfm, "lfm", .coef=fixef(os.fh.lfm), conf.level=.95)
+confint.segmented(os.fh.lfm, "lfm", .coef=fixef(os.fh.lfm))
+```
+
+
+--------------------------------------------------------------------------------
+
+
+# CEME Only
 ```{r}
 seg.ceme.subset <- seg.data.subset %>% 
   filter(spp == "CEME")
 ```
 
 
-#### MPA x PC1
+## MPa x PC1
 ```{r}
-plot(groupedData(PC1~mpa|id,data=seg.ceme.subset))
+o.pc1.mpa.c<-lme(PC1~mpa, random=~1|id, data=seg.ceme.subset)
+os.pc1.mpa.c<-segmented.default(o.pc1.mpa.c, ~mpa, npsi=list(mpa=1))
 
-#specify lme
-o<-lme(PC1~mpa, random=list(id=pdDiag(~1+mpa)), data=seg.ceme.subset)
-
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.ceme.subset)
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.pc1.mpa.c, .coef=fixef(os.pc1.mpa.c))
+plot.segmented(os.pc1.mpa.c, "mpa", .coef=fixef(os.pc1.mpa.c), conf.level=.95)
+confint.segmented(os.pc1.mpa.c, "mpa", .coef=fixef(os.pc1.mpa.c))
 ```
 
-####LFM x PC1
-
+## LFM x PC1
 ```{r}
-plot(groupedData(PC1~lfm|id,data=seg.ceme.subset))
+o.pc1.lfm.c<-lme(PC1~lfm, random=~1|id, data=seg.ceme.subset)
+os.pc1.lfm.c<-segmented.default(o.pc1.lfm.c, ~lfm, npsi=list(lfm=1))
 
-#specify lme
-o<-lme(PC1~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.ceme.subset)
-o
+#summarizing results (note the '.coef' argument)
+slope(os.pc1.lfm.c, .coef=fixef(os.pc1.lfm.c))
+plot.segmented(os.pc1.lfm.c, "lfm", .coef=fixef(os.pc1.lfm.c), conf.level=.95)
+confint.segmented(os.pc1.lfm.c, "lfm", .coef=fixef(os.pc1.lfm.c))
+```
 
-### Call segmented: 
+## MPa x TTI
+```{r}
+o.tti.mpa.c<-lme(tti~mpa, random=~1|id, data=seg.ceme.subset)
+os.tti.mpa.c<-segmented.default(o.tti.mpa.c, ~mpa, npsi=list(mpa=1))
 
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
+#summarizing results (note the '.coef' argument)
+slope(os.tti.mpa.c, .coef=fixef(os.tti.mpa.c))
+plot.segmented(os.tti.mpa.c, "mpa", .coef=fixef(os.tti.mpa.c), conf.level=.95)
+confint.segmented(os.tti.mpa.c, "mpa", .coef=fixef(os.tti.mpa.c))
+```
 
-oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + lfm + U + G0)))
+## LFM x TTI
+```{r}
+o.tti.lfm.c<-lme(tti~lfm, random=~1|id, data=seg.ceme.subset)
+os.tti.lfm.c<-segmented.default(o.tti.lfm.c, ~lfm, npsi=list(lfm=1))
 
-oseg
-#G0 is the changepoint estimate
+#summarizing results (note the '.coef' argument)
+slope(os.tti.lfm.c, .coef=fixef(os.tti.lfm.c))
+plot.segmented(os.tti.lfm.c, "lfm", .coef=fixef(os.tti.lfm.c), conf.level=.95)
+confint.segmented(os.tti.lfm.c, "lfm", .coef=fixef(os.tti.lfm.c))
+```
 
-confint(oseg)
+## MPa x FH
+```{r}
+o.fh.mpa.c<-lme(fh~mpa, random=~1|id, data=seg.ceme.subset)
+os.fh.mpa.c<-segmented.default(o.fh.mpa.c, ~mpa, npsi=list(mpa=1))
 
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.fh.mpa.c, .coef=fixef(os.fh.mpa.c))
+plot.segmented(os.fh.mpa.c, "mpa", .coef=fixef(os.fh.mpa.c), conf.level=.95)
+confint.segmented(os.fh.mpa.c, "mpa", .coef=fixef(os.fh.mpa.c))
+```
+
+## LFM x FH
+```{r}
+o.fh.lfm.c<-lme(fh~lfm, random=~1|id, data=seg.ceme.subset)
+os.fh.lfm.c<-segmented.default(o.fh.lfm.c, ~lfm, npsi=list(lfm=1))
+
+#summarizing results (note the '.coef' argument)
+slope(os.fh.lfm.c, .coef=fixef(os.fh.lfm.c))
+plot.segmented(os.fh.lfm.c, "lfm", .coef=fixef(os.fh.lfm.c), conf.level=.95)
+confint.segmented(os.fh.lfm.c, "lfm", .coef=fixef(os.fh.lfm.c))
 ```
 
 
-# Time to Ignition
+--------------------------------------------------------------------------------
 
-## BOTH SPP: 
-
-#### MPA x tti
-```{r}
-plot(groupedData(tti~mpa|id,data=seg.data.subset))
-
-#specify lme
-o<-lme(tti~mpa, random=list(id=pdDiag(~1+mpa)), data=seg.data.subset)
-
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + U + G0)), data=seg.data.subset)
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
-```
-
-#### LFM x tti
-
-```{r}
-plot(groupedData(tti~lfm|id,data=seg.data.subset))
-
-#specify lme
-o<-lme(tti~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.data.subset)
-o
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + U + G0)))
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
-```
-
-## ADFA only: 
-
+# ADFA Only
 ```{r}
 seg.adfa.subset <- seg.data.subset %>% 
   filter(spp == "ADFA")
 ```
 
-#### MPA x tti
+
+## MPa x PC1
 ```{r}
-plot(groupedData(tti~mpa|id,data=seg.adfa.subset))
+o.pc1.mpa.a<-lme(PC1~mpa, random=~1|id, data=seg.adfa.subset)
+os.pc1.mpa.a<-segmented.default(o.pc1.mpa.a, ~mpa, npsi=list(mpa=1))
 
-#specify lme
-
-o<-lme(tti~mpa, random=list(id=pdDiag(~1+ mpa)), data=seg.adfa.subset)
-
-
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-
-oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.adfa.subset)
-
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.pc1.mpa.a, .coef=fixef(os.pc1.mpa.a))
+plot.segmented(os.pc1.mpa.a, "mpa", .coef=fixef(os.pc1.mpa.a), conf.level=.95)
+confint.segmented(os.pc1.mpa.a, "mpa", .coef=fixef(os.pc1.mpa.a))
 ```
 
-#### LFM x tti
-
+## LFM x PC1
 ```{r}
-plot(groupedData(tti~lfm|id,data=seg.adfa.subset))
+o.pc1.lfm.a<-lme(PC1~lfm, random=~1|id, data=seg.adfa.subset)
+os.pc1.lfm.a<-segmented.default(o.pc1.lfm.a, ~lfm, npsi=list(lfm=1))
 
-#specify lme
-o<-lme(tti~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.adfa.subset)
-o
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + lfm + U + G0)))
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.pc1.lfm.a, .coef=fixef(os.pc1.lfm.a))
+plot.segmented(os.pc1.lfm.a, "lfm", .coef=fixef(os.pc1.lfm.a), conf.level=.95)
+confint.segmented(os.pc1.lfm.a, "lfm", .coef=fixef(os.pc1.lfm.a))
 ```
 
-## CEME only: 
-
+## MPa x TTI
 ```{r}
-seg.ceme.subset <- seg.data.subset %>% 
-  filter(spp == "CEME")
+o.tti.mpa.a<-lme(tti~mpa, random=~1|id, data=seg.adfa.subset)
+os.tti.mpa.a<-segmented.default(o.tti.mpa.a, ~mpa, npsi=list(mpa=1))
+
+#summarizing results (note the '.coef' argument)
+slope(os.tti.mpa.a, .coef=fixef(os.tti.mpa.a))
+plot.segmented(os.tti.mpa.a, "mpa", .coef=fixef(os.tti.mpa.a), conf.level=.95)
+confint.segmented(os.tti.mpa.a, "mpa", .coef=fixef(os.tti.mpa.a))
 ```
 
-
-#### MPA x tti
+## LFM x TTI
 ```{r}
-plot(groupedData(tti~mpa|id,data=seg.ceme.subset))
+o.tti.lfm.a<-lme(tti~lfm, random=~1|id, data=seg.adfa.subset)
+os.tti.lfm.a<-segmented.default(o.tti.lfm.a, ~lfm, npsi=list(lfm=1))
 
-#specify lme
-o<-lme(tti~mpa, random=list(id=pdDiag(~1+mpa)), data=seg.ceme.subset)
-
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=mpa, random=list(id=pdDiag(~1 + mpa + G0)), data=seg.ceme.subset)
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.tti.lfm.a, .coef=fixef(os.tti.lfm.a))
+plot.segmented(os.tti.lfm.a, "lfm", .coef=fixef(os.tti.lfm.a), conf.level=.95)
+confint.segmented(os.tti.lfm.a, "lfm", .coef=fixef(os.tti.lfm.a))
 ```
 
-####LFM x tti
-
+## MPa x FH
 ```{r}
-plot(groupedData(tti~lfm|id,data=seg.ceme.subset))
+o.fh.mpa.a<-lme(fh~mpa, random=~1|id, data=seg.adfa.subset)
+os.fh.mpa.a<-segmented.default(o.fh.mpa.a, ~mpa, npsi=list(mpa=1))
 
-#specify lme
-o<-lme(tti~lfm, random=list(id=pdDiag(~1+lfm)), data=seg.ceme.subset)
-o
-
-### Call segmented: 
-
-# random=list(id=pdDiag(~1+time+U+G0)): independent random effects in
-# each model parameter, namely the covariance matrix is diagonal (all covariances in (4) set to zero);
-
-oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1 + lfm + U + G0)))
-
-oseg
-#G0 is the changepoint estimate
-
-confint(oseg)
-
-plot(oseg, n.plot=c(2,10), pop=TRUE)
+#summarizing results (note the '.coef' argument)
+slope(os.fh.mpa.a, .coef=fixef(os.fh.mpa.a))
+plot.segmented(os.fh.mpa.a, "mpa", .coef=fixef(os.fh.mpa.a), conf.level=.95)
+confint.segmented(os.fh.mpa.a, "mpa", .coef=fixef(os.fh.mpa.a))
 ```
 
+## LFM x FH
+```{r}
+o.fh.lfm.a<-lme(fh~lfm, random=~1|id, data=seg.adfa.subset)
+os.fh.lfm.a<-segmented.default(o.fh.lfm.a, ~lfm, npsi=list(lfm=1))
 
-
-
+#summarizing results (note the '.coef' argument)
+slope(os.fh.lfm.a, .coef=fixef(os.fh.lfm.a))
+plot.segmented(os.fh.lfm.a, "lfm", .coef=fixef(os.fh.lfm.a), conf.level=.95)
+confint.segmented(os.fh.lfm.a, "lfm", .coef=fixef(os.fh.lfm.a))
+```
