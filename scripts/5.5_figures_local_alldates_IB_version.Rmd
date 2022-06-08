@@ -317,7 +317,7 @@ clean.mem.data.alldates <- mem.data.raw.alldates
 
 #Parsing out the variables of interest for the mixed effects modelling
 
-clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd','temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition", 'hydration')] # including hydration here even though it is not dependant variable, as it cannot be scaled
+clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd','temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")]
  
 scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
   filter(spp == "ADFA") %>% 
@@ -333,7 +333,7 @@ scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
 scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
 
 mem.data.predictors.alldates <- clean.mem.data.alldates %>%
-    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled') 
+    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'gr') 
 
 scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates, 
                          mem.data.predictors.alldates,
@@ -939,9 +939,7 @@ season_plot <- precip_groups_ranis  %>%
   labs(x = "Water Potential (-MPa)", 
        y = "PC1 ", 
        color = "Season") +
- # scale_color_discrete(name = "Site")+
   th +
- # scale_color_brewer(palette = "Dark2") +
   facet_wrap(~spp,
               labeller = labeller(spp = spp.labs),
              scales = "free" ) +
@@ -1832,6 +1830,13 @@ tmp %>%
 ```
 
 #------------------------------------
+# PC1 vs. LFM boxplots
+```{r}
+ggplot(data = seg.data.subset.alldates, aes(x = gr, y = PC1)) +
+  geom_boxplot()
+```
+#------------------------------------
+
 #Field data: 
 
 ```{r}
