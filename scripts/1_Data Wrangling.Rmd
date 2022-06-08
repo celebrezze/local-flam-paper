@@ -16,7 +16,7 @@ knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 
 # SETUP
 
-```{r}
+```{r setup, include = FALSE}
 #To load in necessary packages:
 library(gapminder)
 library(data.table)
@@ -708,42 +708,22 @@ write_csv(data.local, here("processed-data",  "local_flam_data_all.csv"))
 # Script-Specific
 
 ## Segmented Regressions
+Need to fix mpa issue!
 ```{r}
-mem.data <- read_csv(here("processed-data", "mem.data.local.epi.csv"), show_col_types = FALSE)
+mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
 
-mem.data.raw <- mem.data %>%
-  mutate(mpa = (-1*mpa)) %>% 
+mem.data.raw <- mem.data.alldates %>%
   mutate(year = as.factor(year)) %>%
-  mutate(month = as.factor(month)) %>% 
-  mutate(mpa.unscaled = mpa)
+  mutate(month = as.factor(month))
 
-clean.mem.data.all <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'temp.max','flam.index', 'precip.2mo')] 
-
-clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'temp.max','flam.index', 'precip.2mo', 'mpa.unscaled')] %>%
-  #na.omit() %>%
-  filter(year.month == "2020_September")
-#Parsing out the variables of interest for the mixed effects modelling
-
-clean.mem.data.dependant <- clean.mem.data[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'temp.max', 'flam.index', 'year', 'month', 'mpa.unscaled')] 
-  
-scaled.mem.data.predictors <- clean.mem.data %>%
-    dplyr::select('spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp', 'precip.2mo') %>%
-    mutate_if(is.numeric, scale)
-
-scaled.mem.data <- cbind(scaled.mem.data.predictors, clean.mem.data.dependant) 
-  
-#For sept. 2020 only: 
-scaled.mem.data.2020 <- scaled.mem.data %>%
-  #na.omit() %>%
-  filter(year.month == "2020_September")
+clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'fd', 'temp.max','flam.index', 'precip.2mo', 'prop.ignite.bins5_nodate', 'prop.ignite.bins10_nodate')]
 ```
-
 
 ```{r}
 seg.data.subset <- clean.mem.data %>% 
   mutate(lfm = lfm.NAs.imputed, 
          id = individual) %>% 
- dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh) 
+ dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh, fd, year.month, prop.ignite.bins10_nodate, prop.ignite.bins5_nodate)
 
 seg.data.subset<-seg.data.subset[order(seg.data.subset$id),]
 
@@ -751,17 +731,6 @@ write_csv(seg.data.subset, here("processed-data", "seg.reg.data.local.csv"))
 ```
 
 ## Mixed Effects Models
-Seasonal mins and maxs from 2016 - 2020:
-
-https://www.sbbg.org/about/onsite-weather-station-live-fuel-moisture 
-```{r}
-adfa_min <- 55
-adfa_max <- 110
-
-ceme_min <- 55
-ceme_max <- 140
-```
-
 All dates datasets
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
@@ -785,7 +754,7 @@ clean.mem.data.alldates <- mem.data.raw.alldates
 
 #Parsing out the variables of interest for the mixed effects modelling
 
-clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")] 
+clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd', 'temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")] 
  
 scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
   filter(spp == "ADFA") %>% 
