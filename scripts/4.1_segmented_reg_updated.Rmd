@@ -640,12 +640,6 @@ segplot(seg.ceme.subset, lfm, prop.ignite.bins5_nodate, fit, mean_lfm_ceme, lwr_
 o<-lme(prop.ignite.bins5_nodate ~ lfm, random=list(id=pdDiag(~1+lfm)), 
        data = seg.ceme.subset.limited)
 
-#oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1+lfm+U)))
-#oseg
-
-#confint.oseg <- #confint(oseg)
-#confint.oseg
-
 lower <- #confint.oseg[7]
 lower
 

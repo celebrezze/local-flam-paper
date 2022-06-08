@@ -716,6 +716,13 @@ mem.data.raw <- mem.data.alldates %>%
   mutate(year = as.factor(year)) %>%
   mutate(month = as.factor(month))
 
+for(i in 1:length(mem.data.raw$mpa)) {
+  if(mem.data.raw$mpa[i] > 0){
+    mem.data.raw$mpa[i] <- mem.data.raw$mpa[i]*-1
+  }
+  else{mem.data.raw$mpa[i] <- mem.data.raw$mpa[i]}
+}
+
 clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'fd', 'temp.max','flam.index', 'precip.2mo', 'prop.ignite.bins5_nodate', 'prop.ignite.bins10_nodate')]
 ```
 
