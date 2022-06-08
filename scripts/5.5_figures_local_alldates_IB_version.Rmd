@@ -317,12 +317,13 @@ clean.mem.data.alldates <- mem.data.raw.alldates
 
 #Parsing out the variables of interest for the mixed effects modelling
 
-clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")] 
+clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd','temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition", 'hydration')] # including hydration here even though it is not dependant variable, as it cannot be scaled
  
 scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
   filter(spp == "ADFA") %>% 
   dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
  scale()
+
   
 scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
   filter(spp == "CEME") %>% 
@@ -513,8 +514,6 @@ annotate("text", x= -11, y= -3.5, label= "Less", size = 3) +
     ) 
 ```
 ####Color by water status: 
-# ERROR: Data wrangle 'hydration'
-
 ```{r, message=FALSE, results='hide',fig.height= 4, fig.length = 8}
 # Separating by Species
 p <- ggplot() + 
@@ -701,29 +700,6 @@ m15 <- lmer(PC1 ~ excess_water.scaled * spp + site + (1 | individual), data = sc
 performance::multicollinearity(m15)
 ```
 
-```{r}
-# models <- list(top_model, m7, m10, m3, m6)
-# 
-# # build table with `modelsummary` 
-# cm <- c( '(Intercept)' = 'Intercept', 
-#          'mpa' = 'Water Potential (-Mpa)', 
-#          'lfm.NAs.imputed' = 'LFM (%)',
-#          'ww.flam.sample' = 'Water weight (g)', 
-#          'dw.flam.sample' = 'Dry weight (g)', 
-#          'sppCEME' = 'C. megacarpus')
-# cap <- 'Candidate models for predicting flammability (PC1)'
-# 
-# 
-# modelsummary <- modelsummary(models,
-#                              statistic = "p = {p.value}",
-#                              stars = TRUE, 
-#                              coef_map = cm, 
-#                              title = cap, 
-#                              output = 'flextable') %>% 
-#   flextable::autofit()
-# modelsummary
-```
-
 https://strengejacke.github.io/sjPlot/articles/tab_model_estimates.html 
 
 ```{r}
@@ -788,18 +764,18 @@ The intra-class correlation coefficient (ICC) is a related statistic that quanti
 
 Flame height models: 
 ```{r}
-mpa_mod_fig.mpa <- lmer(fh ~ mpa + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+mpa_mod_fig.mpa <- lmer(fh ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m3 <- lmer(fh ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m3 <- lmer(fh ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
   
-m6 <- lmer(fh ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m6 <- lmer(fh ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m7 <- lmer(fh ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m7 <- lmer(fh ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 m7
 
-m10 <- lmer(fh ~ lfm + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m10 <- lmer(fh ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m11 <- lmer(fh ~ mpa*spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m11 <- lmer(fh ~ mpa*spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 #tab_model(top_model, m7, m10, m3, m6) 
 tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
@@ -826,18 +802,18 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6,
 ```
 Temp max models:
 ```{r}
-mpa_mod_fig.mpa <- lmer(temp.max ~ mpa + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+mpa_mod_fig.mpa <- lmer(temp.max ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m3 <- lmer(temp.max ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m3 <- lmer(temp.max ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
   
-m6 <- lmer(temp.max ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m6 <- lmer(temp.max ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m7 <- lmer(temp.max ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m7 <- lmer(temp.max ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 m7
 
-m10 <- lmer(temp.max ~ lfm + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m10 <- lmer(temp.max ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m11 <- lmer(temp.max ~ spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m11 <- lmer(temp.max ~ spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 #tab_model(top_model, m7, m10, m3, m6) 
 tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
@@ -865,18 +841,18 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6,
 
 Flame duration models: 
 ```{r}
-mpa_mod_fig.mpa <- lmer(fd ~ mpa + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+mpa_mod_fig.mpa <- lmer(fd ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m3 <- lmer(fd ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m3 <- lmer(fd ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
   
-m6 <- lmer(fd ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m6 <- lmer(fd ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m7 <- lmer(fd ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m7 <- lmer(fd ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 m7
 
-m10 <- lmer(fd ~ lfm + spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m10 <- lmer(fd ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m11 <- lmer(fd ~ mpa*spp + (1 | individual), data = scaled.mem.data.2020.noNAs)
+m11 <- lmer(fd ~ mpa*spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 #tab_model(top_model, m7, m10, m3, m6) 
 tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
@@ -901,83 +877,6 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6,
   string.p = "P-Value", 
   p.style = "stars")
 ```
-
-
-
--------older version------
-
-```{r}
-mpa_mod_fig.mpa <- lmer(PC1 ~ mpa + spp*year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs) #mpa model
-
-m3 <- lmer(PC1 ~ spp*year.month + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs) #ww model
-  
-m6 <- lmer(PC1 ~ dw.flam.sample + spp*year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs) #dw model
-
-m7 <- lmer(PC1 ~ mpa + lfm.NAs.imputed + spp*year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs) #mpa nad lfm model
-m7
-
-m10 <- lmer(PC1 ~ lfm.NAs.imputed + spp*year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs) #lfm model
-
-m11 <- lmer(PC1 ~ excess_water + spp*year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m12 <- lmer(PC1 ~ excess_water + mpa + lfm.NAs.imputed + spp*year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-m12
-```
-
-```{r}
-# models <- list(top_model, m7, m10, m3, m6)
-# 
-# # build table with `modelsummary` 
-# cm <- c( '(Intercept)' = 'Intercept', 
-#          'mpa' = 'Water Potential (-Mpa)', 
-#          'lfm.NAs.imputed' = 'LFM (%)',
-#          'ww.flam.sample' = 'Water weight (g)', 
-#          'dw.flam.sample' = 'Dry weight (g)', 
-#          'sppCEME' = 'C. megacarpus')
-# cap <- 'Candidate models for predicting flammability (PC1)'
-# 
-# 
-# modelsummary <- modelsummary(models,
-#                              statistic = "p = {p.value}",
-#                              stars = TRUE, 
-#                              coef_map = cm, 
-#                              title = cap, 
-#                              output = 'flextable') %>% 
-#   flextable::autofit()
-# modelsummary
-```
-
-https://strengejacke.github.io/sjPlot/articles/tab_model_estimates.html 
-
-```{r}
-
-#tab_model(top_model, m7, m10, m3, m6) 
-
-tab_model(mpa_mod_fig.mpa , m7, m10, m3, m6, m11, m12,
-          show.reflvl = TRUE, 
-          digits = 3, 
-          show.aic = TRUE, 
-          show.ci = FALSE,
-          show.icc = FALSE, 
-          pred.labels = c('Intercept', 
-                          'Water Potential (-Mpa)', 
-                          'C. megacarpus',
-                           'LFM (%)',
-                          'Water weight (g)', 
-                          'Dry weight (g)'), 
-         dv.labels = c("Model 1", 
-                       "Model 2", 
-                       "Model 3", 
-                       "Model 4", 
-                       "Model 5", 
-                       "Model 6"),
-         string.pred = "Coeffcient",
-  string.p = "P-Value", 
-  p.style = "stars")
-         
-```
-
-The intra-class correlation coefficient (ICC) is a related statistic that quantifies the proportion of variance explained by a grouping (random) factor in multilevel/hierarchical data.
 
 #------------------------------------
 #2.2. Raw values plots
@@ -1051,7 +950,7 @@ season_plot <- precip_groups_ranis  %>%
   scale_color_manual(values=met.brewer("Morgenstern", 3)) 
 season_plot
 
-ggsave(here("scripts", "LOCAL", "figures", "season_plot.jpg"),
+ggsave(here("figures", "season_plot.jpg"),
        plot = season_plot, 
        width = 6, height = 4, dpi = 300)
 ```
@@ -1106,7 +1005,7 @@ precip_plot <- scaled.mem.data.alldates.noNAs %>%
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 precip_plot
 
-ggsave(here("scripts", "LOCAL", "figures", "precip_plot.jpg"),
+ggsave(here("figures", "precip_plot.jpg"),
        plot = precip_plot, 
        width = 6, height = 4, dpi = 300)
 ```
@@ -1143,7 +1042,7 @@ precip_plot <- scaled.mem.data.alldates.noNAs %>%
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 precip_plot
 
-ggsave(here("scripts", "LOCAL", "figures", "precip_plot.jpg"),
+ggsave(here("figures", "precip_plot.jpg"),
        plot = precip_plot, 
        width = 6, height = 4, dpi = 300)
 ```
@@ -1189,6 +1088,7 @@ ggplot(aes(y = lfm.unscaled,
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 ```
 ###****Timing and precip plot
+# ERROR: precip_groups_ranis... Maybe fix SBBG Precip and then fix?
 Model: 
 ```{r}
 precip_mod <- lmer(lfm.unscaled ~ mpa.unscaled + Species + timing + (1 | individual), data = scaled.mem.data.alldates.noNAs)
@@ -1200,12 +1100,11 @@ terms <- term2coef(precip_mod, "timing") %>%
 terms
 
 r1_1 <- remef(precip_mod ,  ran = "all")
-#summary(r1_1)
 
 #https://stats.stackexchange.com/questions/258285/how-to-do-partial-regression-plots-with-linear-mixed-effect-models/258292#258292?newreg=3b55c635f610441db980674675bc0051
 
 scaled_r1_1_df <- as.data.frame(r1_1)
-precip_groups_ranis <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
+#precip_groups_ranis <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
 ```
 
 Plot: 
@@ -1241,7 +1140,7 @@ ggplot(aes(y = lfm.unscaled,
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 timing_plot
 
-ggsave(here("scripts", "LOCAL", "figures", "timing_precip_plot.jpg"),
+ggsave(here("figures", "timing_precip_plot.jpg"),
        plot = timing_plot, 
        width = 6, height = 4, dpi = 300)
 ```
@@ -1442,7 +1341,7 @@ plot_legend
 #                    gp=gpar(fontface="bold", col="blue", fontsize=15), rot=90)
 
 
-ggsave(here("scripts", "LOCAL", "figures", "scatterplot_ranef_all.jpg"),
+ggsave(here("figures", "scatterplot_ranef_all.jpg"),
        plot = plot_legend, 
        width = 6.5, height = 4.5, dpi = 300)
 ```
@@ -1550,12 +1449,14 @@ plot_legend
 #                    gp=gpar(fontface="bold", col="blue", fontsize=15), rot=90)
 
 
-ggsave(here("scripts", "LOCAL", "figures", "scatterplot_noremef.jpg"),
+ggsave(here("figures", "scatterplot_noremef.jpg"),
        plot = plot_legend, 
        width = 6.5, height = 4.5, dpi = 300)
 ```
 
 ##### Season and Species Effects
+Note: Might want to remove.. right now may just be taking up extra space
+
 Splitting season effects into two plots (separated by species)
 ```{r}
 season_plot.adfa <- precip_groups_ranis  %>%
@@ -1648,25 +1549,6 @@ pc1.mpa2 <- ggplot() +
 pc1.mpa2
 ```
 
-Arrange plots
-
-Note: this is a work in progress...
-```{r}
-ggarrange(tti.mpa2, gd.mpa2, fh.mpa2, pc1.mpa2, season_plot.adfa, season_plot.ceme, common.legend = TRUE)
-
-ggsave("spp.and.season.effects.png", height = 7, width = 11)
-
-spp.effects.plots <- ggarrange(tti.mpa2, gd.mpa2, fh.mpa2, pc1.mpa2, common.legend = TRUE, legend = c("right"))
-spp.effects.plots
-
-szn.effects.plots <- ggarrange(season_plot.ceme, season_plot.adfa, common.legend = TRUE, legend = c("bottom"))
-szn.effects.plots
-
-plot_grid(spp.effects.plots, szn.effects.plots, ncol = 1, rel_heights = c(3, 2), labels = c("A", "B"))
-ggsave("spp.and.season.effects2.png", height = 10, width = 7)
-```
- 
-
 #####Dry weight by season
 ```{r}
 mod_dw <- lmer(PC1 ~ dw.flam.sample + Species * season + (1 | individual), data = scaled.mem.data.alldates.noNAs)
@@ -1717,7 +1599,7 @@ precip_plot <- scaled.mem.data.alldates.noNAs %>%
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 precip_plot
 
-ggsave(here("scripts", "LOCAL", "figures", "dw_plot.jpg"),
+ggsave(here("figures", "dw_plot.jpg"),
        plot = precip_plot, 
        width = 6, height = 4, dpi = 300)
 ```
@@ -1794,7 +1676,7 @@ cowplot::plot_grid(tti, fh, gd,
 ###PV data: 
 
 ```{r}
-pv_summary_df_timing <- read_csv(here("processed-data", "compiled-datasets", "pv_summary_df_timing.csv"))
+pv_summary_df_timing <- read_csv(here("processed-data", "pv_summary_df_timing.csv"))
 
 pv_local <- pv_summary_df_timing %>% 
   filter(spp %in% c("ADFA", "CEME"))
@@ -1885,33 +1767,19 @@ tmp
 ```
 
 ####****Boxplots:
+# NOTE: NOT WORKING
 
-
-#####bins 10
-```{r}
-tmp %>% 
-  ggplot(aes(y = prop.ignite.bins10_nodate, x = lfm.unscaled, fill = tlp_split)) +
-  facet_wrap(~spp) +
-  geom_boxplot()
-```
-```{r}
-tmp %>% 
-  ggplot(aes(y = prop.ignite.bins10_nodate, x = mpa.unscaled, fill = tlp_split)) +
-  facet_wrap(~spp) +
-  geom_boxplot() +
-  ylab("Ignition Likelihood")
-```
 #####bins 5
 ```{r}
 tmp %>% 
-  ggplot(aes(y = prop.ignite.bins5_nodate, x = lfm.unscaled, fill = tlp_split)) +
+  ggplot(aes(y = prop.ignite.bins5, x = lfm.unscaled, fill = tlp_split)) +
   facet_wrap(~spp) +
   geom_boxplot()
 ```
 
 ```{r}
 tmp %>% 
-  ggplot(aes(y = prop.ignite.bins5_nodate, x = mpa.unscaled, fill = tlp_split)) +
+  ggplot(aes(y = prop.ignite.bins5, x = mpa.unscaled, fill = tlp_split)) +
   facet_wrap(~spp) +
   geom_boxplot()
 ```
@@ -1999,112 +1867,4 @@ field_data_local %>%
   xlab("Midday") +
   ylab("LFM") + 
   th
-```
-
-#------------------------------------
-
-# EXTRA 
-First attempt at using ggplot instead of biplot: 
-```{r}
-figure_princomp <- princomp(na.omit(figure_epi_pca_quant), center = TRUE, scale = TRUE)
-
-figure_prcomp <- prcomp(na.omit(figure_epi_pca_quant), center = TRUE, scale = TRUE)
-
-PCAvalues <- data.frame(Species = figure_epi_pca_cat$Species,
-                        figure_prcomp$x) 
-
-# Extract loadings of the variables
-PCAloadings <- data.frame(Variables = rownames(figure_prcomp$rotation), figure_prcomp$rotation)
-
-#Group by flam. metric: 
-PCA_combustability <- PCAloadings %>% 
-  filter(Variables %in% c("Flame Height", "Max. Temp","Flame Duration"))
-         
-PCA_ignitability <- PCAloadings %>% 
-  filter(Variables %in% c("\n\nTime to Ignition", "\nTime to First Glow", "Glow to Ignition"))
-
-PCA_consumability <- PCAloadings %>% 
-  filter(Variables %in% c("Glow Duration", "Post-flame Glow"))
-
-
-# Calculate the angles and the label offset
-PCAloadings$Angle = ((180/pi) * atan(PCAloadings$PC2/PCAloadings$PC1))
-
-PCAloadings$Offset <- ((-2 * sign(PCAloadings$PC1*4))/2)
-
-#to make a sircle on the plot:
-```
-
-```{r}
-seg_ceme_predicted <- predict(seg_CEME_mpa, seg.CEME.subset, se.fit = TRUE) %>% 
-  as.data.frame()
-
-seg_ceme_predicted_fuldf <- cbind(seg_ceme_predicted, seg.CEME.subset)
-```
-
-Varimax rotation attempt: 
-```{r}
-ncomp <- 2
-
-pca_iris_rotated <- psych::principal(figure_epi_pca_quant, rotate="varimax", nfactors=ncomp, scores=TRUE)
-
-princ_pca <- as.data.frame(pca_iris_rotated$scores)  # Scores returned by principal()
-
-princ_pca_loadings <- as.data.frame(pca_iris_rotated$values) 
-
-
-figure_prcomp <- prcomp(na.omit(figure_epi_pca_quant), center = TRUE, scale = TRUE)
-
-rawLoadings <- figure_prcomp$rotation
-rotatedLoadings <- varimax(rawLoadings)$loadings
-invLoadings     <- t(pracma::pinv(rotatedLoadings))
-scores          <- scale(figure_epi_pca_quant) %>% invLoadings
-scores_df <- as.data.frame(print(scores))                  # Scores computed via rotated loadings
-
-
-rawLoadings <- figure_prcomp$rotation
-rotatedLoadings <- varimax(rawLoadings)$loadings
-invLoadings     <- t(pracma::pinv(rotatedLoadings))
-scores          <- scale(figure_epi_pca_quant) %>% invLoadings
-scores_df <- as.data.frame(print(scores))                  # Scores computed via rotated loadings
-PCAvalues <- data.frame(Species = figure_epi_pca_cat$Species, 
-                        princ_pca
-                        #scores_df
-                        #figure_prcomp$x
-                        ) %>% 
-  mutate(PC1 = RC1, 
-         PC2 = RC2) %>% 
-  select(-RC1, - RC2)
-
-# Extract loadings of the variables
-PCAloadings <- data.frame(Variables = rownames(figure_prcomp$rotation),
-                          princ_pca_loadings
-                         # invLoadings
-                         # figure_prcomp$rotation
-                          ) %>% 
-  mutate(PC1 = X1, 
-         PC2 = X2) %>% 
-  select(Variables, PC1, PC2)
-
-#lengthen the loadings: 
-# PCAloadings <- PCAloadings_small %>% 
-#   mutate(PC1 = case_when(
-#     PC1 > 0 ~ PC1 + 1, 
-#     PC1 < 0 ~ PC1 - 1)) %>% 
-#    mutate(PC2 = case_when(
-#     PC1 > 0 ~ PC2 + 1, 
-#     PC1 < 0 ~ PC2 - 1))
-```
-
-```{r, message=FALSE, results='hide'}
-# Separating by Species
-mpa_plot_spp <- ggplot() + 
-  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa, PC1, color = spp), size = .5) + 
- # geom_point(data=x_mpa_fig, aes(x=mpa, y=fit), color="#7570b3", size = .5) +
-  geom_line(data=seg_CEME_mpa, aes(x=effects, y=fitted.values), color="#7570b3") +
-  #geom_ribbon(data= seg_CEME_mpa, aes(x=mpa, ymin=lower, ymax=upper), alpha= 0.3, fill="#7570b3") +
-  labs(x="Water Potential (-Mpa)", y="Principle Component 1") +
-  scale_color_brewer(name = "Species", palette  = "Dark2") +
-  th
-mpa_plot_spp
 ```

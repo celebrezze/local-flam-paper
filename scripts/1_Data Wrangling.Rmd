@@ -708,7 +708,6 @@ write_csv(data.local, here("processed-data",  "local_flam_data_all.csv"))
 # Script-Specific
 
 ## Segmented Regressions
-Need to fix mpa issue!
 ```{r}
 mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
 
@@ -723,7 +722,7 @@ for(i in 1:length(mem.data.raw$mpa)) {
   else{mem.data.raw$mpa[i] <- mem.data.raw$mpa[i]}
 }
 
-clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'fd', 'temp.max','flam.index', 'precip.2mo', 'prop.ignite.bins5_nodate', 'prop.ignite.bins10_nodate')]
+clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'fd', 'temp.max','flam.index', 'precip.2mo', 'prop.ignite.bins5_nodate', 'prop.ignite.bins10_nodate')]
 ```
 
 ```{r}
@@ -765,12 +764,12 @@ clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'P
  
 scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
   filter(spp == "ADFA") %>% 
-  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'lfm', 'excess_water.scaled') %>%
+  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
  scale()
   
 scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
   filter(spp == "CEME") %>% 
-  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'gww.gdw.saturated', 'gdw.gww.saturated', 'lfm', 'excess_water.scaled') %>%
+  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
  scale()
   
 scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
