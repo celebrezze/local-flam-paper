@@ -1831,10 +1831,30 @@ tmp %>%
 
 #------------------------------------
 # PC1 vs. LFM boxplots
+Filtering out only realistic LFM values
+Reordering factors so the LFM bins go in order
 ```{r}
-ggplot(data = seg.data.subset.alldates, aes(x = gr, y = PC1)) +
-  geom_boxplot()
+seg.data.subset.limited <- seg.data.subset.alldates %>% 
+  filter(lfm.unscaled > 50 & lfm.unscaled < 160) %>% 
+  mutate(gr = factor(gr, levels=c('(50,60]', '(60,70]', '(70,80]','(80,90]', '(90,100]', '(100,110]', '(110,120]', '(120,130]', '(130,140]', '(140,150]', '(150,160]')))
 ```
+
+Boxplot split by species
+```{r}
+ggplot(data = seg.data.subset.limited, aes(x = gr, y = PC1)) +
+  geom_boxplot() +
+  facet_wrap(~spp, ncol = 1) +
+  th
+```
+Violin plot
+```{r}
+ggplot(data = seg.data.subset.limited, aes(x = gr, y = PC1)) +
+  geom_violin() +
+  facet_wrap(~spp, ncol = 1) +
+  th
+```
+
+
 #------------------------------------
 
 #Field data: 
