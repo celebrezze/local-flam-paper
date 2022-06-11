@@ -40,13 +40,15 @@ precip
 Sept2020 <- precip %>%
   filter(year.month == "2020_8" | year.month == "2020_7") %>%
   group_by(year) %>%
-  mutate(rainfall.2mo = sum(daily.rain))
+  mutate(rainfall.2mo = sum(daily.rain), 
+         timing = "Sept_2020")
 Sept2020
 
 Jan2020 <- precip %>%
   filter(year.month == "2020_01" | year.month == "2019_12") %>%
   group_by(year) %>%
-  mutate(rainfall.2mo = sum(daily.rain))
+  mutate(rainfall.2mo = sum(daily.rain), 
+         timing = "Jan_2020")
 Jan2020
 #For Jan2020, uses 2020-01 and 2019-12
 
@@ -66,29 +68,31 @@ Dec20192 <- precip %>%
 Dec20192
 
 Dec2019 <- rbind(Dec20191, Dec20192) %>%
-  mutate(rainfall.2mo = sum(daily.rain))
+  mutate(rainfall.2mo = sum(daily.rain),
+         timing = "Dec_2019")
 Dec2019
   
-
 Jan2018 <- precip %>%
   filter(year.month == "2017_12" | year.month == "2017_11") %>%
   group_by(year) %>%
-  mutate(rainfall.2mo = sum(daily.rain))
+  mutate(rainfall.2mo = sum(daily.rain), 
+         timing = "Jan_2018")
 Jan2018
 #but for jan2018, uses 2017-12 and 2017-11
 
 Dec2016 <- precip %>%
-  filter(year.month == "2015_12" | year.month == "2015_11") %>%
+  filter(year.month == "2016_12" | year.month == "2016_11") %>%
   group_by(year) %>%
-  mutate(rainfall.2mo = sum(daily.rain))
+  mutate(rainfall.2mo = sum(daily.rain), 
+         timing = "Dec_2016")
 Dec2016
 # and then for dec2016, it uses 2015 data?
 
-precip.filtered <- rbind(Dec2016, Dec2019, Jan2018, Dec2019, Sept2020) %>%
-  select(water.year, year.month, day, daily.rain, rainfall.2mo)
+precip.filtered_2mo <- rbind(Dec2016, Dec2019, Jan2018, Dec2019, Sept2020, Jan2020) %>%
+  select(water.year, year.month, day, daily.rain, rainfall.2mo, timing)
 precip.filtered
 
-write.csv(precip.filtered, "precip.clean.csv")
+write.csv(precip.filtered_2mo, here("processed-data", "precip.clean.csv"))
 ```
 
 #4 months prior: 
@@ -129,16 +133,16 @@ Jan2018
 
 
 Dec2016 <- precip %>%
-  filter(year.month == "2015_12" | year.month == "2015_11" | year.month == "2015_10" | year.month == "2015_9") %>%
+  filter(year.month == "2016_12" | year.month == "2016_11" | year.month == "2016_10" | year.month == "2016_9") %>%
   group_by(year) %>%
   mutate(rainfall.4mo = sum(daily.rain))
 Dec2016
 
-precip.filtered <- rbind(Dec2016, Dec2019, Jan2018, Jan2019, Sept2020) %>%
+precip.filtered <- rbind(Dec2016, Dec2019, Jan2018, Jan2020, Sept2020) %>%
   select(water.year, year.month, day, daily.rain, rainfall.4mo)
 precip.filtered
 
 summarise(precip.filtered)
 
-write.csv(precip.filtered, "precip.clean.csv")
+write.csv(precip.filtered, here("processed-data", "precip.clean.csv"))
 ```

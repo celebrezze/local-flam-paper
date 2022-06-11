@@ -188,7 +188,7 @@ data <- data.with.na.imputed %>%
 Add some columns to the dataframe and manipulate some variables:
 
 -   Add precip columns with 2 month previous precipitation (from SBBG
-    daily precip. database, see Precip_SB_DATE.Rmd file for tidying that
+    daily precip. database, see Precip_SB_DATA.Rmd file for tidying that
     data).
 -   Proportion ignite columns: for each increase in LFM of 10% or 5%, what
     proportion of the attempted burns ignited?
@@ -209,9 +209,9 @@ data <- data %>%
   mutate(individual = model.spp.gr.sample) %>% 
   #group for month and year
   mutate(precip.2month = year.month) %>%
- mutate(precip.2mo = recode(precip.2month, "2020_September" = 0.01, "2018_January" = 0.09, "2019_December" = 3.69, "2020_January" = 5.82, "2016_December" = 0.61)) %>%
+ mutate(precip.2mo = recode(precip.2month, "2020_September" = 0.01, "2018_January" = 0.09, "2019_December" = 3.69, "2020_January" = 5.82, "2016_December" = 3.49)) %>%
   mutate(season = year.month) %>%
-  mutate(season = recode(season, "2020_September" = "Dry", "2018_January" = "Dry", "2019_December" = "Wet", "2020_January" = "Wet", "2016_December" = "Dry" )) %>%  #group for month and year
+  mutate(season = recode(season, "2020_September" = "Dry", "2018_January" = "Dry", "2019_December" = "Wet", "2020_January" = "Wet", "2016_December" = "Wet" )) %>%  #group for month and year
   group_by(model.spp.gr)#group by year, model, spp, group column
  
 setDT(data)[,total:=sum(ignition),by=model.spp.gr][] #add column called "total" with the total number of ignitions per group ("sum" works because we have 0s and 1s)
