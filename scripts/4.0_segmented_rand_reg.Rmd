@@ -24,6 +24,9 @@ filter = dplyr::filter
 # Reading in Dataframe
 ```{r}
 seg.data.subset <- read.csv(here('processed-data', 'seg.reg.data.local.csv'))
+
+seg.data.subset <- seg.data.subset %>% 
+  na.omit()
 ```
 
 # Both Species 

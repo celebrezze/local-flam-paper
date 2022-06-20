@@ -59,9 +59,6 @@ library(remef)
 Set global options for color palettes and themes: 
 
 ```{r}
-# scale_colour_continuous <- function(...) scale_color_brewer(palette="Dark2")
-# scale_colour_discrete   <- function(...) scale_color_brewer(palette="Dark2")
-# scale_colour_binned     <- function(...) scale_color_brewer(palette="Dark2")
 th <- theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
           panel.grid.major = element_blank(),  # Hide major gridlines
           panel.grid.minor = element_blank())
@@ -101,8 +98,8 @@ figure_epi_pca_cat <- (epi.flamdata[c("hydration", "spp", "year.month", "sample"
             "Timing" = year.month, 
             "Sample" = sample) %>% 
   mutate(Species = case_when(
-    spp == "ADFA" ~ "A. fasciculatum", 
-    spp == "CEME" ~ "C. megacarpus"
+    spp == "ADFA" ~ "Adenostoma fasciculatum", 
+    spp == "CEME" ~ "Ceanothus megacarpus"
   ))
 
 figure_prcomp <- prcomp(na.omit(figure_epi_pca_quant), center = TRUE, scale = TRUE, retx=TRUE)
@@ -257,8 +254,8 @@ figure_epi_pca_cat <- (epi.flamdata[c("hydration", "spp", "year.month", "sample"
             "Timing" = year.month, 
             "Sample" = sample) %>% 
   mutate(Species = case_when(
-    spp == "ADFA" ~ "A. fasciculatum", 
-    spp == "CEME" ~ "C. megacarpus"
+    spp == "ADFA" ~ "Adenostoma fasciculatum", 
+    spp == "CEME" ~ "Ceanothus megacarpus"
   ))
 
 #colnames(wine_subset)[2] <- "\nFlav"  # new line
@@ -342,8 +339,8 @@ scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates,
 #For sept. 2020 only: 
 scaled.mem.data.alldates <- scaled.mem.data.alldates %>% 
   mutate(Species = case_when(
-    spp == "ADFA" ~ "A. fasciculatum", 
-    spp == "CEME" ~ "C. megacarpus"
+    spp == "ADFA" ~ "Adenostoma fasciculatum", 
+    spp == "CEME" ~ "Ceanothus megacarpus"
   )) %>% 
   mutate(id = individual)  %>% 
   mutate(timing = case_when(
@@ -404,7 +401,7 @@ summary(mpa_mod_fig.mpa)
 #     see what names are associated: 
 term2coef(mpa_mod_fig.mpa, "Species")
 
-r1_1 <- remef(mpa_mod_fig.mpa , fix = c("SpeciesC. megacarpus"))
+r1_1 <- remef(mpa_mod_fig.mpa , fix = c("SpeciesCeanothus megacarpus"))
 summary(r1_1)
 head(r1_1)
 
@@ -893,7 +890,7 @@ scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs %>%
 
 
 ```{r}
-spp.labs <- c("A. fasciculatum", "C. megacarpus")
+spp.labs <- c("Adenostoma fasciculatum", "Ceanothus megacarpus")
 names(spp.labs) <- c("ADFA", "CEME")
 ```
 
@@ -933,19 +930,23 @@ season_plot <- precip_groups_ranis  %>%
              color = season)) +
   geom_point(alpha = .5) +
   geom_smooth(method = lm, 
-              #alpha = .5, 
               se = TRUE) +
   ggpubr::stat_regline_equation() +
   labs(x = "Water Potential (-MPa)", 
-       y = "PC1 ", 
+       y = "Flammability Proxy", 
        color = "Season") +
+  scale_y_continuous(limits=c(-5,6), breaks=c(-5,-2.5,0,2.5,5)) +
   th +
   facet_wrap(~spp,
               labeller = labeller(spp = spp.labs),
              scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "bottom", 
-        strip.text = element_text(face = "italic", size = 12)) +
-  scale_color_manual(values=met.brewer("Morgenstern", 3)) 
+        legend.title = element_text(face = "bold"),
+        strip.text = element_text(face = "italic", size = 12),
+        axis.title = element_text(face = 'bold')) +
+  scale_color_manual(values=c("#c1121f","#669BBC"))
+         
 season_plot
 
 ggsave(here("figures", "season_plot.jpg"),
@@ -1154,14 +1155,11 @@ tab_model(mpa_lfm_mod)
 
 
 ```{r}
-color_panels <- scale_color_manual(
-  values=met.brewer("Morgenstern", 3
-                    )) 
+color_panels <- scale_color_manual(values=c("#9D0208","#F48C06")) 
 
 th_panels <- theme(
-        #axis.ticks.x = element_blank(),
-       # axis.text.x = element_blank(), 
         axis.title.x=element_blank(),
+        axis.title.y=element_text(face = 'bold', size = 14),
         legend.position = "none", 
         aspect.ratio = 1, 
         plot.margin = unit(c(0,0,0,0), "cm")
@@ -1220,10 +1218,8 @@ scaled_r1_1_df <- as.data.frame(r1_1)
 tti_groups_ranis <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
 
 tti.mpa <- ggplot() + 
-  geom_point(data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species,shape = Species), size = 1, alpha = .5) + 
+  geom_point(data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species,shape = Species), size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species), se = FALSE, size = 1) +
-  #geom_line(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), color="#7570b3") +
-  #geom_ribbon(data= x_mpa_fig, aes(x=mpa.unscaled, ymin=lower, ymax=upper), alpha= 0.3, fill="#7570b3") +
   labs(
     x="Water Potential (-Mpa)", 
        y="Time to Ignition (sec)")  +
@@ -1242,12 +1238,9 @@ scaled_r1_1_df <- as.data.frame(fd_remef_year)
 fd_remef_year_df <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
 
 fd.mpa <- ggplot() + 
-  geom_point(data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species,shape = Species), size = 1, alpha = .5) + 
-  #geom_point(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), color="#7570b3", size = 1) +
-  #geom_line(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), color="#7570b3") +
+  geom_point(data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species), se = FALSE, size = 1, alpha = .5) +
    stat_regline_equation() +
-  #geom_ribbon(data= x_mpa_fig, aes(x=mpa.unscaled, ymin=lower, ymax=upper), alpha= 0.3, fill="#7570b3") +
   labs(
     x="Water Potential (-Mpa)", 
        y="Flame Duration (sec)")  +
@@ -1267,12 +1260,9 @@ scaled_r1_1_df <- as.data.frame(gd_remef_year)
 gd_remef_year_df <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
 
 gd.mpa <- ggplot() + 
-  geom_point(data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species,shape = Species), size = 1, alpha = .5) + 
-  #geom_point(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), color="#7570b3", size = 1) +
-  #geom_line(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), color="#7570b3") +
+  geom_point(data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species), se = FALSE, size = 1, alpha = .5) +
    stat_regline_equation() +
-  #geom_ribbon(data= x_mpa_fig, aes(x=mpa.unscaled, ymin=lower, ymax=upper), alpha= 0.3, fill="#7570b3") +
   labs(
     x="Water Potential (-Mpa)", 
        y="Glow Duration (sec)")  +
@@ -1289,34 +1279,34 @@ scaled_r1_1_df <- as.data.frame(pc1_remef_year)
 pc1_remef_year_df <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
 
 pc1.mpa <- ggplot() + 
-  geom_point(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species), size = 1, alpha = .5) + 
-  #geom_point(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), color="#7570b3", size = 1) +
-  #geom_line(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), color="#7570b3") +
+  geom_point(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species), se = FALSE, size = 1, alpha = .5) +
    stat_regline_equation() +  labs(x="Water Potential (-Mpa)", 
-       y="PC1") +
+       y="Flammability Proxy") +
   th +
   th_panels +
   color_panels
   
 pc1.mpa
+```
 
+```{r}
 legend <- get_legend(
   # create some space to the left of the legend
   ggplot() + 
-  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, PC1, color = Species, shape = Species), size = 1, alpha = .5) +
+  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, PC1, color = Species, shape = Species), size = 1, alpha = .8) +
     color_panels +
     theme(legend.box.margin = margin(0, 0, 0, 0),
-          legend.text = element_text(face = "italic"))
+          legend.text = element_text(face = "italic", size = 12),
+          legend.title = element_text(face = 'bold', size = 16),
+          legend.key = element_rect(fill = "white"))
 )
 
-
 plot <- cowplot::plot_grid(
-        tti.mpa + theme(plot.margin = unit(c(0, 0, 0, 0), "cm")), 
-        gd.mpa + theme(plot.margin = unit(c(0, 0, 0, 0), "cm")), 
-        fd.mpa + theme(plot.margin = unit(c(0, 0, 0, 0), "cm")), 
-        pc1.mpa+ theme(plot.margin = unit(c(0, 0, 0, 0), "cm")),
-       
+        tti.mpa + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        gd.mpa + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        fd.mpa + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        pc1.mpa+ theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
         align='vh', vjust=.5, scale = 1,
         ncol = 2
           )
@@ -1324,24 +1314,20 @@ plot <- cowplot::plot_grid(
 x.grob <- textGrob("Water Potential (MPa)", 
                    gp=gpar(fontface="bold", 
                            col="black", 
-                           fontsize=15)
+                           fontsize=20)
                    )
 library(gridExtra)
 #add to plot
 scatterplot <- gridExtra::grid.arrange(arrangeGrob(plot, bottom = x.grob)) 
 scatterplot
 
-plot_legend <- cowplot::plot_grid(scatterplot, legend, rel_widths = c(4, 1))
+plot_legend <- cowplot::plot_grid(scatterplot, legend, rel_widths = c(4, 1.1))
 plot_legend
-
-
-# y.grob <- textGrob("Common Y", 
-#                    gp=gpar(fontface="bold", col="blue", fontsize=15), rot=90)
 
 
 ggsave(here("figures", "scatterplot_ranef_all.jpg"),
        plot = plot_legend, 
-       width = 6.5, height = 4.5, dpi = 300)
+       width = 11, height = 8)
 ```
 
 
