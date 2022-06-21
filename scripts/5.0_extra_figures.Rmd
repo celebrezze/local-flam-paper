@@ -5,26 +5,486 @@ date: "6/21/2022"
 output: html_document
 ---
 
+# Setup
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+
+#lots of extra here, but oh well... 
+library(ggplot2)
+library(gapminder)
+library(data.table)
+library(purrr) #for visualizing all variables in one big plot
+library(naniar) #for dealing with NAs nicely 
+library(tidyverse)
+library(devtools)
+library(ggfortify)
+library(ggpubr)
+library(jtools)
+library(cowplot)
+library(lmerTest)
+library(ggeffects)  # install the package first if you haven't already, then load it
+library(GGally) #for corr plots
+require(kimisc) # has the nlist function to create a named list
+require(AICcmodavg) # has the aictab function
+library(psych)
+#devtools::install_github("strengejacke/strengejacke")
+library(strengejacke)
+library(sjPlot) # table functions
+library(sjmisc) # sample data
+library(lme4) # fitting models
+library(here)
+library(effects) #for plotting model effects
+library(sjstats) #use for r2 functions
+library(TMB)
+library(glmmTMB)
+library(lattice)
+library(equatiomatic)
+library("broom.mixed")
+library(ggbiplot)
+select = dplyr::select
+here = here::here
+library(MuMIn)
+library(modelsummary)
+#install_github("BlakeRMills/MetBrewer") 
+#library("BlakeRMills/MetBrewer")
+library(segmented)
+filter = dplyr::filter
+mutate = dplyr::mutate
+library(nlme)
+library(MetBrewer)
+#install.packages("segmented")
+#devtools::install_github("hohenstein/remef")
+library(remef)
 ```
 
-## R Markdown
+Set global options for color palettes and themes: 
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+```{r}
+th <- theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
+          panel.grid.major = element_blank(),  # Hide major gridlines
+          panel.grid.minor = element_blank())
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+th.spp.wrap <- theme(legend.position = "bottom", 
+        strip.text = element_text(face = "italic", size = 12) +
+  scale_color_manual(values=met.brewer("Morgenstern", 7)))
 
-```{r cars}
-summary(cars)
+Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db8872", "#a56457"), c(7, 5, 4, 6, 3, 2, 1), colorblind=TRUE)
 ```
 
-## Including Plots
+#------------------------------------
+# 1. Data wrangling
 
-You can also embed plots, for example:
+Seasonal mins and maxs from 2016 - 2020:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+https://www.sbbg.org/about/onsite-weather-station-live-fuel-moisture 
+
+```{r}
+adfa_min <- 55
+adfa_max <- 110
+
+ceme_min <- 55
+ceme_max <- 140
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+### All dates datasets
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
+
+mem.data.raw.alldates <- mem.data.alldates %>%
+  mutate(mpa = case_when(
+    mpa > 0 ~ (-1*mpa), 
+    mpa < 0 ~ mpa)) %>% 
+  mutate(year = as.factor(year)) %>%
+  mutate(month = as.factor(month)) %>% 
+  mutate(mpa.unscaled = mpa) %>% 
+  mutate(lfm.unscaled = lfm)%>% 
+  mutate(lfm.NAs.imputed.unscaled = lfm.NAs.imputed) %>% 
+  mutate(excess_water.scaled = ww.flam.sample - dw.flam.sample) %>% 
+  mutate(excess_water.unscaled = excess_water.scaled)
+ # mutate(lfm = lfm.NAs.imputed)
+
+clean.mem.data.alldates <- mem.data.raw.alldates
+  #na.omit() %>%
+  #filter(year.month == "2020_September")
+
+#Parsing out the variables of interest for the mixed effects modelling
+
+clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd','temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")]
+ 
+scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
+  filter(spp == "ADFA") %>% 
+  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
+ scale()
+
+  
+scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
+  filter(spp == "CEME") %>% 
+  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
+ scale()
+  
+scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
+
+mem.data.predictors.alldates <- clean.mem.data.alldates %>%
+    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'gr') 
+
+scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates, 
+                         mem.data.predictors.alldates,
+                         clean.mem.data.dependant.alldates) 
+
+#For sept. 2020 only: 
+scaled.mem.data.alldates <- scaled.mem.data.alldates %>% 
+  mutate(Species = case_when(
+    spp == "ADFA" ~ "Adenostoma fasciculatum", 
+    spp == "CEME" ~ "Ceanothus megacarpus"
+  )) %>% 
+  mutate(id = individual)  %>% 
+  mutate(timing = case_when(
+    year.month == "2016_December" ~ "Dec. 2016", 
+    year.month == "2019_December" ~ "Dec. 2019",
+    year.month == "2018_January" ~ "Jan. 2018",
+    year.month == "2020_January" ~ "Jan. 2020",
+    year.month == "2020_September" ~ "Sept. 2020"
+  ))
+
+scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
+  drop_na(mpa, lfm, PC1, timing, mpa.unscaled, lfm.unscaled)
+
+seg.data.subset.alldates <- scaled.mem.data.alldates.noNAs %>% 
+  mutate(id = individual) 
+
+seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldates$id),]
+```
+
+
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+seg.adfa.subset <- seg.data.subset.alldates  %>% 
+  filter(spp == "ADFA") %>% 
+  filter(ignition == "1")
+
+seg.CEME.subset <- seg.data.subset.alldates  %>% 
+  filter(spp == "CEME")%>% 
+  filter(ignition == "1")
+
+seg.adfa.subset.allignitions <- seg.data.subset.alldates  %>% 
+  filter(spp == "ADFA")
+
+seg.CEME.subset.allignitions <- seg.data.subset.alldates %>% 
+  filter(spp == "CEME")
+
+seg.adfa.subset.limited <- seg.adfa.subset %>% 
+  filter(lfm.unscaled < adfa_max, lfm.unscaled > adfa_min)
+
+seg.CEME.subset <- seg.data.subset.alldates %>% 
+  filter(spp == "CEME")
+
+seg.CEME.subset.limited <- seg.CEME.subset %>% 
+  filter(lfm.unscaled < ceme_max, lfm.unscaled > ceme_min)
+```
+
+Scale LFM based on sample data: 
+```{r}
+scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs %>%
+  group_by(year.month) %>% 
+  mutate(lfm.scaled.by.year = scale(lfm), 
+         mpa.scaled.by.year = scale(mpa))
+
+```
+
+Labels for species names:
+```{r}
+spp.labs <- c("Adenostoma fasciculatum", "Ceanothus megacarpus")
+names(spp.labs) <- c("ADFA", "CEME")
+```
+
+#------------------------------------
+# 2. LFM vs. TTI, FH, GD
+
+```{r}
+tti <- ggplot() + 
+  geom_point(data= scaled.mem.data.alldates.noNAs, aes(lfm.scaled.by.year, tti, color = Species), size = .5) + 
+  geom_smooth(method = "lm", 
+              data= scaled.mem.data.alldates.noNAs, 
+              aes(lfm.scaled.by.year, tti, color = Species), se = FALSE, size = .7) +
+  #geom_line(data=x_mpa_fig, aes(x=lfm, y=fit), color="#7570b3") +
+  #geom_ribbon(data= x_mpa_fig, aes(x=lfm, ymin=lower, ymax=upper), alpha= 0.3, fill="#7570b3") +
+  labs(
+    #x="Live Fuel Moisture (%)", 
+       y="Time to Ignition (sec)")  +
+  scale_color_manual(values = c("#b08ba5", "#ffb178")) +
+  th +
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_blank(), 
+        axis.title.x=element_blank(),
+        legend.position = "none") 
+tti
+```
+
+
+```{r}
+fh <- ggplot() + 
+  geom_point(data= scaled.mem.data.alldates.noNAs, aes(lfm, fh, color = Species), size = .5) + 
+  #geom_point(data=x_mpa_fig, aes(x=lfm, y=fit), color="#7570b3", size = 1) +
+  #geom_line(data=x_mpa_fig, aes(x=lfm, y=fit), color="#7570b3") +
+  geom_smooth(method = "lm", data= scaled.mem.data.alldates.noNAs, aes(lfm, fh, color = Species), se = FALSE, size = .7) +
+  #geom_ribbon(data= x_mpa_fig, aes(x=lfm, ymin=lower, ymax=upper), alpha= 0.3, fill="#7570b3") +
+  labs(
+    #x="Live Fuel Moisture (%)", 
+       y="Flame Height (cm)")  +
+  scale_color_manual(values = c("#b08ba5", "#ffb178")) +
+  th +
+  theme(axis.ticks.x = element_blank(),
+        axis.text.x = element_blank(), 
+        axis.title.x=element_blank(),
+        legend.position = "none") 
+fh
+```
+
+
+```{r}
+gd <- ggplot() + 
+  geom_point(data= scaled.mem.data.alldates.noNAs, aes(lfm, gd, color = Species), size = .5) + 
+  #geom_point(data=x_mpa_fig, aes(x=lfm, y=fit), color="#7570b3", size = 1) +
+  #geom_line(data=x_mpa_fig, aes(x=lfm, y=fit), color="#7570b3") +
+  geom_smooth(method = "lm", data= scaled.mem.data.alldates.noNAs, aes(lfm, gd, color = Species), se = FALSE, size = .7) +
+  #geom_ribbon(data= x_mpa_fig, aes(x=lfm, ymin=lower, ymax=upper), alpha= 0.3, fill="#7570b3") +
+  labs(x="Live Fuel Moisture (%)", 
+       y="Glow Duration (sec)")  +
+  scale_color_manual(values = c("#b08ba5", "#ffb178")) +
+  th +
+  theme(legend.title = element_text(size = 10), 
+        legend.text = element_text(size = 8), 
+        legend.position = "bottom")
+gd
+```
+
+
+```{r, fig1, fig.height = 6, fig.width = 3}
+cowplot::plot_grid(tti, fh, gd, 
+          ncol = 1)
+
+ggsave(here('figures', 'lfm.vs.flam.metrics.jpg'))
+```
+#------------------------------------
+# 3. More data wrangling 
+
+## PV data
+
+```{r}
+pv_summary_df_timing <- read_csv(here("processed-data", "pv_summary_df_timing.csv"))
+
+pv_local <- pv_summary_df_timing %>% 
+  filter(spp %in% c("ADFA", "CEME"))
+```
+
+## Prop.ignite v LFM: 10% 
+```{r}
+dlookr::diagnose(seg.adfa.subset)
+```
+
+```{r}
+library(tidyverse)
+
+mean_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(mean_lfm)) %>% 
+  pull()
+
+upr_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(upr_lfm)) %>% 
+  pull()
+
+lwr_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(lwr_lfm)) %>% 
+  pull()
+
+mean_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(mean_tlp)) %>% 
+  pull()
+
+upr_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(upr)) %>% 
+  pull()
+
+lwr_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(lwr)) %>% 
+  pull()
+```
+
+```{r}
+mean_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(mean_lfm)) %>% 
+  pull()
+
+upr_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(upr_lfm)) %>% 
+  pull()
+
+lwr_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(lwr_lfm)) %>% 
+  pull()
+
+mean_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(mean_tlp)) %>% 
+  pull()
+
+upr_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(upr)) %>% 
+  pull()
+
+lwr_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(lwr)) %>% 
+  pull()
+```
+
+```{r}
+tmp <- scaled.mem.data.alldates.noNAs %>% 
+  mutate(tlp = case_when(
+    spp == "ADFA" ~ mean_mpa_adfa, 
+    spp == "CEME" ~ mean_mpa_ceme
+  )) %>% 
+  mutate(tlp_split = case_when(
+    mpa.unscaled > tlp ~ "tlp_above", 
+    mpa.unscaled < tlp ~ "tlp_below"
+  )) 
+tmp
+```
+
+#------------------------------------
+# 4. Boxplots
+## 4.1 Pre/Post TLP
+### Prop. Ignite
+```{r}
+tmp %>% 
+  ggplot(aes(y = prop.ignite.bins5, x = lfm.unscaled, fill = tlp_split)) +
+  facet_wrap(~spp) +
+  geom_boxplot()
+```
+
+```{r}
+tmp %>% 
+  ggplot(aes(y = prop.ignite.bins5, x = mpa.unscaled, fill = tlp_split)) +
+  facet_wrap(~spp) +
+  geom_boxplot()
+```
+### PC1
+
+```{r}
+tmp %>% 
+  ggplot(aes(y = PC1, x = lfm.unscaled, fill = tlp_split)) +
+  facet_wrap(~spp) +
+  geom_boxplot()
+```
+```{r}
+tmp %>% 
+  ggplot(aes(y = PC1, x = mpa.unscaled, fill = tlp_split)) +
+  facet_wrap(~spp) +
+  geom_boxplot()
+```
+
+### TTI
+
+```{r}
+tmp %>% 
+  ggplot(aes(y = tti, x = lfm.unscaled, fill = tlp_split)) +
+  facet_wrap(~spp) +
+  geom_boxplot()
+```
+
+```{r}
+tmp %>% 
+  ggplot(aes(y = tti, x = mpa.unscaled, fill = tlp_split)) +
+  facet_wrap(~spp) +
+  geom_boxplot()
+```
+
+### FD
+
+```{r}
+tmp %>% 
+  ggplot(aes(y = fd, x = lfm.unscaled, fill = tlp_split)) +
+  facet_wrap(~spp) +
+  geom_boxplot()
+```
+
+### FH
+
+```{r}
+tmp %>% 
+  ggplot(aes(y = fh, x = lfm.unscaled, fill = tlp_split)) +
+  facet_wrap(~spp) +
+  geom_boxplot()
+```
+
+## 4.2 PC1 vs. LFM bins
+Filtering out only realistic LFM values
+Reordering factors so the LFM bins go in order
+```{r}
+seg.data.subset.limited <- seg.data.subset.alldates %>% 
+  filter(lfm.unscaled > 50 & lfm.unscaled < 160) %>% 
+  mutate(gr = factor(gr, levels=c('(50,60]', '(60,70]', '(70,80]','(80,90]', '(90,100]', '(100,110]', '(110,120]', '(120,130]', '(130,140]', '(140,150]', '(150,160]')))
+```
+
+Boxplot split by species
+```{r}
+ggplot(data = seg.data.subset.limited, aes(x = gr, y = PC1)) +
+  geom_boxplot() +
+  facet_wrap(~spp, ncol = 1) +
+  th
+```
+
+Violin plot
+```{r}
+ggplot(data = seg.data.subset.limited, aes(x = gr, y = PC1)) +
+  geom_violin() +
+  facet_wrap(~spp, ncol = 1) +
+  th
+```
+
+#------------------------------------
+# 5. Field Data
+
+```{r}
+field_data_local <- read.csv(here("raw-data", "local_field_data.csv")) %>% 
+  janitor::clean_names() %>% 
+  filter(spp %in% c("ADFA", "CEME")) 
+  
+field_data_local$date <- lubridate::mdy(field_data_local$date)
+
+field_data_local <- field_data_local  %>% 
+   mutate(month = month(date), 
+          year = year(date)) %>% 
+   mutate(age = case_when(
+     age == "New" ~ "new", 
+     age == "Old" ~ "old", 
+     age == "new" ~ "new", 
+     age == "old" ~ "old", 
+     TRUE ~ as.character(age)
+   )) 
+```
+
+```{r}
+field_data_local %>% 
+  ggplot(aes(y = lfm, x = spp, color = spp)) +
+  geom_point() +
+  geom_boxplot()
+```
+
+```{r}
+field_data_local %>% 
+  ggplot(aes(y = lfm, x = midday*-1, color = spp)) +
+  geom_point() +
+  xlab("Midday") +
+  ylab("LFM") + 
+  th
+```

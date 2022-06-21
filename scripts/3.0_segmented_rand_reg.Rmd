@@ -1,5 +1,5 @@
 ---
-title: "Mixed Effects Model - Segmented Regression"
+title: "Segmented Regressions - Mixed Effects Models"
 author: "Indra Boving & Joe Celebrezze"
 date: "4/15/2021"
 output: html_document
@@ -185,15 +185,7 @@ seg.adfa.subset <- seg.data.subset %>%
 
 
 ## MPa x PC1
-```{r}
-o.pc1.mpa.a<-lme(PC1~mpa, random=~1|id, data=seg.adfa.subset)
-os.pc1.mpa.a<-segmented.default(o.pc1.mpa.a, ~mpa, npsi=list(mpa=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.pc1.mpa.a, .coef=fixef(os.pc1.mpa.a))
-plot.segmented(os.pc1.mpa.a, "mpa", .coef=fixef(os.pc1.mpa.a), conf.level=.95)
-confint.segmented(os.pc1.mpa.a, "mpa", .coef=fixef(os.pc1.mpa.a))
-```
+No threshold identified
 
 ## LFM x PC1
 ```{r}
@@ -207,15 +199,7 @@ confint.segmented(os.pc1.lfm.a, "lfm", .coef=fixef(os.pc1.lfm.a))
 ```
 
 ## MPa x TTI
-```{r}
-o.tti.mpa.a<-lme(tti~mpa, random=~1|id, data=seg.adfa.subset)
-os.tti.mpa.a<-segmented.default(o.tti.mpa.a, ~mpa, npsi=list(mpa=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.tti.mpa.a, .coef=fixef(os.tti.mpa.a))
-plot.segmented(os.tti.mpa.a, "mpa", .coef=fixef(os.tti.mpa.a), conf.level=.95)
-confint.segmented(os.tti.mpa.a, "mpa", .coef=fixef(os.tti.mpa.a))
-```
+No threshold identified
 
 ## LFM x TTI
 ```{r}
