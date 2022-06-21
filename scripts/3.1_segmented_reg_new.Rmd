@@ -228,6 +228,8 @@ seg.adfa.subset <- seg.adfa.subset %>%
 
 out.lm<-lm(PC1 ~ lfm, data = seg.adfa.subset)
 davies.test(out.lm, k = 50)
+# Result: significant (p = 0.02517)
+
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
@@ -252,8 +254,9 @@ segplot(seg.adfa.subset, lfm, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adf
 ```{r}
 out.lm<-lm(PC1 ~ lfm, data = seg.adfa.subset.limited)
 
-davies.test(out.lm, k = 50
-            )
+davies.test(out.lm, k = 50)
+# Result: insignificant (p = 0.6597)
+
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
@@ -279,7 +282,6 @@ segplot(seg.adfa.subset.limited, lfm, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr
 #### CEME
 
 ```{r}
-
 seg.ceme.subset <- seg.ceme.subset %>% 
   filter(lfm < 300)
 
@@ -291,6 +293,7 @@ segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
 davies.test(out.lm, k = 50)
+# Result: marginally significant (p = 0.04844)
 
 confint <- confint(segmented.mod)
 confint
@@ -317,6 +320,7 @@ segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
 davies.test(out.lm, k = 50)
+#Result: significant, p = 0.03114
 
 confint <- confint(segmented.mod)
 confint
@@ -339,6 +343,8 @@ no breakpoint
 ```{r}
 out.lm<-lm(PC1 ~ mpa, data = seg.adfa.subset)
 davies.test(out.lm, k = 50)
+#Result: insignifcant (p = 0.6182)
+
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
@@ -362,9 +368,9 @@ segplot(seg.adfa.subset, mpa, PC1, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adf
 
 ```{r}
 out.lm<-lm(PC1 ~ mpa, data = seg.adfa.subset.limited)
+davies.test(out.lm, k = 50)
+#Result: insignificant (p = 0.5455)
 
-davies.test(out.lm, k = 50
-            )
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
@@ -391,13 +397,15 @@ segplot(seg.adfa.subset.limited, mpa, PC1, fit, mean_mpa_adfa, lwr_mpa_adfa, upr
 
 ```{r}
 out.lm<-lm(PC1 ~ mpa, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+#Result: insignificant (p = 0.6775)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 #segmented.mod
 #summary(segmented.mod)
-davies.test(out.lm, k = 50)
+
 
 confint <- confint(segmented.mod)
 confint
@@ -417,13 +425,13 @@ segplot(seg.ceme.subset, mpa, PC1, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_cem
  
 ```{r}
 out.lm<-lm(PC1 ~ mpa, data = seg.ceme.subset.limited)
+davies.test(out.lm, k = 50)
+#Result: P = 1?!
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -445,14 +453,14 @@ segplot(seg.ceme.subset.limited, mpa, PC1, fit, mean_mpa_ceme, lwr_mpa_ceme, upr
 
 ```{r}
 out.lm<-lm(prop.ignite.bins10_nodate ~ lfm, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+#Result: marginally significant (p = 0.04587)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -471,16 +479,9 @@ segplot(seg.ceme.subset, lfm, prop.ignite.bins10_nodate, fit, mean_lfm_ceme, lwr
 ```
 
 ```{r}
-#with random changepoints: 
-o<-lme(prop.ignite.bins10_nodate ~ lfm, random=list(id=pdDiag(~1+lfm)), 
-       data = seg.ceme.subset.limited)
-
-##oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1+lfm+U)))
-
-##confint(oseg)
-
-#with no random changepoints, but plotted:
 out.lm<-lm(prop.ignite.bins10_nodate ~ lfm, data = seg.ceme.subset.limited)
+davies.test(out.lm, k = 50)
+# Highly significant (p < 0.00005)
 
 selgmented.mod <- selgmented(out.lm)
 selgmented.mod
@@ -491,8 +492,6 @@ selgmented.mod
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -516,17 +515,9 @@ Bins of 5 LFM used to make prop. ignite column
 ### ADFA
 
 ```{r}
-#with random changepoints: 
-o<-lme(prop.ignite.bins5_nodate ~ lfm, random=list(id=pdDiag(~1+lfm)), 
-       data = seg.adfa.subset)
-
-##oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1+lfm+U)))
-
-##confint(oseg)
-
-#with no random changepoints, but plotted:
 out.lm<-lm(prop.ignite.bins5_nodate ~ lfm, data = seg.adfa.subset) 
 davies.test(out.lm, k = 50)
+# Highly significant (p < 0.00005)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -553,19 +544,9 @@ segplot(seg.adfa.subset, lfm, prop.ignite.bins5_nodate, fit, mean_lfm_ceme, lwr_
 
 
 ```{r}
-
-#with random changepoints: 
-o<-lme(prop.ignite.bins5_nodate ~ lfm, random=list(id=pdDiag(~1+lfm)), 
-       data = seg.adfa.subset.limited)
-
-#oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1+lfm+U)))
-
-#confint(oseg)
-
-#with no random effects: 
 out.lm<-lm(prop.ignite.bins5_nodate ~ lfm, data = seg.adfa.subset.limited)
-
 davies.test(out.lm, k = 50)
+# Highly significant (p < 0.0005)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -592,25 +573,9 @@ segplot(seg.adfa.subset.limited, lfm, prop.ignite.bins5_nodate, fit, mean_lfm_ce
 ### CEME
 
 ```{r}
-#with random changepoints: 
-o<-lme(prop.ignite.bins5_nodate ~ lfm, random=list(id=pdDiag(~1+lfm)), 
-       data = seg.ceme.subset)
-
-#oseg<-segmented.lme(o, Z=lfm, random=list(id=pdDiag(~1+lfm+U)))
-#oseg
-
-#confint.oseg <- #confint(oseg)
-#confint.oseg
-
-lower <- #confint.oseg[7]
-lower
-
-upper <- #confint.oseg[8]
-upper
-
 out.lm<-lm(prop.ignite.bins5_nodate ~ lfm, data = seg.ceme.subset)
-
 davies.test(out.lm, k = 50)
+#Result: insignificant (p = 0.1897)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -636,19 +601,9 @@ segplot(seg.ceme.subset, lfm, prop.ignite.bins5_nodate, fit, mean_lfm_ceme, lwr_
 ```
 
 ```{r}
-#with random changepoints: 
-o<-lme(prop.ignite.bins5_nodate ~ lfm, random=list(id=pdDiag(~1+lfm)), 
-       data = seg.ceme.subset.limited)
-
-lower <- #confint.oseg[7]
-lower
-
-upper <- #confint.oseg[8]
-upper
-
-out.lm<-lm(prop.ignite.bins5_nodate ~ lfm, data = seg.ceme.subset)
-
 out.lm<-lm(prop.ignite.bins5_nodate ~ lfm, data = seg.ceme.subset.limited)
+davies.test(out.lm, k = 50)
+#Result: highly significant (p < 0.00005)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -678,6 +633,8 @@ segplot(seg.ceme.subset.limited, lfm, prop.ignite.bins5_nodate, fit, mean_lfm_ce
 
 ```{r}
 out.lm<-lm(prop.ignite.bins5_nodate ~ mpa, data = seg.adfa.subset)
+davies.test(out.lm, k = 50)
+# Result: insignificant (p = 0.5482)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -685,7 +642,6 @@ segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
 summary(segmented.mod)
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -707,6 +663,8 @@ segplot(seg.adfa.subset, mpa, prop.ignite.bins5_nodate, fit, mean_mpa_adfa, lwr_
 
 ```{r}
 out.lm<-lm(prop.ignite.bins5_nodate ~ mpa, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+#Result: highly significant, p = 0.000134
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -714,7 +672,6 @@ segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
 summary(segmented.mod)
-davies.test(out.lm, k = 50)
 
 fit <- numeric(length(seg.ceme.subset$mpa)) * NA
 
@@ -737,13 +694,13 @@ segplot(seg.ceme.subset, mpa, prop.ignite.bins5_nodate, fit, mean_mpa_ceme, lwr_
 ### ADFA
 ```{r}
 out.lm<-lm(tti ~ lfm, data = seg.adfa.subset.limited)
+davies.test(out.lm, k = 50)
+#Result: p = 1?!
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -766,13 +723,13 @@ segplot(seg.adfa.subset.limited, lfm, tti, fit, mean_lfm_adfa, lwr_lfm_adfa, upr
 
 ```{r}
 out.lm<-lm(tti ~ lfm, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+# Result: highly significant (p = 0.0009369)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -793,6 +750,8 @@ segplot(seg.ceme.subset, lfm, tti, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_cem
 Remove non-realistic LFMS
 ```{r}
 out.lm<-lm(tti ~ lfm, data = seg.ceme.subset.limited)
+davies.test(out.lm)
+# Inisignificant (p = 0.3837)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -801,8 +760,6 @@ segmented.mod
 
 #segmented::slope(segmented.mod)
 #pscore.test(segmented.mod)
-
-davies.test(out.lm)
 
 confint <- confint(segmented.mod)
 confint
@@ -825,12 +782,13 @@ segplot(seg.ceme.subset.limited, lfm, tti, fit, mean_lfm_ceme, lwr_lfm_ceme, upr
 
 ```{r}
 out.lm<-lm(tti ~ mpa, data = seg.adfa.subset)
+davies.test(out.lm, k=50)
+# Result: insignificant (p = 0.6741)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-davies.test(out.lm, k=50)
 
 confint <- confint(segmented.mod)
 confint
@@ -915,13 +873,13 @@ tgt <- foo.opt$objective + qchisq(0.95,1)
 
 ```{r}
 out.lm<-lm(tti ~ mpa, data = seg.adfa.subset.limited)
+davies.test(out.lm, k = 50)
+# Result: p = 1?!
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -944,13 +902,13 @@ segplot(seg.adfa.subset.limited, mpa, tti, fit, mean_mpa_adfa, lwr_mpa_adfa, upr
 
 ```{r}
 out.lm<-lm(tti ~ mpa, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+#Result: significant (p = 0.01178)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1033,16 +991,13 @@ tgt <- foo.opt$objective + qchisq(0.95,1)
 Remove non-realistic LFMS
 ```{r}
 out.lm<-lm(tti ~ mpa, data = seg.ceme.subset.limited)
+davies.test(out.lm)
+# Result: significant (p = 0.02031)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-#segmented::slope(segmented.mod)
-#pscore.test(segmented.mod)
-
-davies.test(out.lm)
 
 confint <- confint(segmented.mod)
 confint
@@ -1069,12 +1024,13 @@ segplot(seg.ceme.subset.limited, mpa, tti, fit, mean_mpa_ceme, lwr_mpa_ceme, upr
 #https://stats.stackexchange.com/questions/19772/estimating-the-break-point-in-a-broken-stick-piecewise-linear-model-with-rando/19777#19777
 
 out.lm<-lm(fd ~ lfm, data = seg.adfa.subset)
+davies.test(out.lm, k=50)
+#Result: insignificant (p = 0.6856)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
-davies.test(out.lm, k=50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1094,13 +1050,13 @@ segplot(seg.adfa.subset, lfm, fd, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa
 
 ```{r}
 out.lm<-lm(fd ~ lfm, data = seg.adfa.subset.limited)
+davies.test(out.lm, k = 50)
+#Result: insignificant (p = 0.6819)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1123,13 +1079,13 @@ segplot(seg.adfa.subset.limited, lfm, fd, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_
 
 ```{r}
 out.lm<-lm(fd ~ lfm, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+#Result: insignificant (p = 0.4814)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1150,16 +1106,13 @@ segplot(seg.ceme.subset, lfm, fd, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme
 Remove non-realistic LFMS
 ```{r}
 out.lm<-lm(fd ~ lfm, data = seg.ceme.subset.limited)
+davies.test(out.lm)
+#Result: insignificant (p = 0.1716)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-#segmented::slope(segmented.mod)
-#pscore.test(segmented.mod)
-
-davies.test(out.lm)
 
 confint <- confint(segmented.mod)
 confint
@@ -1182,12 +1135,13 @@ segplot(seg.ceme.subset.limited, lfm, fd, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_
 
 ```{r}
 out.lm<-lm(fd ~ mpa, data = seg.adfa.subset)
+davies.test(out.lm, k=50)
+# Result: insignificant (p = 0.7258)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-davies.test(out.lm, k=50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1268,13 +1222,13 @@ tgt <- foo.opt$objective + qchisq(0.95,1)
 
 ```{r}
 out.lm<-lm(fd ~ mpa, data = seg.adfa.subset.limited)
+davies.test(out.lm, k = 50)
+#Result: p = 1?!
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1297,13 +1251,13 @@ segplot(seg.adfa.subset.limited, mpa, fd, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_
 
 ```{r}
 out.lm<-lm(fd ~ mpa, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+#Result: insignificant (p = 0.7735)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1386,16 +1340,13 @@ tgt <- foo.opt$objective + qchisq(0.95,1)
 Remove non-realistic LFMS
 ```{r}
 out.lm<-lm(fd ~ mpa, data = seg.ceme.subset.limited)
+davies.test(out.lm)
+#Result; insig. (p = 0.6627)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-#segmented::slope(segmented.mod)
-#pscore.test(segmented.mod)
-
-davies.test(out.lm)
 
 confint <- confint(segmented.mod)
 confint
@@ -1420,13 +1371,13 @@ segplot(seg.ceme.subset.limited, mpa, fd, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_
 
 ```{r}
 out.lm<-lm(fh ~ lfm, data = seg.adfa.subset)
+davies.test(out.lm, k = 50)
+# result: significant (p = 0.001313)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1446,10 +1397,9 @@ segplot(seg.adfa.subset, lfm, fh, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa
 ```
 
 ```{r}
-
 out.lm<-lm(fh ~ lfm, data = seg.adfa.subset.limited)
-
 davies.test(out.lm, k = 50)
+# Result: insignificant (p = 0.2161)
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
@@ -1475,8 +1425,8 @@ segplot(seg.adfa.subset.limited, lfm, fh, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_
 
 ```{r}
 out.lm<-lm(fh ~ lfm, data = seg.ceme.subset)
-
 davies.test(out.lm, k = 50)
+#Result: significant (p = 0.3032)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -1501,8 +1451,9 @@ segplot(seg.ceme.subset, lfm, fh, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme
 
 ```{r}
 out.lm<-lm(fh ~ lfm, data = seg.ceme.subset.limited)
-
 davies.test(out.lm, k = 50)
+# Result: significant (p = 0.008863)
+
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
@@ -1529,13 +1480,13 @@ segplot(seg.ceme.subset.limited, lfm, fh, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_
 
 ```{r}
 out.lm<-lm(fh ~ mpa, data = seg.adfa.subset)
+davies.test(out.lm, k = 50)
+# Result: p = 1?!
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
-
-davies.test(out.lm, k = 50)
 
 confint <- confint(segmented.mod)
 confint
@@ -1555,10 +1506,10 @@ segplot(seg.adfa.subset, mpa, fh, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa
 ```
 
 ```{r}
-
 out.lm<-lm(fh ~ mpa, data = seg.adfa.subset.limited)
-
 davies.test(out.lm, k = 50)
+# p = 1!
+
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
@@ -1584,8 +1535,8 @@ segplot(seg.adfa.subset.limited, mpa, fh, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_
 
 ```{r}
 out.lm<-lm(fh ~ mpa, data = seg.ceme.subset)
-
 davies.test(out.lm, k = 50)
+# result: significant (p = 0.001903)
 
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
@@ -1610,8 +1561,9 @@ segplot(seg.ceme.subset, mpa, fh, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme
 
 ```{r}
 out.lm<-lm(fh ~ mpa, data = seg.ceme.subset.limited)
-
 davies.test(out.lm, k = 50)
+# Result: marginally insignificant (p = 0.05442)
+
 #the simplest example: the starting model includes just 1 covariate
 #.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
@@ -1631,5 +1583,4 @@ fit <- numeric(length(seg.ceme.subset.limited$mpa)) * NA
 fit[complete.cases(rowSums(cbind(seg.ceme.subset.limited$fh, seg.ceme.subset.limited$mpa)))] <- broken.line(segmented.mod)$fit
 
 segplot(seg.ceme.subset.limited, mpa, fh, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
-
 ```
