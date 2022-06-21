@@ -231,14 +231,19 @@ precip_groups_ranis <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
 ```{r}
 season_plot <- precip_groups_ranis  %>%
   ggplot(aes(y = PC1, 
-             x = mpa.unscaled, 
-             color = season)) +
-  geom_point(alpha = .5) +
+             x = mpa.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .5, aes(color = season)) +
   geom_smooth(method = lm, 
-              se = TRUE) +
-  ggpubr::stat_regline_equation() +
+              se = TRUE, 
+              aes(fill = season),
+              show.legend = FALSE) +
+  ggpubr::stat_regline_equation(show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
        y = "Flammability Proxy", 
+       fill = "Season",
        color = "Season") +
   scale_y_continuous(limits=c(-5,6), breaks=c(-5,-2.5,0,2.5,5)) +
   th +
@@ -248,9 +253,11 @@ season_plot <- precip_groups_ranis  %>%
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "bottom", 
         legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
         strip.text = element_text(face = "italic", size = 12),
         axis.title = element_text(face = 'bold')) +
-  scale_color_manual(values=c("#c1121f","#669BBC"))
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
          
 season_plot
 
