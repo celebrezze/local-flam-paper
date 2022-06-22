@@ -473,18 +473,43 @@ field_data_local <- field_data_local  %>%
    )) 
 ```
 
+Range of LFM in field data
 ```{r}
 field_data_local %>% 
-  ggplot(aes(y = lfm, x = spp, color = spp)) +
+  ggplot(aes(y = lfm, x = spp, fill = spp)) +
   geom_point() +
-  geom_boxplot()
+  geom_boxplot(alpha = 0.7) +
+  scale_fill_manual(values=c("#9D0208","#F48C06")) +
+  labs(x = "Species", y = "LFM (%)", fill = "Species") +
+  th
+
+ggsave(here('figures', 'lfm.field.data.jpg'), height = 7, width = 9)
 ```
 
+Comparing field measurements of water status/content
 ```{r}
-field_data_local %>% 
+field.plot1 <- field_data_local %>% 
   ggplot(aes(y = lfm, x = midday*-1, color = spp)) +
   geom_point() +
-  xlab("Midday") +
-  ylab("LFM") + 
+  labs(x = "Midday Water Potential", y = "LFM", color = "Species") + 
+  scale_color_manual(values=c("#9D0208","#F48C06")) +
   th
+
+field.plot2 <- field_data_local %>% 
+  ggplot(aes(y = lfm, x = predawn*-1, color = spp)) +
+  geom_point() +
+  labs(x = "Predawn Water Potential", y = "LFM", color = "Species") + 
+  scale_color_manual(values=c("#9D0208","#F48C06")) +
+  th
+
+field.plot3 <- field_data_local %>% 
+  ggplot(aes(y = midday*-1, x = predawn*-1, color = spp)) +
+  geom_point() +
+  labs(x = "Predawn Water Potential", y = "Midday Water Potential", color = "Species") +
+  scale_color_manual(values=c("#9D0208","#F48C06")) +
+  th
+
+ggarrange(field.plot1, field.plot2, field.plot3, ncol = 3, common.legend = TRUE)
+
+ggsave(here('figures', 'field.plots.jpg'), height = 4, width = 12)
 ```

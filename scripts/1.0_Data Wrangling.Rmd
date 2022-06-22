@@ -722,14 +722,14 @@ for(i in 1:length(mem.data.raw$mpa)) {
   else{mem.data.raw$mpa[i] <- mem.data.raw$mpa[i]}
 }
 
-clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'fd', 'temp.max','flam.index', 'precip.2mo', 'prop.ignite.bins5_nodate', 'prop.ignite.bins10_nodate')]
+clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'fd', 'gti', 'pfg', 'temp.max','flam.index', 'precip.2mo', 'prop.ignite.bins5_nodate', 'prop.ignite.bins10_nodate')]
 ```
 
 ```{r}
 seg.data.subset <- clean.mem.data %>% 
   mutate(lfm = lfm.NAs.imputed, 
          id = individual) %>% 
- dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh, fd, year.month, prop.ignite.bins10_nodate, prop.ignite.bins5_nodate)
+ dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh, fd, gd, gti, pfg, year.month, prop.ignite.bins10_nodate, prop.ignite.bins5_nodate)
 
 seg.data.subset<-seg.data.subset[order(seg.data.subset$id),]
 
