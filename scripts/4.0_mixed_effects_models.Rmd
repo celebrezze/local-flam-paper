@@ -226,7 +226,7 @@ The Increased SE column in the output indicates how much larger the standard err
 
 ##### Models, multicolinearity check
 ```{r}
-mpa_mod_fig.mpa <- lmer(PC1 ~ mpa + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+mpa_mod_fig.mpa <- lmer(PC1 ~ mpa.unscaled + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(mpa_mod_fig.mpa)
 ```
@@ -342,11 +342,17 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
           show.icc = FALSE, 
           pred.labels = c('Intercept', 
                           'Water Potential (-Mpa)', 
-                          'C. megacarpus',
-                           'LFM (%)',
-                          'Water weight (g)', 
-                          'Dry weight (g)'), 
-         dv.labels = c("mppa_spp", 
+                          'Species Effect (C. megacarpus)',
+                          'Water Potential x Species Effect
+                          (interaction)',
+                          'LFM (%)',
+                          'Water Weight (g)', 
+                          'Dry Weight (g)',
+                          'Site Effect (Site 1)',
+                          'Excess Water (scaled)',
+                          'Excess Water x Species Effect
+                          (interaction)'),
+         dv.labels = c("mpa_spp", 
                        "m11", 
                        "m7", 
                        "m7",
@@ -372,11 +378,14 @@ tab_model(max_model, m7, mpa_mod_fig.mpa, max_model_nolfm, max_model_nompa, m12.
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c('Intercept', 
-                          'Water Potential (-Mpa)', 
-                          'C. megacarpus',
-                           'LFM (%)',
-                          'Water weight (g)', 
-                          'Dry weight (g)'), 
+                          'Species Effect (C. megacarpus)',
+                          'Dry Weight (g)',
+                          'Water Weight (g)',
+                          'Water Potential (scaled)',
+                          'LFM (%)',
+                          'Excess Water (scaled)',
+                          'Site Effect (Site 1)',
+                          'Water Potential (MPa, unscaled)'),
          dv.labels = c("max_model", 
                        "m7**", 
                        "mpa_spp**", 
