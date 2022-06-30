@@ -162,6 +162,13 @@ data.with.na.adfa <- data.with.na.adfa %>%
 data.with.na.new <- rbind(data.with.na.adfa, data.with.na.ceme)
 ```
 
+### Sample weight outliers
+```{r}
+data.with.na.new <- data.with.na.new %>% 
+  filter(sample.wt > 0.4 & sample.wt < 0.6) # filtering out outlier sample weights
+```
+
+
 # 2. Impute missing values
 
 ### LFM
@@ -704,16 +711,15 @@ write_csv(data.local, here("processed-data",  "local_flam_data_all.csv"))
 ```
 
 ------------------------------------------------------------------
-
-# 5. Script-Specific
-
+# 5. Analysis-Specific
 ## Segmented Regressions
 ```{r}
 mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
 
 mem.data.raw <- mem.data.alldates %>%
   mutate(year = as.factor(year)) %>%
-  mutate(month = as.factor(month))
+  mutate(month = as.factor(month)) %>% 
+  filter(sample.wt > 0.4 & sample.wt < 0.6) # filtering out outlier sample weights (sorry for redundancy in code)
 
 for(i in 1:length(mem.data.raw$mpa)) {
   if(mem.data.raw$mpa[i] > 0){
@@ -722,14 +728,14 @@ for(i in 1:length(mem.data.raw$mpa)) {
   else{mem.data.raw$mpa[i] <- mem.data.raw$mpa[i]}
 }
 
-clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'fd', 'gti', 'pfg', 'temp.max','flam.index', 'precip.2mo', 'prop.ignite.bins5_nodate', 'prop.ignite.bins10_nodate')]
+clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'year.month', 'individual', 'site','sample.wt', 'ww.flam.sample', 'start.temp',  'year', 'month', 'tti', 'fh', 'gd', 'fd', 'gti', 'pfg', 'ttfg', 'temp.max','flam.index', 'precip.2mo', 'prop.ignite.bins5_nodate', 'prop.ignite.bins10_nodate')]
 ```
 
 ```{r}
 seg.data.subset <- clean.mem.data %>% 
   mutate(lfm = lfm.NAs.imputed, 
          id = individual) %>% 
- dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh, fd, gd, gti, pfg, year.month, prop.ignite.bins10_nodate, prop.ignite.bins5_nodate)
+ dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh, fd, gd, gti, pfg, temp.max, year.month, prop.ignite.bins10_nodate, prop.ignite.bins5_nodate, ttfg)
 
 seg.data.subset<-seg.data.subset[order(seg.data.subset$id),]
 
@@ -751,8 +757,8 @@ mem.data.raw.alldates <- mem.data.alldates %>%
   mutate(lfm.unscaled = lfm)%>% 
   mutate(lfm.NAs.imputed.unscaled = lfm.NAs.imputed) %>% 
   mutate(excess_water.scaled = ww.flam.sample - dw.flam.sample) %>% 
-  mutate(excess_water.unscaled = excess_water.scaled)
- # mutate(lfm = lfm.NAs.imputed)
+  mutate(excess_water.unscaled = excess_water.scaled) %>% 
+  filter(sample.wt > 0.4 & sample.wt < 0.6) # filtering out outlier sample weights (sorry for redundancy in code)
 
 clean.mem.data.alldates <- mem.data.raw.alldates
   #na.omit() %>%
@@ -806,4 +812,3 @@ seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldate
 
 write.csv(seg.data.subset.alldates, here('processed-data', 'mem.data.subset.alldates'))
 ```
-

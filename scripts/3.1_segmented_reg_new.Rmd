@@ -17,6 +17,8 @@ library(nlme)
 library(lubridate)
 library(MetBrewer)
 library(lattice)
+library(gt)
+library(gtsummary)
 filter = dplyr::filter 
 here = here::here
 ```
@@ -215,7 +217,6 @@ segplot <- function(data, x, y, z, tlp_value, lwr, upr, lwr_seg, upr_seg) {
               alpha = .3, 
               color = "blue2") +
    th #theme!
-
 }
 ```
 
@@ -865,70 +866,6 @@ fit[complete.cases(rowSums(cbind(seg.adfa.subset$tti, seg.adfa.subset$mpa)))] <-
 segplot(seg.adfa.subset, mpa, tti, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa, lower, upper)
 ```
 
-####With random bps
-
-# NOTE: ERROR
-```{r}
-#Basis functions
-bp = 1
-b1 <- function(x, bp) ifelse(x < bp, bp - x, 0)
-b2 <- function(x, bp) ifelse(x < bp, 0, x - bp)
-
-#Wrapper for Mixed effects model with variable break point
-foo <- function(bp)
-{
-  # mod <- lmer(Reaction ~ b1(Days, bp) + b2(Days, bp) + (b1(Days, bp) + b2(Days, bp) | Subject), data = sleepstudy)
-  
-  mod <- lmer(PC1 ~ b1(mpa, bp) + b2(mpa, bp) +  spp + year.month + ((b1(mpa, bp) + b2(mpa, bp))| individual), data = scaled.mem.data.alldates.noNAs, REML=FALSE)
-  deviance(mod)
-}
-
-search.range <- c(min(scaled.mem.data.alldates.noNAs$mpa) + 0.5, max(scaled.mem.data.alldates.noNAs$mpa)-.5)
-foo.opt <- optimize(foo, interval = search.range)
-bp <- foo.opt$minimum
-bp
-
-##bp = 3.961
-
-#Plot with break point = 4
-xyplot(
-        tti ~ mpa | individual, scaled.mem.data.alldates.noNAs, aspect = "xy",
-        layout = c(6,3), 
-        type = c("g", "p", "r"),
-        xlab = "mpa",
-        ylab = "tti",
-        panel = function(x,y) {
-        panel.points(x,y)
-        panel.lmline(x,y)
-        pred <- predict(lm(y ~ b1(x, bp) + b2(x, bp)), newdata = data.frame(x = 0:9))
-            panel.lines(0:9, pred, lwd=1, lty=2, col="red")
-        }
-    )
-
-
-# search.range <- c(min(sleepstudy$Days)+0.5,max(sleepstudy$Days)-0.5)
-# foo.opt <- optimize(foo, interval = search.range)
-# bp <- foo.opt$minimum
-# bp
-# [1] 6.071932
-# mod <- lmer(Reaction ~ b1(Days, bp) + b2(Days, bp) + (b1(Days, bp) + b2(Days, bp) | Subject), data = sleepstudy)
-
-mod <- lmer(PC1 ~ b1(mpa, bp) + b2(mpa, bp) +  spp + year.month + ((b1(mpa, bp) + b2(mpa, bp))| individual), data = scaled.mem.data.alldates.noNAs, REML=FALSE)
-
-foo.root <- function(bp, tgt)
-{
-  foo(bp) - tgt
-}
-tgt <- foo.opt$objective + qchisq(0.95,1)
-
-# ERRORS popping up below. What is this?
-#lb95 <- uniroot(foo.root, lower=search.range[1], upper=bp, tgt=tgt)
-#ub95 <- uniroot(foo.root, lower=bp, upper=search.range[2], tgt=tgt)
-#lb95$root
-
-#ub95$root
-
-```
 
 ```{r}
 out.lm<-lm(tti ~ mpa, data = seg.adfa.subset.limited)
@@ -983,67 +920,6 @@ fit <- numeric(length(seg.ceme.subset$mpa)) * NA
 fit[complete.cases(rowSums(cbind(seg.ceme.subset$tti, seg.ceme.subset$mpa)))] <- broken.line(segmented.mod)$fit
 
 segplot(seg.ceme.subset, mpa, tti, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
-```
-
-####With random bps
-```{r}
-#Basis functions
-bp = 4
-b1 <- function(x, bp) ifelse(x < bp, bp - x, 0)
-b2 <- function(x, bp) ifelse(x < bp, 0, x - bp)
-
-#Wrapper for Mixed effects model with variable break point
-foo <- function(bp)
-{
-mod <- lmer(PC1 ~ b1(mpa, bp) + b2(mpa, bp) + year.month + ((b1(mpa, bp) + b2(mpa, bp))| id), data = seg.ceme.subset, REML=FALSE)
-
-  deviance(mod)
-}
-
-search.range <- c(min(seg.ceme.subset$mpa) + 0.5, max(seg.ceme.subset$mpa)-.5)
-foo.opt <- optimize(foo, interval = search.range)
-bp <- foo.opt$minimum
-bp
-
-##bp = 3.961
-
-#Plot with break point = 4
-xyplot(
-        tti ~ mpa | id, seg.ceme.subset, aspect = "xy",
-        layout = c(6,3), 
-        type = c("g", "p", "r"),
-        xlab = "mpa",
-        ylab = "tti",
-        panel = function(x,y) {
-        panel.points(x,y)
-        panel.lmline(x,y)
-        pred <- predict(lm(y ~ b1(x, bp) + b2(x, bp)), newdata = data.frame(x = 0:9))
-            panel.lines(0:9, pred, lwd=1, lty=2, col="red")
-        }
-    )
-
-
-# search.range <- c(min(sleepstudy$Days)+0.5,max(sleepstudy$Days)-0.5)
-# foo.opt <- optimize(foo, interval = search.range)
-# bp <- foo.opt$minimum
-# bp
-# [1] 6.071932
-# mod <- lmer(Reaction ~ b1(Days, bp) + b2(Days, bp) + (b1(Days, bp) + b2(Days, bp) | Subject), data = sleepstudy)
-
-mod <- lmer(PC1 ~ b1(mpa, bp) + b2(mpa, bp) + year.month + ((b1(mpa, bp) + b2(mpa, bp))| id), data = seg.ceme.subset, REML=FALSE)
-
-foo.root <- function(bp, tgt)
-{
-  foo(bp) - tgt
-}
-tgt <- foo.opt$objective + qchisq(0.95,1)
-
-#lb95 <- uniroot(foo.root, lower=search.range[1], upper=bp, tgt=tgt)
-#ub95 <- uniroot(foo.root, lower=bp, upper=search.range[2], tgt=tgt)
-#lb95$root
-
-#ub95$root
-
 ```
 
 
@@ -1218,66 +1094,6 @@ fit[complete.cases(rowSums(cbind(seg.adfa.subset$fd, seg.adfa.subset$mpa)))] <- 
 segplot(seg.adfa.subset, mpa, fd, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa, lower, upper)
 ```
 
-####With random bps
-```{r}
-#Basis functions
-bp = -3
-b1 <- function(x, bp) ifelse(x < bp, bp + x, 0)
-b2 <- function(x, bp) ifelse(x < bp, 0, x + bp)
-
-#Wrapper for Mixed effects model with variable break point
-foo <- function(bp)
-{
-  # mod <- lmer(Reaction ~ b1(Days, bp) + b2(Days, bp) + (b1(Days, bp) + b2(Days, bp) | Subject), data = sleepstudy)
-  
-  mod <- lmer(fd ~ b1(mpa, bp) + b2(mpa, bp) +  spp + year.month + ((b1(mpa, bp) + b2(mpa, bp))| individual), data = scaled.mem.data.alldates.noNAs, REML=FALSE)
-  deviance(mod)
-}
-
-search.range <- c(min(scaled.mem.data.alldates.noNAs$mpa) + 0.5, max(scaled.mem.data.alldates.noNAs$mpa)-.5)
-foo.opt <- optimize(foo, interval = search.range)
-bp <- foo.opt$minimum
-bp
-
-##bp = 3.961
-
-#Plot with break point = 4
-xyplot(
-        fd ~ mpa | individual, scaled.mem.data.alldates.noNAs, aspect = "xy",
-        layout = c(6,3), 
-        type = c("g", "p", "r"),
-        xlab = "mpa",
-        ylab = "fd",
-        panel = function(x,y) {
-        panel.points(x,y)
-        panel.lmline(x,y)
-        pred <- predict(lm(y ~ b1(x, bp) + b2(x, bp)), newdata = data.frame(x = 0:9))
-            panel.lines(0:9, pred, lwd=1, lty=2, col="red")
-        }
-    )
-
-
-# search.range <- c(min(sleepstudy$Days)+0.5,max(sleepstudy$Days)-0.5)
-# foo.opt <- optimize(foo, interval = search.range)
-# bp <- foo.opt$minimum
-# bp
-# [1] 6.071932
-# mod <- lmer(Reaction ~ b1(Days, bp) + b2(Days, bp) + (b1(Days, bp) + b2(Days, bp) | Subject), data = sleepstudy)
-
-mod <- lmer(fd ~ b1(mpa, bp) + b2(mpa, bp) +  spp + year.month + ((b1(mpa, bp) + b2(mpa, bp))| individual), data = scaled.mem.data.alldates.noNAs, REML=FALSE)
-
-foo.root <- function(bp, tgt)
-{
-  foo(bp) - tgt
-}
-tgt <- foo.opt$objective + qchisq(0.95,1)
-#lb95 <- uniroot(foo.root, lower=search.range[1], upper=bp, tgt=tgt)
-#ub95 <- uniroot(foo.root, lower=bp, upper=search.range[2], tgt=tgt)
-#lb95$root
-
-#ub95$root
-
-```
 
 ```{r}
 out.lm<-lm(fd ~ mpa, data = seg.adfa.subset.limited)
@@ -1333,68 +1149,6 @@ fit[complete.cases(rowSums(cbind(seg.ceme.subset$fd, seg.ceme.subset$mpa)))] <- 
 
 segplot(seg.ceme.subset, mpa, fd, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
 ```
-
-####With random bps
-# ERROR
-```{r}
-#Basis functions
-bp = 4
-b1 <- function(x, bp) ifelse(x < bp, bp - x, 0)
-b2 <- function(x, bp) ifelse(x < bp, 0, x - bp)
-
-#Wrapper for Mixed effects model with variable break point
-foo <- function(bp)
-{
-mod <- lmer(PC1 ~ b1(mpa, bp) + b2(mpa, bp) +  spp + year.month + ((b1(mpa, bp) + b2(mpa, bp))| id), data = seg.ceme.subset, REML=FALSE)
-
-  deviance(mod)
-}
-
-search.range <- c(min(seg.ceme.subset$mpa) + 0.5, max(seg.ceme.subset$mpa)-.5)
-foo.opt <- optimize(foo, interval = search.range)
-bp <- foo.opt$minimum
-bp
-
-##bp = 3.961
-
-#Plot with break point = 4
-xyplot(
-        fd ~ mpa | id, seg.ceme.subset, aspect = "xy",
-        layout = c(6,3), 
-        type = c("g", "p", "r"),
-        xlab = "mpa",
-        ylab = "fd",
-        panel = function(x,y) {
-        panel.points(x,y)
-        panel.lmline(x,y)
-        pred <- predict(lm(y ~ b1(x, bp) + b2(x, bp)), newdata = data.frame(x = 0:9))
-            panel.lines(0:9, pred, lwd=1, lty=2, col="red")
-        }
-    )
-
-
-# search.range <- c(min(sleepstudy$Days)+0.5,max(sleepstudy$Days)-0.5)
-# foo.opt <- optimize(foo, interval = search.range)
-# bp <- foo.opt$minimum
-# bp
-# [1] 6.071932
-# mod <- lmer(Reaction ~ b1(Days, bp) + b2(Days, bp) + (b1(Days, bp) + b2(Days, bp) | Subject), data = sleepstudy)
-
-mod <- lmer(PC1 ~ b1(mpa, bp) + b2(mpa, bp) +  spp + year.month + ((b1(mpa, bp) + b2(mpa, bp))| id), data = seg.ceme.subset, REML=FALSE)
-
-foo.root <- function(bp, tgt)
-{
-  foo(bp) - tgt
-}
-tgt <- foo.opt$objective + qchisq(0.95,1)
-#lb95 <- uniroot(foo.root, lower=search.range[1], upper=bp, tgt=tgt)
-#ub95 <- uniroot(foo.root, lower=bp, upper=search.range[2], tgt=tgt)
-#lb95$root
-
-#ub95$root
-
-```
-
 
 Remove non-realistic LFMS
 ```{r}
@@ -1952,7 +1706,7 @@ upper
 
 fit <- numeric(length(seg.ceme.subset$lfm)) * NA
 
-fit[complete.cases(rowSums(cbind(seg.ceme.subset$gti, seg.ceme.subset.gti$lfm)))] <- broken.line(segmented.mod)$fit
+fit[complete.cases(rowSums(cbind(seg.ceme.subset$gti, seg.ceme.subset$lfm)))] <- broken.line(segmented.mod)$fit
 
 segplot(seg.ceme.subset, lfm, gti, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
 ```
@@ -2094,16 +1848,242 @@ segplot(seg.ceme.subset.limited, lfm, pfg, fit, mean_lfm_ceme, lwr_lfm_ceme, upr
 
 ```
 
+# Max. Temp.
+### ADFA
+```{r}
+out.lm<-lm(temp.max ~ lfm, data = seg.adfa.subset)
+davies.test(out.lm, k = 50)
+# result: insignificant
+
+#the simplest example: the starting model includes just 1 covariate
+#.. and 1 breakpoint has to be estimated for that
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset$temp.max, seg.adfa.subset$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset, lfm, temp.max, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
+```
+
+```{r}
+out.lm<-lm(temp.max ~ lfm, data = seg.adfa.subset.limited)
+davies.test(out.lm, k = 50)
+# Result: insignificant
+
+#the simplest example: the starting model includes just 1 covariate
+#.. and 1 breakpoint has to be estimated for that
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset.limited$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset.limited$temp.max, seg.adfa.subset.limited$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset.limited, lfm, temp.max, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
+```
+
+### CEME
+```{r}
+out.lm <- lm(temp.max ~ lfm, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+#Result: significant (p = 0.000395)
+
+#the simplest example: the starting model includes just 1 covariate
+#.. and 1 breakpoint has to be estimated for that
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset$temp.max, seg.ceme.subset$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset, lfm, temp.max, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+```
+
+```{r}
+out.lm<-lm(temp.max ~ lfm, data = seg.ceme.subset.limited)
+davies.test(out.lm, k = 50)
+# Result: insignificant 
+
+#the simplest example: the starting model includes just 1 covariate
+#.. and 1 breakpoint has to be estimated for that
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset.limited$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset.limited$temp.max, seg.ceme.subset.limited$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset.limited, lfm, temp.max, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+
+```
+
+# TTFG
+### Removing unrealistic value
+For time to first glow, there is one strange value remaining where it probably didn't glow or didn't ignite (ttfg = 490)
+```{r}
+seg.adfa.subset <- seg.adfa.subset %>% 
+  filter(ttfg < 300)
+
+seg.adfa.subset.limited <- seg.adfa.subset.limited %>% 
+  filter(ttfg < 300)
+```
+
+### ADFA
+```{r}
+out.lm<-lm(ttfg ~ lfm, data = seg.adfa.subset)
+davies.test(out.lm, k = 50)
+# result: insignificant
+
+#the simplest example: the starting model includes just 1 covariate
+#.. and 1 breakpoint has to be estimated for that
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset$ttfg, seg.adfa.subset$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset, lfm, ttfg, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
+```
+
+```{r}
+out.lm<-lm(ttfg ~ lfm, data = seg.adfa.subset.limited)
+davies.test(out.lm, k = 50)
+# Result: insignificant
+
+#the simplest example: the starting model includes just 1 covariate
+#.. and 1 breakpoint has to be estimated for that
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset.limited$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset.limited$ttfg, seg.adfa.subset.limited$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset.limited, lfm, ttfg, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
+```
+
+### CEME
+```{r}
+out.lm <- lm(ttfg ~ lfm, data = seg.ceme.subset)
+davies.test(out.lm, k = 50)
+#Result: significant (p = 0.005595)
+
+#the simplest example: the starting model includes just 1 covariate
+#.. and 1 breakpoint has to be estimated for that
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset$ttfg, seg.ceme.subset$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset, lfm, ttfg, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+```
+
+```{r}
+out.lm<-lm(ttfg ~ lfm, data = seg.ceme.subset.limited)
+davies.test(out.lm, k = 50)
+# Result: insignificant 
+
+#the simplest example: the starting model includes just 1 covariate
+#.. and 1 breakpoint has to be estimated for that
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset.limited$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset.limited$ttfg, seg.ceme.subset.limited$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset.limited, lfm, ttfg, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+
+```
+
 #-----------------------------------
 # Visualizing distribution of identified thresholds
 
 Making dataframe
 ```{r}
-lfm.thresholds <- c(109.32, NA, 131.08, 71.523, 83.981, 85.741, 30.825, 98.265, 30.825, 96.118, NA, 84.143, 79.555, NA, 119.38, NA, NA, NA, NA, NA, 79.555, NA, 56.968, 74.711, NA, 106.85, NA, NA)
+lfm.thresholds <- c(109.32, NA, 131.08, 71.523, 83.981, 85.741, 30.825, 98.265, 30.825, 96.118, NA, 84.143, 79.555, NA, 119.38, NA, NA, NA, NA, NA, 79.555, NA, 56.968, 74.711, NA, 106.85, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 65.876, NA, NA, NA, 103.01, NA)
 
-spp.thresholds <- c("ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)",  "ADFA", "ADFA (limited)", "CEME", "CEME (limited)","ADFA", "ADFA (limited)", "CEME", "CEME (limited)",  "ADFA", "ADFA (limited)", "CEME", "CEME (limited)")
+spp.thresholds <- c("ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)",  "ADFA", "ADFA (limited)", "CEME", "CEME (limited)","ADFA", "ADFA (limited)", "CEME", "CEME (limited)",  "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)")
 
-metrics.thresholds <- c(rep("PC1", 4), rep("prop.ignite.10", 4), rep("prop.ignite.5", 4), rep("TTI", 4), rep("FD", 4), rep("FH", 4), rep("GD", 4))
+metrics.thresholds <- c(rep("PC1", 4), rep("prop.ignite.10", 4), rep("prop.ignite.5", 4), rep("TTI", 4), rep("FD", 4), rep("FH", 4), rep("GD", 4), rep("GTI", 4), rep("PFG", 4), rep("temp.max", 4), rep("TTFG", 4))
 
 threshold.df <- data.frame(lfm.thresholds, spp.thresholds, metrics.thresholds)
 
@@ -2123,10 +2103,16 @@ threshold.df %>%
     annotate("text", x = 3, y = 140, label = "n = 3") +
     annotate("text", x = 4, y = 140, label = "n = 4") +
     annotate("text", x = 5, y = 140, label = "n = 3") +
-    annotate("text", x = 6, y = 140, label = "n = 2") +
+    annotate("text", x = 6, y = 140, label = "n = 1") +
+    annotate("text", x = 7, y = 140, label = "n = 1") +
+    annotate("text", x = 8, y = 140, label = "n = 2") +
     labs(x = "Metric", y = "Threshold (LFM)") +
     th
 
 summary(threshold.df)
+
+threshold.df %>% 
+  filter(species == "CEME" | species == "CEME (limited)") %>% 
+  summary()
 ```
 
