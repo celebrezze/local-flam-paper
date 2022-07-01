@@ -251,7 +251,7 @@ season_plot <- precip_groups_ranis  %>%
               labeller = labeller(spp = spp.labs),
              scales = "free" ) +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
-  theme(legend.position = "bottom", 
+  theme(legend.position = "top", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
         strip.text = element_text(face = "italic", size = 12),

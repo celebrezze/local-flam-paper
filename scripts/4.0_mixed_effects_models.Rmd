@@ -341,7 +341,7 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c('Intercept', 
-                          'Water Potential (-Mpa)', 
+                          'Water Potential (scaled)', 
                           'Species Effect (C. megacarpus)',
                           'Water Potential x Species Effect
                           (interaction)',
@@ -401,6 +401,28 @@ tab_model(max_model, m7, mpa_mod_fig.mpa, max_model_nolfm, max_model_nompa, m12.
 ```
 
 The intra-class correlation coefficient (ICC) is a related statistic that quantifies the proportion of variance explained by a grouping (random) factor in multilevel/hierarchical data.
+
+##### kableExtra Table
+First, making dataframe with fixed effects, water estimate, species estimate, AIC, marginal and conditional R2 values, and deltaAIC (for barebones models with only one water-related fixed effect:
+```{r}
+fix.fx <- c("Species & Water Potential", "Species & LFM", "Species & Dry Weight", "Species & Wet Weight")
+est1 <- c('-0.121***', '-0.084', '0.072','-0.061')
+est2 <- c('-1.112***', '-1.035***', '-0.072***', '-0.061***')
+aic.values <- c(1682.036, 1703.207, 1703.476, 1703.673)
+r2.values <- c('0.189/0.196', '0.145/0.161', '0.145/0.163', '0.144/0.161')
+d.aic <- c(0, 21.171, 21.44, 21.637)
+mem.table.df <- data.frame(fix.fx, est1, est2, aic.values, r2.values, d.aic)
+```
+there was probably a more elegant way to do that (just like PCA table), but since there aren't too many numbers to enter in by hand, I thought it would be quicker to just go ahead and do so.
+
+Now, using kableExtra package to visualize how each component is weighted by each flam. metric
+```{r}
+mem.table.df %>%
+  kable(format = 'html', escape = F, col.names = c('Model Fixed Effects', 'Water Estimate', 'Species Estimate', 'AIC', expression('Marginal R2/Conditional R2'), 'Change in AIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  save_kable(here('figures', 'mem_table_kable.html'))
+```
+
 
 ## 2.0.3 Other figures
 ### Predicted vs. Observed PC1

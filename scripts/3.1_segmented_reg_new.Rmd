@@ -2114,6 +2114,7 @@ summary(threshold.df)
 
 threshold.df %>% 
   filter(species == "CEME" | species == "CEME (limited)") %>% 
+  filter(metric == "prop.ignite.10" | metric == "prop.ignite.5" | metric == "TTI" | metric == "PC1") %>% 
   summary()
 ```
 
