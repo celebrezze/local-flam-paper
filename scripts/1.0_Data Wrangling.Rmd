@@ -735,7 +735,7 @@ clean.mem.data <- mem.data.raw[,c('PC1', 'PC2', 'PC3', 'PC4', 'spp', 'lfm.NAs.im
 seg.data.subset <- clean.mem.data %>% 
   mutate(lfm = lfm.NAs.imputed, 
          id = individual) %>% 
- dplyr::select(id, PC1, PC2, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh, fd, gd, gti, pfg, temp.max, year.month, prop.ignite.bins10_nodate, prop.ignite.bins5_nodate, ttfg)
+ dplyr::select(id, PC1, PC2, PC3, mpa, lfm, ww.flam.sample, dw.flam.sample, spp, tti, fh, fd, gd, gti, pfg, temp.max, year.month, prop.ignite.bins10_nodate, prop.ignite.bins5_nodate, ttfg)
 
 seg.data.subset<-seg.data.subset[order(seg.data.subset$id),]
 
@@ -761,8 +761,6 @@ mem.data.raw.alldates <- mem.data.alldates %>%
   filter(sample.wt > 0.4 & sample.wt < 0.6) # filtering out outlier sample weights (sorry for redundancy in code)
 
 clean.mem.data.alldates <- mem.data.raw.alldates
-  #na.omit() %>%
-  #filter(year.month == "2020_September")
 
 #Parsing out the variables of interest for the mixed effects modelling
 
