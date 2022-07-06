@@ -742,11 +742,10 @@ write_csv(seg.data.subset, here("processed-data", "seg.reg.data.local.csv"))
 ```
 
 ## Mixed Effects Models
-All dates datasets
-```{r, message=FALSE, warning=FALSE, include=FALSE}
+```{r}
 mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
 
-mem.data.raw.alldates <- mem.data.alldates %>%
+clean.mem.data.alldates <- mem.data.alldates %>%
   mutate(mpa = case_when(
     mpa > 0 ~ (-1*mpa), 
     mpa < 0 ~ mpa)) %>% 
@@ -759,21 +758,21 @@ mem.data.raw.alldates <- mem.data.alldates %>%
   mutate(excess_water.unscaled = excess_water.scaled) %>% 
   filter(sample.wt > 0.4 & sample.wt < 0.6) # filtering out outlier sample weights (sorry for redundancy in code)
 
-clean.mem.data.alldates <- mem.data.raw.alldates
-
-#Parsing out the variables of interest for the mixed effects modelling
-
-clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd', 'temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")] 
+#Parsing out the variables of interest for the mixed effects modeling
+clean.mem.data.dependant.alldates <- clean.mem.data.alldates %>% 
+  dplyr::select(c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd', 'temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition"))
  
 scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
   filter(spp == "ADFA") %>% 
-  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
- scale()
+  dplyr::select(lfm.NAs.imputed, lfm.outliers.out, mpa, dw.flam.sample, 
+                sample.wt, ww.flam.sample, lfm, excess_water.scaled) %>%
+  scale()
   
 scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
   filter(spp == "CEME") %>% 
-  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
- scale()
+  dplyr::select(lfm.NAs.imputed, lfm.outliers.out, mpa, dw.flam.sample, 
+                sample.wt, ww.flam.sample, lfm, excess_water.scaled) %>% 
+  scale()
   
 scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
 
@@ -799,13 +798,88 @@ scaled.mem.data.alldates <- scaled.mem.data.alldates %>%
     year.month == "2020_September" ~ "Sept. 2020"
   ))
 
-scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
-  drop_na(mpa, lfm, PC1)
+#scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
+  #drop_na(mpa, lfm, PC1)
 
 seg.data.subset.alldates <- scaled.mem.data.alldates.noNAs %>% 
   mutate(id = individual) 
 
-seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldates$id),]
+#seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldates$id),]
+```
+
+All dates datasets
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
+
+mem.data.raw.alldates <- mem.data.alldates %>%
+  mutate(mpa = case_when(
+    mpa > 0 ~ (-1*mpa), 
+    mpa < 0 ~ mpa)) %>% 
+  mutate(year = as.factor(year)) %>%
+  mutate(month = as.factor(month)) %>% 
+  mutate(mpa.unscaled = mpa) %>% 
+  mutate(lfm.unscaled = lfm)%>% 
+  mutate(lfm.NAs.imputed.unscaled = lfm.NAs.imputed) %>% 
+  mutate(excess_water.scaled = ww.flam.sample - dw.flam.sample) %>% 
+  mutate(excess_water.unscaled = excess_water.scaled) %>% 
+  filter(sample.wt > 0.4 & sample.wt < 0.6) # filtering out outlier sample weights (sorry for redundancy in code)
+
+clean.mem.data.alldates <- mem.data.raw.alldates
+
+#Parsing out the variables of interest for the mixed effects modelling
+
+clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd', 'temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")] 
+ 
+scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
+  filter(spp == "ADFA") %>% 
+  dplyr::select(lfm.NAs.imputed, lfm.outliers.out, mpa, dw.flam.sample, 
+                sample.wt, ww.flam.sample, lfm, excess_water.scaled) %>%
+  scale()
+  
+scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
+  filter(spp == "CEME") %>% 
+  dplyr::select(lfm.NAs.imputed, lfm.outliers.out, mpa, dw.flam.sample, 
+                sample.wt, ww.flam.sample, lfm, excess_water.scaled) %>% 
+  scale()
+  
+scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
+
+mem.data.predictors.alldates <- clean.mem.data.alldates %>%
+    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled') 
+
+scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates, 
+                         mem.data.predictors.alldates,
+                         clean.mem.data.dependant.alldates) 
+
+#For sept. 2020 only: 
+scaled.mem.data.alldates <- scaled.mem.data.alldates %>% 
+  mutate(Species = case_when(
+    spp == "ADFA" ~ "A. fasciculatum", 
+    spp == "CEME" ~ "C. megacarpus"
+  )) %>% 
+  mutate(id = individual)  %>% 
+  mutate(timing = case_when(
+    year.month == "2016_December" ~ "Dec. 2016", 
+    year.month == "2019_December" ~ "Dec. 2019",
+    year.month == "2018_January" ~ "Jan. 2018",
+    year.month == "2020_January" ~ "Jan. 2020",
+    year.month == "2020_September" ~ "Sept. 2020"
+  ))
+
+#scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
+  #drop_na(mpa, lfm, PC1)
+
+seg.data.subset.alldates <- scaled.mem.data.alldates.noNAs %>% 
+  mutate(id = individual) 
+
+#seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldates$id),]
 
 write.csv(seg.data.subset.alldates, here('processed-data', 'mem.data.subset.alldates'))
 ```
+
+```{r}
+scaled.mem.data.predictors.alldates.ceme %>% 
+  ggplot(aes(x = mpa, y = mpa.unscaled)) +
+  geom_point()
+```
+
