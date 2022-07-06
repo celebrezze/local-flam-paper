@@ -231,7 +231,6 @@ mpa_mod_fig.mpa <- lmer(PC1 ~ mpa.unscaled + spp + site + (1 | individual), data
 performance::multicollinearity(mpa_mod_fig.mpa)
 ```
 
-
 ```{r}
 max_model <- lmer(PC1 ~ spp + dw.flam.sample + ww.flam.sample + mpa + lfm.NAs.imputed + excess_water.scaled + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
