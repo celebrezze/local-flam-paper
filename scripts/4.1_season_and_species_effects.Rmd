@@ -214,12 +214,6 @@ precip_mod <- lmer(PC1 ~ mpa.unscaled + Species + season + (1 | individual), dat
 
 summary(precip_mod)
 
-#remove fixed effect of year.month
-#     see what names are associated: 
-# terms <- term2coef(precip_mod, "season") %>% 
-#   list()
-# terms
-
 r1_1 <- remef(precip_mod ,  ran = "all")
 #summary(r1_1)
 
@@ -228,9 +222,15 @@ r1_1 <- remef(precip_mod ,  ran = "all")
 scaled_r1_1_df <- as.data.frame(r1_1)
 precip_groups_ranis <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
 ```
+
+## NOTE: How do we include r1_1 in figure?
+
 ## 2.0.1 Main Figure
+
+### PC1
+Ignitability + combustibility proxy (used as 'flammability' proxy)
 ```{r}
-season_plot <- precip_groups_ranis  %>%
+season_plot.pc1 <- precip_groups_ranis  %>%
   ggplot(aes(y = PC1, 
              x = mpa.unscaled,
              fill = season,
@@ -246,7 +246,7 @@ season_plot <- precip_groups_ranis  %>%
        y = "Flammability Proxy", 
        fill = "Season",
        color = "Season") +
-  scale_y_continuous(limits=c(-5,6), breaks=c(-5,-2.5,0,2.5,5)) +
+  scale_y_continuous(limits=c(-5,6.25), breaks=c(-5,-2.5,0,2.5,5)) +
   th +
   facet_wrap(~spp,
               labeller = labeller(spp = spp.labs),
@@ -256,20 +256,97 @@ season_plot <- precip_groups_ranis  %>%
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
         strip.text = element_text(face = "italic", size = 12),
+        axis.title.y = element_text(face = 'bold'),
+        axis.title.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+         
+season_plot.pc1
+```
+
+### PC2
+Consumability proxy
+```{r}
+season_plot.pc2 <- precip_groups_ranis  %>%
+  ggplot(aes(y = PC2, 
+             x = mpa.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .5, aes(color = season)) +
+  geom_smooth(method = lm, 
+              se = TRUE, 
+              aes(fill = season),
+              show.legend = FALSE) +
+  ggpubr::stat_regline_equation(show.legend = FALSE) +
+  labs(x = "Water Potential (-MPa)", 
+       y = "Consumability Proxy", 
+       fill = "Season",
+       color = "Season") +
+  scale_y_continuous(limits=c(-5,5), breaks=c(-5,-2.5,0,2.5,5)) +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 12),
         axis.title = element_text(face = 'bold')) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
          
-season_plot
+season_plot.pc2
+```
+
+Both PC1 and PC2
+```{r}
+season_plot.both <- cowplot::plot_grid(season_plot.pc1, season_plot.pc2, nrow = 2)
+
+season_plot.both
 
 ggsave(here("figures", "season_plot.jpg"),
-       plot = season_plot, 
-       width = 6, height = 4, dpi = 300)
+       plot = season_plot.both, 
+       width = 6, height = 8, dpi = 300)
 ```
-Significant? 
+
+
+### Significance Tests
 ```{r}
+# Is species significant predictor of PC1?
 precip_mod <- lmer(PC1 ~ mpa.unscaled + Species*season + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 summary(precip_mod)
+# Yes
+
+# For CEME?
+scaled.mem.data.alldates.noNAs.ceme <- scaled.mem.data.alldates.noNAs %>%
+  filter(spp == "CEME")
+precip_mod.ceme <- lmer(PC1 ~ mpa.unscaled + season + (1 | individual), data = scaled.mem.data.alldates.noNAs.ceme)
+summary(precip_mod.ceme)
+# Yes
+
+# For ADFA?
+scaled.mem.data.alldates.noNAs.adfa <- scaled.mem.data.alldates.noNAs %>%
+  filter(spp == "ADFA")
+precip_mod.adfa <- lmer(PC1 ~ mpa.unscaled + season + (1 | individual), data = scaled.mem.data.alldates.noNAs.adfa)
+summary(precip_mod.adfa)
+# Yes
+
+# Is species significant predictor of PC1?
+precip_mod2 <- lmer(PC2 ~ mpa.unscaled + Species*season + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+summary(precip_mod2)
+# Yes
+
+# For CEME?
+precip_mod.ceme2 <- lmer(PC2 ~ mpa.unscaled + season + (1 | individual), data = scaled.mem.data.alldates.noNAs.ceme)
+summary(precip_mod.ceme2)
+# Yes
+
+# For ADFA?
+precip_mod.adfa2 <- lmer(PC2 ~ mpa.unscaled + season + (1 | individual), data = scaled.mem.data.alldates.noNAs.adfa)
+summary(precip_mod.adfa2)
+# Yes
 ```
 
 ## MPa vs PC1
