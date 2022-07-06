@@ -208,6 +208,36 @@ fit[complete.cases(rowSums(cbind(seg.adfa.subset$PC1, seg.adfa.subset$lfm)))] <-
 segplot(seg.adfa.subset, lfm, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper, color = year.month)
 ```
 
+#### ADFA, 2020 only
+```{r}
+seg.adfa.subset <- seg.adfa.subset %>% 
+  filter(lfm < 150) %>% 
+  filter(year.month == "2020_September")
+
+out.lm<-lm(PC1 ~ lfm + site, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
+# Result: insignificant (p = 0.0888)
+
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for lfm
+segmented.mod
+summary(segmented.mod)
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset$PC1, seg.adfa.subset$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset, lfm, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper, color = year.month)
+```
+
 #### CEME
 
 ```{r}
@@ -239,6 +269,37 @@ fit[complete.cases(rowSums(cbind(seg.ceme.subset$PC1, seg.ceme.subset$lfm)))] <-
 segplot(seg.ceme.subset, lfm, PC1, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper, color = year.month)
 ```
  
+##CEME 2020 only 
+```{r}
+seg.ceme.subset <- seg.ceme.subset %>% 
+  filter(lfm < 300) %>% 
+  filter(year.month == "2020_September")
+
+out.lm<-lm(PC1 ~ lfm + site, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
+# Result: marginally insignificant (p = 0.05644)
+
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
+segmented.mod
+summary(segmented.mod)
+
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset$PC1, seg.ceme.subset$lfm)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset, lfm, PC1, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper, color = year.month)
+```
+
 # PC2
 
 #### ADFA
