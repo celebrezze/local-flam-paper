@@ -150,42 +150,10 @@ Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db
 ```
 
 
-# Functions
-
-```{r, eval=F}
-seg.setup <- function(x, y, df) {
-  #out.lm<-lm({{y}}~{{x}}, data = data
-  x <- enquo(x)
-  y <- enquo(y)
-  
-#out.lm<-lm(paste(y, "~", x), data = df)
-
-out.lm<-lm(y ~ x, data = df)
-
-segmented.mod <- segmented(out.lm) #1 breakpoint for x
-segmented.mod
-
-confint <- confint(segmented.mod) #CI of breakpoints
-confint
-
-lower <- confint[2] #lower bound
-lower
-
-upper <- confint[3] #upper bound
-upper
-
-fit <- numeric(length(df$x)) * NA
-
-fit[complete.cases(rowSums(cbind(y, x)))] <- broken.line(segmented.mod)$fit
-
-}
-
-#seg.setup(lfm, PC1, seg.ceme.subset)
-```
-
+# Segmented Regression Visualization Function
 ```{r}
-segplot <- function(data, x, y, z, tlp_value, lwr, upr, lwr_seg, upr_seg) {
-  ggplot(data, aes({{x}}, {{y}})) +
+segplot <- function(data, x, y, z, tlp_value, lwr, upr, lwr_seg, upr_seg, color = NULL) {
+  ggplot(data, aes({{x}}, {{y}}, color = {{color}})) +
   geom_point()+
   geom_line(aes({{x}}, {{z}}), #segmented line
             color = "blue2") +
@@ -216,14 +184,13 @@ segplot <- function(data, x, y, z, tlp_value, lwr, upr, lwr_seg, upr_seg) {
 seg.adfa.subset <- seg.adfa.subset %>% 
   filter(lfm < 150)
 
-out.lm<-lm(PC1 ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
-# Result: significant (p = 0.02517)
+out.lm<-lm(PC1 ~ lfm + year.month + site, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
+# Result: insignificant (p = 0.0888)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for lfm
 segmented.mod
+summary(segmented.mod)
 
 confint <- confint(segmented.mod)
 confint
@@ -238,7 +205,7 @@ fit <- numeric(length(seg.adfa.subset$lfm)) * NA
 
 fit[complete.cases(rowSums(cbind(seg.adfa.subset$PC1, seg.adfa.subset$lfm)))] <- broken.line(segmented.mod)$fit
 
-segplot(seg.adfa.subset, lfm, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
+segplot(seg.adfa.subset, lfm, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper, color = year.month)
 ```
 
 #### CEME
@@ -247,13 +214,11 @@ segplot(seg.adfa.subset, lfm, PC1, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adf
 seg.ceme.subset <- seg.ceme.subset %>% 
   filter(lfm < 300)
 
-out.lm<-lm(PC1 ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
-# Result: marginally significant (p = 0.04844)
+out.lm<-lm(PC1 ~ lfm + site + year.month, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
+# Result: marginally insignificant (p = 0.05644)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
 
@@ -271,74 +236,18 @@ fit <- numeric(length(seg.ceme.subset$lfm)) * NA
 
 fit[complete.cases(rowSums(cbind(seg.ceme.subset$PC1, seg.ceme.subset$lfm)))] <- broken.line(segmented.mod)$fit
 
-segplot(seg.ceme.subset, lfm, PC1, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+segplot(seg.ceme.subset, lfm, PC1, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper, color = year.month)
 ```
  
-
-
-```{r}
-out.lm<-lm(PC1 ~ mpa, data = seg.adfa.subset.limited)
-davies.test(out.lm, k = 50)
-#Result: insignificant (p = 0.5455)
-
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
-segmented.mod
-
-confint <- confint(segmented.mod)
-confint
-
-lower <- confint[2]
-lower
-
-upper <- confint[3]
-upper
-
-fit <- numeric(length(seg.adfa.subset.limited$mpa)) * NA
-
-fit[complete.cases(rowSums(cbind(seg.adfa.subset.limited$PC1, seg.adfa.subset.limited$mpa)))] <- broken.line(segmented.mod)$fit
-
-segplot(seg.adfa.subset.limited, mpa, PC1, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa, lower, upper)
-
-```
- 
-```{r}
-out.lm<-lm(PC1 ~ mpa, data = seg.ceme.subset.limited)
-davies.test(out.lm, k = 50)
-#Result: P = 1?!
-
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
-segmented.mod
-
-confint <- confint(segmented.mod)
-confint
-
-lower <- confint[2]
-lower
-
-upper <- confint[3]
-upper
-
-fit <- numeric(length(seg.ceme.subset.limited$mpa)) * NA
-
-fit[complete.cases(rowSums(cbind(seg.ceme.subset.limited$PC1, seg.ceme.subset.limited$mpa)))] <- broken.line(segmented.mod)$fit
-
-segplot(seg.ceme.subset.limited, mpa, PC1, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
-```
 # PC2
 
 #### ADFA
 ```{r}
 out.lm<-lm(PC2 ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
-# Result: insignificant (p = 0.178)
+davies.test(out.lm, ~lfm, k = 50)
+# Result: significant (p = 0.0142)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
 
 confint <- confint(segmented.mod)
@@ -360,13 +269,11 @@ segplot(seg.adfa.subset, lfm, PC2, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adf
 #### CEME
 
 ```{r}
-out.lm<-lm(PC2 ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
-# Result: significant (p = 0.01212)
+out.lm<-lm(PC2 ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
+# Result: significant (p = 0.02631)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
 
@@ -391,12 +298,10 @@ segplot(seg.ceme.subset, lfm, PC2, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_cem
 
 #### ADFA
 ```{r}
-out.lm<-lm(PC3 ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(PC3 ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
 # Result: significant (p = 0.0303)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -418,12 +323,10 @@ segplot(seg.adfa.subset, lfm, PC3, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adf
 
 #### CEME
 ```{r}
-out.lm<-lm(PC3 ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(PC3 ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 # Result: significant (p = 0.01461)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
@@ -448,20 +351,18 @@ segplot(seg.ceme.subset, lfm, PC3, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_cem
 # Prop. Ignited (10% Bins)
 ## ADFA
 ```{r}
-out.lm<-lm(prop.ignite.bins10_nodate ~ lfm, data = seg.adfa.subset) 
-davies.test(out.lm, k = 50)
+out.lm<-lm(prop.ignite.bins10_nodate ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset) 
+davies.test(out.lm, ~lfm, k = 50)
 # Highly significant (p < 0.00005)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
 
 confint(segmented.mod)
 
 fit <- numeric(length(seg.adfa.subset$lfm)) * NA
 
-fit[complete.cases(rowSums(cbind(seg.adfa.subset$prop.ignite.bins5_nodate, seg.adfa.subset$lfm)))] <- broken.line(segmented.mod)$fit
+fit[complete.cases(rowSums(cbind(seg.adfa.subset$prop.ignite.bins10_nodate, seg.adfa.subset$lfm)))] <- broken.line(segmented.mod)$fit
 
 confint <- confint(segmented.mod)
 confint
@@ -472,17 +373,15 @@ lower
 upper <- confint[3]
 upper
 
-segplot(seg.adfa.subset, lfm, prop.ignite.bins5_nodate, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+segplot(seg.adfa.subset, lfm, prop.ignite.bins10_nodate, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
 ```
 
 ## CEME
 ```{r}
-out.lm<-lm(prop.ignite.bins10_nodate ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(prop.ignite.bins10_nodate ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: marginally significant (p = 0.04587)
-
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
+ 
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
@@ -503,18 +402,84 @@ fit[complete.cases(rowSums(cbind(seg.ceme.subset$prop.ignite.bins10_nodate, seg.
 segplot(seg.ceme.subset, lfm, prop.ignite.bins10_nodate, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
 ```
 
+# *** Prop. Ignited (10% Bins)
+***: one point per bin
+
+### ADFA
+```{r}
+prop.ignite.df.adfa <- seg.adfa.subset %>% 
+  filter(sample.wt == 0.5210 | sample.wt == 0.4984 & tti == 25| sample.wt == 0.4913 | sample.wt == 0.4799 & tti == 43| sample.wt == 0.5079 | sample.wt == 0.5518 | sample.wt == 0.4862 | sample.wt == 0.5344 | sample.wt == 0.5240 & tti == 20)
+```
+
+```{r}
+out.lm<-lm(prop.ignite.bins10_nodate ~ lfm, data = prop.ignite.df.adfa) 
+davies.test(out.lm, ~lfm, k = 50)
+# Highly significant (p < 0.00005)
+
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
+segmented.mod
+
+confint(segmented.mod)
+
+fit <- numeric(length(prop.ignite.df.adfa$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(prop.ignite.df.adfa$prop.ignite.bins10_nodate, prop.ignite.df.adfa$lfm)))] <- broken.line(segmented.mod)$fit
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+segplot(prop.ignite.df.adfa, lfm, prop.ignite.bins10_nodate, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+```
+
+### CEME
+```{r}
+prop.ignite.df.ceme <- seg.ceme.subset %>% 
+  filter(sample.wt == 0.5793 | sample.wt == 0.4870 & tti == 32| sample.wt == 0.5347 | sample.wt == 0.4488 & tti == 49| sample.wt == 0.5266 | sample.wt == 0.5246 | sample.wt == 0.5478 | sample.wt == 0.4908 | sample.wt == 0.4924 & tti == 56 | sample.wt == 0.5940 & tti == 43 | sample.wt == 0.5138 & tti == 40 | sample.wt == 0.4620 & tti == 49 | sample.wt == 0.5320 & tti == 49 | sample.wt == 0.5340 & tti == 52 | sample.wt == 0.5739 & tti == 33 | sample.wt == 0.5520 & tti == 42 | sample.wt == 0.5110 & tti == 34 | sample.wt == 0.5130 & tti == 48 | sample.wt == 0.5240 & tti == 46)
+```
+
+```{r}
+out.lm<-lm(prop.ignite.bins10_nodate ~ lfm, data = prop.ignite.df.ceme) 
+davies.test(out.lm, ~lfm, k = 50)
+# Highly significant (p < 0.00005)
+
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
+segmented.mod
+
+confint(segmented.mod)
+
+fit <- numeric(length(prop.ignite.df.ceme$lfm)) * NA
+
+fit[complete.cases(rowSums(cbind(prop.ignite.df.ceme$prop.ignite.bins10_nodate, prop.ignite.df.ceme$lfm)))] <- broken.line(segmented.mod)$fit
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+segplot(prop.ignite.df.ceme, lfm, prop.ignite.bins10_nodate, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+```
+
 # TTI
 
 ### ADFA
 ```{r}
-out.lm<-lm(tti ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(tti ~ lfm + year.month + site, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: significant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
+summary(segmented.mod)
 
 confint <- confint(segmented.mod)
 confint
@@ -529,21 +494,18 @@ fit <- numeric(length(seg.adfa.subset$lfm)) * NA
 
 fit[complete.cases(rowSums(cbind(seg.adfa.subset$tti, seg.adfa.subset$lfm)))] <- broken.line(segmented.mod)$fit
 
-
-segplot(seg.adfa.subset, lfm, tti, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
- 
+segplot(seg.adfa.subset, lfm, tti, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper, color = year.month)
 ```
 ### CEME
 
 ```{r}
-out.lm<-lm(tti ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(tti ~ lfm + site + year.month, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 # Result: highly significant (p = 0.0009369)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
+summary(segmented.mod)
 
 confint <- confint(segmented.mod)
 confint
@@ -558,25 +520,19 @@ fit <- numeric(length(seg.ceme.subset$lfm)) * NA
 
 fit[complete.cases(rowSums(cbind(seg.ceme.subset$tti, seg.ceme.subset$lfm)))] <- broken.line(segmented.mod)$fit
 
-segplot(seg.ceme.subset, lfm, tti, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
+segplot(seg.ceme.subset, lfm, tti, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper, color = year.month)
 ```
 
 
-
-----
 # FD
 
 ### ADFA
 
 ```{r}
-#https://stats.stackexchange.com/questions/19772/estimating-the-break-point-in-a-broken-stick-piecewise-linear-model-with-rando/19777#19777
-
-out.lm<-lm(fd ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k=50)
+out.lm<-lm(fd ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k=50)
 #Result: insignificant (p = 0.6856)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
 
@@ -598,12 +554,10 @@ segplot(seg.adfa.subset, lfm, fd, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa
 
 ### CEME
 ```{r}
-out.lm<-lm(fd ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(fd ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: insignificant (p = 0.4814)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -628,12 +582,10 @@ segplot(seg.ceme.subset, lfm, fd, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme
 ### ADFA
 
 ```{r}
-out.lm<-lm(fh ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(fh ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
 # result: significant (p = 0.001313)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -656,12 +608,10 @@ segplot(seg.adfa.subset, lfm, fh, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa
 
 ### CEME
 ```{r}
-out.lm<-lm(fh ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(fh ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: significant (p = 0.03032)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -685,12 +635,10 @@ segplot(seg.ceme.subset, lfm, fh, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme
 
 ### ADFA
 ```{r}
-out.lm<-lm(gd ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(gd ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
 # result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -719,12 +667,10 @@ seg.ceme.subset.gd <- seg.ceme.subset %>%
 
 
 ```{r}
-out.lm <- lm(gd ~ lfm, data = seg.ceme.subset.gd)
-davies.test(out.lm, k = 50)
+out.lm <- lm(gd ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset.gd)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -745,43 +691,14 @@ segplot(seg.ceme.subset.gd, lfm, gd, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_c
 ```
 
 
-
-```{r}
-out.lm<-lm(gd ~ mpa, data = seg.ceme.subset.limited)
-davies.test(out.lm, k = 50)
-# Result: insignificant (p = 0.7217)
-
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
-segmented.mod
-
-confint <- confint(segmented.mod)
-confint
-
-lower <- confint[2]
-lower
-
-upper <- confint[3]
-upper
-
-fit <- numeric(length(seg.ceme.subset.limited$mpa)) * NA
-
-fit[complete.cases(rowSums(cbind(seg.ceme.subset.limited$gd, seg.ceme.subset.limited$mpa)))] <- broken.line(segmented.mod)$fit
-
-segplot(seg.ceme.subset.limited, mpa, gd, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
-```
-
 # GTI
 No significant thresholds identified
 ### ADFA
 ```{r}
-out.lm<-lm(gti ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(gti ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
 # result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -804,12 +721,10 @@ segplot(seg.adfa.subset, lfm, gti, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adf
 
 ### CEME
 ```{r}
-out.lm <- lm(gti ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm <- lm(gti ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -833,12 +748,10 @@ segplot(seg.ceme.subset, lfm, gti, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_cem
 No significant thresholds identified
 ### ADFA
 ```{r}
-out.lm<-lm(pfg ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(pfg ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
 # result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -861,12 +774,10 @@ segplot(seg.adfa.subset, lfm, pfg, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adf
 
 ### CEME
 ```{r}
-out.lm <- lm(pfg ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm <- lm(pfg ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: marginally insignificant (p = 0.0667)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -891,12 +802,10 @@ segplot(seg.ceme.subset, lfm, pfg, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_cem
 # Max. Temp.
 ### ADFA
 ```{r}
-out.lm<-lm(temp.max ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(temp.max ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~lfm, k = 50)
 # result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -918,12 +827,10 @@ segplot(seg.adfa.subset, lfm, temp.max, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lf
 
 ### CEME
 ```{r}
-out.lm <- lm(temp.max ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm <- lm(temp.max ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: significant (p = 0.000395)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -953,12 +860,10 @@ seg.adfa.subset.ttfg <- seg.adfa.subset %>%
 ```
 
 ```{r}
-out.lm<-lm(ttfg ~ lfm, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(ttfg ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset.ttfg)
+davies.test(out.lm, ~lfm, k = 50)
 # result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -980,12 +885,10 @@ segplot(seg.adfa.subset, lfm, ttfg, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_ad
 
 ### CEME
 ```{r}
-out.lm <- lm(ttfg ~ lfm, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm <- lm(ttfg ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~lfm, k = 50)
 #Result: significant (p = 0.005595)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1006,16 +909,16 @@ segplot(seg.ceme.subset, lfm, ttfg, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ce
 ```
 # -----------------------------------
 # - Water Potential - 
+Repeating the same analysis above, but using water potential as primary predictor instead of LFM
+
 # PC1
 #### ADFA 
 no breakpoint
 ```{r}
-out.lm<-lm(PC1 ~ mpa, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(PC1 ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k = 50)
 #Result: insignifcant (p = 0.6182)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1036,12 +939,10 @@ segplot(seg.adfa.subset, mpa, PC1, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adf
 ```
 #### CEME
 ```{r}
-out.lm<-lm(PC1 ~ mpa, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(PC1 ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
 #Result: insignificant (p = 0.6775)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 #segmented.mod
 #summary(segmented.mod)
@@ -1067,12 +968,10 @@ segplot(seg.ceme.subset, mpa, PC1, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_cem
 
 #### ADFA
 ```{r}
-out.lm<-lm(PC2 ~ mpa, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(PC2 ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k = 50)
 # Result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1095,12 +994,10 @@ segplot(seg.adfa.subset, mpa, PC2, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adf
 #### CEME
 
 ```{r}
-out.lm<-lm(PC2 ~ mpa, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(PC2 ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
 # Result: insignificant (p = 0.3722)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
@@ -1126,12 +1023,10 @@ segplot(seg.ceme.subset, mpa, PC2, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_cem
 
 #### ADFA
 ```{r}
-out.lm<-lm(PC3 ~ mpa, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(PC3 ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k = 50)
 # Result: insignificant (p = 1)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1153,12 +1048,10 @@ segplot(seg.adfa.subset, mpa, PC3, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adf
 
 #### CEME
 ```{r}
-out.lm<-lm(PC3 ~ mpa, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(PC3 ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
 # Result: significant (p = 0.0311)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
@@ -1183,12 +1076,10 @@ segplot(seg.ceme.subset, mpa, PC3, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_cem
 # Prop. Ignited (10% Bins)
 ## ADFA
 ```{r}
-out.lm<-lm(prop.ignite.bins10_nodate ~ mpa, data = seg.adfa.subset) 
-davies.test(out.lm, k = 50)
+out.lm<-lm(prop.ignite.bins10_nodate ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset) 
+davies.test(out.lm, ~mpa, k = 50)
 # insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1212,12 +1103,10 @@ segplot(seg.adfa.subset, mpa, prop.ignite.bins5_nodate, fit, mean_mpa_ceme, lwr_
 
 ## CEME
 ```{r}
-out.lm<-lm(prop.ignite.bins10_nodate ~ mpa, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(prop.ignite.bins10_nodate ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
 #Result: insignificant (p = 1)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 summary(segmented.mod)
@@ -1241,12 +1130,10 @@ segplot(seg.ceme.subset, mpa, prop.ignite.bins10_nodate, fit, mean_mpa_ceme, lwr
 # TTI
 #### ADFA
 ```{r}
-out.lm<-lm(tti ~ mpa, data = seg.adfa.subset)
-davies.test(out.lm, k=50)
+out.lm<-lm(tti ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k=50)
 # Result: insignificant (p = 0.6741)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1268,12 +1155,10 @@ segplot(seg.adfa.subset, mpa, tti, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adf
 
 #### CEME
 ```{r}
-out.lm<-lm(tti ~ mpa, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(tti ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
 #Result: significant (p = 0.01178)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1296,12 +1181,10 @@ segplot(seg.ceme.subset, mpa, tti, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_cem
 # FD
 ### ADFA
 ```{r}
-out.lm<-lm(fd ~ mpa, data = seg.adfa.subset)
-davies.test(out.lm, k=50)
+out.lm<-lm(fd ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k=50)
 # Result: insignificant (p = 0.7258)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1323,12 +1206,10 @@ segplot(seg.adfa.subset, mpa, fd, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa
 
 ### CEME
 ```{r}
-out.lm<-lm(fd ~ mpa, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(fd ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
 #Result: insignificant (p = 0.7735)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1351,12 +1232,10 @@ segplot(seg.ceme.subset, mpa, fd, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme
 # FH
 #### ADFA
 ```{r}
-out.lm<-lm(fh ~ mpa, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(fh ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k = 50)
 # Result: p = 1?!
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1378,12 +1257,10 @@ segplot(seg.adfa.subset, mpa, fh, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa
 
 #### CEME
 ```{r}
-out.lm<-lm(fh ~ mpa, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(fh ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
 # result: significant (p = 0.001903)
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1406,12 +1283,10 @@ segplot(seg.ceme.subset, mpa, fh, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme
 # GD
 #### ADFA
 ```{r}
-out.lm<-lm(gd ~ mpa, data = seg.adfa.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(gd ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k = 50)
 # Result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1433,12 +1308,10 @@ segplot(seg.adfa.subset, mpa, gd, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa
 
 #### CEME
 ```{r}
-out.lm<-lm(gd ~ mpa, data = seg.ceme.subset)
-davies.test(out.lm, k = 50)
+out.lm<-lm(gd ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
 # result: insignificant
 
-#the simplest example: the starting model includes just 1 covariate
-#.. and 1 breakpoint has to be estimated for that
 segmented.mod <-segmented(out.lm) #1 breakpoint for x
 segmented.mod
 
@@ -1459,24 +1332,223 @@ segplot(seg.ceme.subset, mpa, gd, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme
 ```
 
 # GTI
+### ADFA
+```{r}
+out.lm<-lm(gti ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k = 50)
+# result: insignificant
 
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset$mpa)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset$gti, seg.adfa.subset$mpa)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset, mpa, gti, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa, lower, upper)
+
+```
+
+### CEME
+```{r}
+out.lm <- lm(gti ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
+#Result: significant (0.01812)
+
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset$mpa)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset$gti, seg.ceme.subset$mpa)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset, mpa, gti, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
+```
 # PFG
+### ADFA
+```{r}
+out.lm<-lm(pfg ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k = 50)
+# result: insignificant
+
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset$mpa)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset$pfg, seg.adfa.subset$mpa)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset, mpa, pfg, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa, lower, upper)
+
+```
+
+### CEME
+```{r}
+out.lm <- lm(pfg ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
+#Result: insignificant
+
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset$mpa)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset$pfg, seg.ceme.subset$mpa)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset, mpa, pfg, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
+```
+
+
 
 # Max. Temp.
+### ADFA
+```{r}
+out.lm<-lm(temp.max ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset)
+davies.test(out.lm, ~mpa, k = 50)
+# result: insignificant
+
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset$mpa)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset$temp.max, seg.adfa.subset$mpa)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset, mpa, temp.max, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa, lower, upper)
+```
+
+### CEME
+```{r}
+out.lm <- lm(temp.max ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
+#Result: insignificant
+
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset$mpa)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset$temp.max, seg.ceme.subset$mpa)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset, mpa, temp.max, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
+```
 
 # TTFG
 
+### ADFA
+```{r}
+out.lm<-lm(ttfg ~ mpa + site + year.month + sample.wt, data = seg.adfa.subset.ttfg)
+davies.test(out.lm, ~mpa, k = 50)
+# result: insignificant
+
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.adfa.subset$mpa)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.adfa.subset$ttfg, seg.adfa.subset$mpa)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.adfa.subset, mpa, ttfg, fit, mean_mpa_adfa, lwr_mpa_adfa, upr_mpa_adfa, lower, upper)
+```
+
+### CEME
+```{r}
+out.lm <- lm(ttfg ~ mpa + site + year.month + sample.wt, data = seg.ceme.subset)
+davies.test(out.lm, ~mpa, k = 50)
+#Result: insignificant
+
+segmented.mod <-segmented(out.lm) #1 breakpoint for x
+segmented.mod
+
+confint <- confint(segmented.mod)
+confint
+
+lower <- confint[2]
+lower
+
+upper <- confint[3]
+upper
+
+fit <- numeric(length(seg.ceme.subset$mpa)) * NA
+
+fit[complete.cases(rowSums(cbind(seg.ceme.subset$ttfg, seg.ceme.subset$mpa)))] <- broken.line(segmented.mod)$fit
+
+segplot(seg.ceme.subset, mpa, ttfg, fit, mean_mpa_ceme, lwr_mpa_ceme, upr_mpa_ceme, lower, upper)
+```
 
 #-----------------------------------
 # Visualizing distribution of identified thresholds
 
 Making dataframe
 ```{r}
-lfm.thresholds <- c(109.32, NA, 131.08, 71.523, 83.981, 85.741, 30.825, 98.265, 30.825, 96.118, NA, 84.143, 79.555, NA, 119.38, NA, NA, NA, NA, NA, 79.555, NA, 56.968, 74.711, NA, 106.85, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 65.876, NA, NA, NA, 103.01, NA)
+lfm.thresholds <- c()
 
-spp.thresholds <- c("ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)",  "ADFA", "ADFA (limited)", "CEME", "CEME (limited)","ADFA", "ADFA (limited)", "CEME", "CEME (limited)",  "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)", "ADFA", "ADFA (limited)", "CEME", "CEME (limited)")
+spp.thresholds <- c(rep(c("ADFA", "CEME"), 12))
 
-metrics.thresholds <- c(rep("PC1", 4), rep("prop.ignite.10", 4), rep("prop.ignite.5", 4), rep("TTI", 4), rep("FD", 4), rep("FH", 4), rep("GD", 4), rep("GTI", 4), rep("PFG", 4), rep("temp.max", 4), rep("TTFG", 4))
+metrics.thresholds <- c(rep("PC1", 2), rep("PC2", 2), rep("PC3", 2), rep("prop.ignite.10", 2), rep("TTI", 2), rep("FD", 2), rep("FH", 2), rep("GD", 2), rep("GTI", 2), rep("PFG", 2), rep("temp.max", 2), rep("TTFG", 2))
 
 threshold.df <- data.frame(lfm.thresholds, spp.thresholds, metrics.thresholds)
 

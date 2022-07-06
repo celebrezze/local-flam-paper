@@ -238,13 +238,11 @@ max_model <- lmer(PC1 ~ spp + dw.flam.sample + ww.flam.sample + mpa + lfm.NAs.im
 performance::multicollinearity(max_model)
 ```
 
-
 ```{r}
 max_model_nolfm <- lmer(PC1 ~ spp + dw.flam.sample + ww.flam.sample + mpa + excess_water.scaled + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(max_model_nolfm)
 ```
-
 
 ```{r}
 max_model_nompa <- lmer(PC1 ~ spp + dw.flam.sample + ww.flam.sample + lfm.NAs.imputed + excess_water.scaled + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
@@ -252,80 +250,68 @@ max_model_nompa <- lmer(PC1 ~ spp + dw.flam.sample + ww.flam.sample + lfm.NAs.im
 performance::multicollinearity(max_model_nompa)
 ```
 
-
 ```{r}
-m3 <- lmer(PC1 ~ spp + ww.flam.sample + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m3 <- lmer(PC1 ~ spp + ww.flam.sample + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m3)
 ```
 
-
 ```{r}
-m6 <- lmer(PC1 ~ dw.flam.sample + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m6 <- lmer(PC1 ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m6)
 ```
 
-
 ```{r}
-m6.5 <- lmer(PC1 ~ dw.flam.sample + ww.flam.sample + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m6.5 <- lmer(PC1 ~ dw.flam.sample + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m6.5)
 ```
 
-
 ```{r}
-m7 <- lmer(PC1 ~ mpa + lfm.NAs.imputed + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m7 <- lmer(PC1 ~ mpa + lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m7)
 ```
 
-
 ```{r}
-m10 <- lmer(PC1 ~ lfm.NAs.imputed + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m10 <- lmer(PC1 ~ lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m10)
 ```
 
-
 ```{r}
-m11 <- lmer(PC1 ~ mpa*spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m11 <- lmer(PC1 ~ mpa*spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m11)
 ```
 
-
 ```{r}
-m12 <- lmer(PC1 ~ excess_water.scaled + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m12 <- lmer(PC1 ~ excess_water.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m12)
 ```
 
-
 ```{r}
-m12.5 <- lmer(PC1 ~ excess_water.scaled + mpa + lfm.NAs.imputed + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m12.5 <- lmer(PC1 ~ excess_water.scaled + mpa + lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m12.5) ##High correlation! Don't use
-
 ```
 
-
 ```{r}
-m13 <- lmer(PC1 ~ excess_water.scaled + lfm.NAs.imputed + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m13 <- lmer(PC1 ~ excess_water.scaled + lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m13) ##High correlation! Don't use
 ```
 
-
 ```{r}
-m14 <- lmer(PC1 ~ excess_water.scaled + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m14 <- lmer(PC1 ~ excess_water.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m14)
 ```
 
-
 ```{r}
-m15 <- lmer(PC1 ~ excess_water.scaled * spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m15 <- lmer(PC1 ~ excess_water.scaled * spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 performance::multicollinearity(m15)
 ```
