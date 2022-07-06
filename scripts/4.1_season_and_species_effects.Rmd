@@ -101,6 +101,7 @@ mem.data.raw.alldates <- mem.data.alldates %>%
   mutate(mpa.unscaled = mpa) %>% 
   mutate(lfm.unscaled = lfm)%>% 
   mutate(lfm.NAs.imputed.unscaled = lfm.NAs.imputed) %>% 
+  mutate(dw.unscaled = dw.flam.sample) %>% 
   mutate(excess_water.scaled = ww.flam.sample - dw.flam.sample) %>% 
   mutate(excess_water.unscaled = excess_water.scaled)
  # mutate(lfm = lfm.NAs.imputed)
@@ -127,7 +128,7 @@ scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
 scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
 
 mem.data.predictors.alldates <- clean.mem.data.alldates %>%
-    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'gr') 
+    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'gr', 'dw.unscaled') 
 
 scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates, 
                          mem.data.predictors.alldates,
@@ -462,6 +463,37 @@ ggplot(aes(y = lfm.unscaled,
  # ggpubr::stat_regline_equation() +
   labs(x = "Water Potential (-MPa)", 
        y = "Live Fuel Moisture (%)", 
+       color = "Season") +
+ # scale_color_discrete(name = "Site")+
+  th +
+ # scale_color_brewer(palette = "Dark2") +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  theme(legend.position = "bottom", 
+        strip.text = element_text(face = "italic", size = 12)) +
+  scale_color_manual(values=met.brewer("Morgenstern", 2)) +
+  facet_wrap(~Species) +
+  theme(legend.position = "bottom") +
+  scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
+```
+
+##MPa vs. DW
+
+```{r}
+mem.data.predictors.alldates %>%
+ggplot(aes(y = dw.unscaled, 
+             x = mpa.unscaled, 
+             color = as.factor(season))) +
+  geom_point(size = 1, alpha = .7) +
+  #geom_line(data=x_mpa_fig.mpa, aes(x=mpa.unscaled, y=fit, color = year.month)) +
+  geom_smooth(method = lm, 
+              size = 1, 
+              alpha = 1, 
+              se = FALSE) +
+ # ggpubr::stat_regline_equation() +
+  labs(x = "Water Potential (-MPa)", 
+       y = "Dry Weight (g)", 
        color = "Season") +
  # scale_color_discrete(name = "Site")+
   th +
