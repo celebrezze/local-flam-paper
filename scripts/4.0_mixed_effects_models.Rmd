@@ -47,12 +47,12 @@ library(MuMIn)
 library(modelsummary)
 #install_github("BlakeRMills/MetBrewer") 
 #library("BlakeRMills/MetBrewer")
-library(segmented)
+#library(memmented)
 filter = dplyr::filter
 mutate = dplyr::mutate
 library(nlme)
 library(MetBrewer)
-#install.packages("segmented")
+#install.packages("memmented")
 #devtools::install_github("hohenstein/remef")
 library(remef)
 ```
@@ -73,6 +73,10 @@ Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db
 
 #------------------------------------
 # 1. Data wrangling
+Reading in dataframe
+```{r}
+scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+```
 
 Seasonal mins and maxs from 2016 - 2020:
 
@@ -88,96 +92,27 @@ ceme_max <- 140
 
 ### All dates datasets
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
-mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
-
-mem.data.raw.alldates <- mem.data.alldates %>%
-  mutate(mpa = case_when(
-    mpa > 0 ~ (-1*mpa), 
-    mpa < 0 ~ mpa)) %>% 
-  mutate(year = as.factor(year)) %>%
-  mutate(month = as.factor(month)) %>% 
-  mutate(mpa.unscaled = mpa) %>% 
-  mutate(lfm.unscaled = lfm)%>% 
-  mutate(lfm.NAs.imputed.unscaled = lfm.NAs.imputed) %>% 
-  mutate(excess_water.scaled = ww.flam.sample - dw.flam.sample) %>% 
-  mutate(excess_water.unscaled = excess_water.scaled)
- # mutate(lfm = lfm.NAs.imputed)
-
-clean.mem.data.alldates <- mem.data.raw.alldates
-  #na.omit() %>%
-  #filter(year.month == "2020_September")
-
-#Parsing out the variables of interest for the mixed effects modelling
-
-clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd','temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")]
- 
-scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
-  filter(spp == "ADFA") %>% 
-  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
- scale()
-
-  
-scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
-  filter(spp == "CEME") %>% 
-  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
- scale()
-  
-scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
-
-mem.data.predictors.alldates <- clean.mem.data.alldates %>%
-    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'gr') 
-
-scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates, 
-                         mem.data.predictors.alldates,
-                         clean.mem.data.dependant.alldates) 
-
-#For sept. 2020 only: 
-scaled.mem.data.alldates <- scaled.mem.data.alldates %>% 
-  mutate(Species = case_when(
-    spp == "ADFA" ~ "Adenostoma fasciculatum", 
-    spp == "CEME" ~ "Ceanothus megacarpus"
-  )) %>% 
-  mutate(id = individual)  %>% 
-  mutate(timing = case_when(
-    year.month == "2016_December" ~ "Dec. 2016", 
-    year.month == "2019_December" ~ "Dec. 2019",
-    year.month == "2018_January" ~ "Jan. 2018",
-    year.month == "2020_January" ~ "Jan. 2020",
-    year.month == "2020_September" ~ "Sept. 2020"
-  ))
-
-scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
-  drop_na(mpa, lfm, PC1)
-
-seg.data.subset.alldates <- scaled.mem.data.alldates.noNAs %>% 
-  mutate(id = individual) 
-
-seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldates$id),]
-```
-
-
-```{r, message=FALSE, warning=FALSE, include=FALSE}
-seg.adfa.subset <- seg.data.subset.alldates  %>% 
+mem.adfa.subset <- scaled.mem.data.alldates.noNAs  %>% 
   filter(spp == "ADFA") %>% 
   filter(ignition == "1")
 
-seg.CEME.subset <- seg.data.subset.alldates  %>% 
+mem.CEME.subset <- scaled.mem.data.alldates.noNAs  %>% 
   filter(spp == "CEME")%>% 
   filter(ignition == "1")
 
-seg.adfa.subset.allignitions <- seg.data.subset.alldates  %>% 
+mem.adfa.subset.allignitions <- scaled.mem.data.alldates.noNAs  %>% 
   filter(spp == "ADFA")
 
-seg.CEME.subset.allignitions <- seg.data.subset.alldates %>% 
+mem.CEME.subset.allignitions <- scaled.mem.data.alldates.noNAs %>% 
   filter(spp == "CEME")
 
-seg.adfa.subset.limited <- seg.adfa.subset %>% 
+mem.adfa.subset.limited <- mem.adfa.subset %>% 
   filter(lfm.unscaled < adfa_max, lfm.unscaled > adfa_min)
 
-seg.CEME.subset <- seg.data.subset.alldates %>% 
+mem.CEME.subset <- scaled.mem.data.alldates.noNAs %>% 
   filter(spp == "CEME")
 
-seg.CEME.subset.limited <- seg.CEME.subset %>% 
+mem.CEME.subset.limited <- mem.CEME.subset %>% 
   filter(lfm.unscaled < ceme_max, lfm.unscaled > ceme_min)
 ```
 
@@ -194,7 +129,7 @@ summary(mpa_mod_fig.mpa)
 #     see what names are associated: 
 term2coef(mpa_mod_fig.mpa, "Species")
 
-r1_1 <- remef(mpa_mod_fig.mpa , fix = c("SpeciesCeanothus megacarpus"))
+r1_1 <- remef(mpa_mod_fig.mpa , fix = c("SpeciesC. megacarpus"))
 summary(r1_1)
 head(r1_1)
 
@@ -452,7 +387,7 @@ p <- ggplot() +
   th 
 
 p +
-  annotate("segment", x = -11, xend = -11, y = -3, yend = 3,
+  annotate("segment",x = -11, xend = -11, y = -3, yend = 3,
            colour = "#db8872", size = 1, arrow = arrow(ends = "last", angle = 25, type = "closed", length = unit(.2,"cm"))) +
   annotate("text", x= -11, y= 4, label= "More", size = 3) +
   annotate("text", x= -11, y= 3.5, label= "Flammable", size = 3)+
@@ -484,7 +419,6 @@ p <- ggplot() +
        color = "Timing")+
   scale_color_manual(values=met.brewer("Morgenstern", 7)) +
   th 
-
 p +
   annotate("segment", x = -11, xend = -11, y = -3, yend = 3,
            colour = "#db8872", size = .7, arrow = arrow(ends = "last", angle = 25, type = "closed", length = unit(.2,"cm"))) +
