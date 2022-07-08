@@ -150,7 +150,7 @@ Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db
 ```
 
 
-# Segmented Regression Visualization Function
+# Function: Segmented Regression Visualization
 ```{r}
 segplot <- function(data, x, y, z, tlp_value, lwr, upr, lwr_seg, upr_seg, color = NULL) {
   ggplot(data, aes({{x}}, {{y}}, color = {{color}})) +
