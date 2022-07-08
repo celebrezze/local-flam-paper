@@ -29,12 +29,98 @@ seg.data.subset <- seg.data.subset %>%
   na.omit()
 ```
 
-# Function to plot mixed effects model segmented regressions
-This took forever to get running, but I think it works well now. I had to use base plot to get it to work. Note: x.variable and y.variable must be inputted as character strings.
-
-I split the function into two so that we could easily customize the plots for LFM and MPa separately and also make the lines of code super short and neat
+# Splitting by Species
 ```{r}
-rsegplot.lfm <- function(model, dataframe, x.variable = 'lfm', y.variable, max.x = max.lfm, x.lab = 'Live Fuel Moisture (%)', y.lab = NULL) {
+seg.ceme.subset <- seg.data.subset %>% 
+  filter(spp == "CEME")
+```
+
+```{r}
+seg.adfa.subset <- seg.data.subset %>% 
+  filter(spp == "ADFA")
+```
+
+# Maximums for LFM, MPa
+```{r}
+max.lfm <- max(seg.data.subset$lfm)
+max.mpa <- max(seg.data.subset$mpa)
+
+max.lfm.c <- max(seg.ceme.subset$lfm)
+max.mpa.c <- max(seg.ceme.subset$mpa)
+
+max.lfm.a <- max(seg.adfa.subset$lfm)
+max.mpa.a <- max(seg.adfa.subset$mpa)
+```
+
+# PV Curve Data
+```{r}
+pv_summary_df_timing <- read_csv(here("processed-data", "pv_summary_df_timing.csv"))
+
+pv_local <- pv_summary_df_timing %>% 
+  filter(spp %in% c("ADFA", "CEME"))
+#ADFA
+##LFM
+mean_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(mean_lfm)) %>% 
+  pull()
+upr_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(upr_lfm)) %>% 
+  pull()
+lwr_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(lwr_lfm)) %>% 
+  pull()
+##MPa
+mean_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(mean_tlp)) %>% 
+  pull()
+upr_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(upr)) %>% 
+  pull()
+lwr_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(lwr)) %>% 
+  pull()
+# CEME
+##LFM
+mean_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(mean_lfm)) %>% 
+  pull()
+upr_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(upr_lfm)) %>% 
+  pull()
+lwr_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(lwr_lfm)) %>% 
+  pull()
+##MPa
+mean_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(mean_tlp)) %>% 
+  pull()
+upr_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(upr)) %>% 
+  pull()
+lwr_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(lwr)) %>% 
+  pull()
+```
+
+# Function to plot mixed effects model segmented regressions
+
+This took a while to get running, but I think it works well now. I had to use base plot to get it to work. Note: x.variable and y.variable must be inputted as character strings.
+
+I split the function into two so that we could customize the plots for LFM and MPa separately and also make the lines of code shorter and neater by involving more default values for arguments in the function
+```{r}
+rsegplot.lfm <- function(model, dataframe, x.variable = 'lfm', y.variable, max.x = max.lfm, x.lab = 'Live Fuel Moisture (%)', y.lab = NULL, tlp, tlp.upper, tlp.lower) {
   
 p <- summary.segmented(model)$psi[2]
 m <- slope(model, .coef = fixef(model))[[1]][[1]]
@@ -49,10 +135,12 @@ upper <- confint[3]
 ymax <- max(yvar)
 ymin <- min(yvar)
 
-wacky <- plot(xvar, yvar, xlim = c(0, 300), ylim = c(ymin-1, ymax+1), 
+wacky <- plot(xvar, yvar, xlim = c(0, max.x), ylim = c(ymin-1, ymax+1), 
               xlab = x.lab, ylab = y.lab,
               pch = 16, col = "#F48C06")
 polygon(x = c(lower, upper, upper, lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('gray', 0.3), lty = 2)
+abline(v = tlp, col = alpha('#00C368', 0.8), cex = 3)
+polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.7))
 for(z in 1:length(xvar)){
   if(z < p){
     segments(x0 = 0, x1 = p, y0 = b, y1 = m*((b2 - b)/(m - m2))+b, lwd = 3, col = "#9D0208")
@@ -63,7 +151,7 @@ return(wacky)
 ```
 
 ```{r}
-rsegplot.mpa <- function(model, dataframe, x.variable = 'mpa', y.variable, max.x = max.mpa, x.lab = 'Water Potential (MPa)', y.lab = NULL) {
+rsegplot.mpa <- function(model, dataframe, x.variable = 'mpa', y.variable, max.x = max.mpa, x.lab = 'Water Potential (MPa)', y.lab = NULL, tlp, tlp.upper, tlp.lower) {
   
 p <- summary.segmented(model)$psi[2]
 m <- slope(model, .coef = fixef(model))[[1]][[1]]
@@ -82,6 +170,8 @@ wacky <- plot(xvar, yvar, xlim = c(-10,0), ylim = c(ymin-1, ymax+1),
               xlab = x.lab, ylab = y.lab,
               pch = 16, col = "#F48C06")
 polygon(x = c(lower, upper, upper, lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('gray', 0.3), lty = 2)
+abline(v = tlp, col = alpha('#00C368', 0.8), cex = 3)
+polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.7))
 for(z in 1:length(xvar)){
   if(z < p){
     segments(x0 = 0, x1 = p, y0 = b, y1 = m*((b2 - b)/(m - m2))+b, lwd = 3, col = "#9D0208")
@@ -91,18 +181,7 @@ return(wacky)
 }
 ```
 
-# Maximums for LFM, MPa
-```{r}
-max.lfm <- max(seg.data.subset$lfm)
-max.mpa <- max(seg.data.subset$mpa)
-
-max.lfm.c <- max(seg.ceme.subset$lfm)
-max.mpa.c <- max(seg.ceme.subset$mpa)
-
-max.lfm.a <- max(seg.adfa.subset$lfm)
-max.mpa.a <- max(seg.adfa.subset$mpa)
-```
-
+#---------------------------------
 
 # Both Species 
 ## MPa x PC1
@@ -116,7 +195,7 @@ rsegplot.mpa(os.pc1.mpa, seg.data.subset, y = 'PC1', y.lab = "PC1")
 
 ## LFM x PC1
 ```{r}
-o.pc1.lfm<-lme(PC1~lfm, random=~1|id, data=seg.data.subset)
+o.pc1.lfm<-lme(PC1~lfm + site + spp + year.month, random=~1|id, data=seg.data.subset)
 os.pc1.lfm<-segmented.default(o.pc1.lfm, ~lfm, npsi=list(lfm=1))
 #summarizing results (note the '.coef' argument)
 rsegplot.lfm(os.pc1.lfm, seg.data.subset, y = 'PC1', y.lab = "PC1")
@@ -165,13 +244,6 @@ rsegplot.lfm(os.fh.lfm, seg.data.subset, y = 'fh', y.lab = "Flame Height (cm)")
 
 
 # CEME Only
-```{r}
-seg.ceme.subset <- seg.data.subset %>% 
-  filter(spp == "CEME") %>% 
-  na.omit()
-```
-
-
 ## MPa x PC1
 ```{r}
 o.pc1.mpa.c<-lme(PC1~mpa, random=~1|id, data=seg.ceme.subset)
@@ -184,18 +256,14 @@ confint.segmented(os.pc1.mpa.c, "mpa", .coef=fixef(os.pc1.mpa.c))
 ```
 
 ## LFM x PC1
+Tried out adding TLP and standard error for TLP below, and seemed to work out okay
 ```{r}
 o.pc1.lfm.c<-lme(PC1~lfm, random=~1|id, data=seg.ceme.subset)
 os.pc1.lfm.c<-segmented.default(o.pc1.lfm.c, ~lfm, npsi=list(lfm=1))
 #summarizing results (note the '.coef' argument)
-slope(os.pc1.lfm.c, .coef=fixef(os.pc1.lfm.c))
-plot.segmented(os.pc1.lfm.c, "lfm", .coef=fixef(os.pc1.lfm.c), res = T, conf.level=.95)
-
-#####
 summary.segmented(os.pc1.lfm.c)
-#####
-?summary.segmented()
-confint.segmented(os.pc1.lfm.c, "lfm", .coef=fixef(os.pc1.lfm.c))
+
+rsegplot.lfm(os.pc1.lfm.c, seg.ceme.subset, y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
 ```
 
 ## MPa x TTI
@@ -278,12 +346,6 @@ confint.segmented(os.pi10.lfm.c, "lfm", .coef=fixef(os.pi10.lfm.c))
 --------------------------------------------------------------------------------
 
 # ADFA Only
-```{r}
-seg.adfa.subset <- seg.data.subset %>% 
-  filter(spp == "ADFA")
-```
-
-
 ## MPa x PC1
 No threshold identified
 
@@ -294,8 +356,9 @@ os.pc1.lfm.a<-segmented.default(o.pc1.lfm.a, ~lfm, npsi=list(lfm=1))
 
 #summarizing results (note the '.coef' argument)
 slope(os.pc1.lfm.a, .coef=fixef(os.pc1.lfm.a))
-plot.segmented(os.pc1.lfm.a, "lfm", .coef=fixef(os.pc1.lfm.a), conf.level=.95)
 confint.segmented(os.pc1.lfm.a, "lfm", .coef=fixef(os.pc1.lfm.a))
+
+rsegplot.lfm(os.pc1.lfm.a, seg.adfa.subset, y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
 ```
 
 ## MPa x TTI
