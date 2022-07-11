@@ -17,6 +17,7 @@ library(segmented)
 library(nlme)
 library(lubridate)
 filter = dplyr::filter 
+here = here::here
 
 #source(here("source-code", "source-segmented.lme.R"))
 ```
@@ -120,7 +121,7 @@ This took a while to get running, but I think it works well now. I had to use ba
 
 I split the function into two so that we could customize the plots for LFM and MPa separately and also make the lines of code shorter and neater by involving more default values for arguments in the function
 ```{r}
-rsegplot.lfm <- function(model, dataframe, x.variable = 'lfm', y.variable, max.x = max.lfm, x.lab = 'Live Fuel Moisture (%)', y.lab = NULL, tlp, tlp.upper, tlp.lower) {
+rsegplot.lfm <- function(model, dataframe, x.variable = 'lfm', y.variable, max.x = max.lfm, x.lab = 'Live Fuel Moisture (%)', y.lab = NULL, tlp = NULL, tlp.upper = NULL, tlp.lower = NULL) {
   
 p <- summary.segmented(model)$psi[2]
 m <- slope(model, .coef = fixef(model))[[1]][[1]]
@@ -151,8 +152,8 @@ return(wacky)
 ```
 
 ```{r}
-rsegplot.mpa <- function(model, dataframe, x.variable = 'mpa', y.variable, max.x = max.mpa, x.lab = 'Water Potential (MPa)', y.lab = NULL, tlp, tlp.upper, tlp.lower) {
-  
+rsegplot.mpa <- function(model, dataframe, x.variable = 'mpa', y.variable, max.x = max.mpa, x.lab = 'Water Potential (MPa)', y.lab = NULL, tlp = NULL, tlp.upper = NULL, tlp.lower = NULL) 
+  {
 p <- summary.segmented(model)$psi[2]
 m <- slope(model, .coef = fixef(model))[[1]][[1]]
 b <- intercept(model, .coef = fixef(model))[[1]][[1]]
@@ -172,17 +173,461 @@ wacky <- plot(xvar, yvar, xlim = c(-10,0), ylim = c(ymin-1, ymax+1),
 polygon(x = c(lower, upper, upper, lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('gray', 0.3), lty = 2)
 abline(v = tlp, col = alpha('#00C368', 0.8), cex = 3)
 polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.7))
-for(z in 1:length(xvar)){
-  if(z < p){
-    segments(x0 = 0, x1 = p, y0 = b, y1 = m*((b2 - b)/(m - m2))+b, lwd = 3, col = "#9D0208")
-  }else{
-    segments(x0 = p, x1 = max.x, y0 = m2*((b - b2)/(m2 - m))+b2 , y1 = m2*max.x + b2, lwd = 3, col = "#9D0208")}}
+abline(a = b, b = m, lwd = 3, col = "#9D0208")
+for(j in 1:length(xvar)){
+  if(j < p){
+    segments(x0 = -10, x1 = p, y0 = (-10*m) + b , y1 = m2*((b - b2)/(m2 - m))+b2, lwd = 3, col = "#9D0208")
+  }
+  else{
+    segments(x0 = p, x1 = max.x, y0 = m2*((b - b2)/(m2 - m))+b2, y1 = b2, lwd = 3, col = "#9D0208")
+  }
+    }
 return(wacky)
 }
 ```
 
-#---------------------------------
+x0 = -10, x1 = p, y0 = (-10*m) + b , y1 = m2*((b - b2)/(m2 - m))+b2
 
+#---------------------------------
+# CEME
+## LFM
+### PC1
+```{r}
+o.mod<-lme(PC1~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+### PC2
+```{r}
+o.mod<-lme(PC2~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'PC2',y.lab = "PC2", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+ 
+Ignitability Metrics:
+### Time to Ignition
+```{r}
+o.mod<-lme(tti~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+### Prop. Ignite (5%)
+```{r}
+o.mod<-lme(prop.ignite.bins5_nodate~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'prop.ignite.bins5_nodate',y.lab = "Proportion Ignted (5% Bins of LFM)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+### Glow to Ignition
+```{r}
+o.mod<-lme(gti~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'gti',y.lab = "Glow to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+Combustibility Metrics:
+### Flame Height
+```{r}
+o.mod<-lme(fh~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+### Max. Temp.
+```{r}
+o.mod<-lme(temp.max~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'temp.max',y.lab = "Maximum Temperature (C)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+Sustainability Metrics:
+### Flame Duration
+```{r}
+o.mod<-lme(fd~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'fd',y.lab = "Flame Duration (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+Consumability Metrics:
+### Glow Duration
+```{r}
+o.mod<-lme(gd~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'gd',y.lab = "Glow Duration (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+### Post-Flame Glow
+```{r}
+o.mod<-lme(pfg~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'pfg',y.lab = "Post-Flame Glow (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+### Time to First Glow
+```{r}
+o.mod<-lme(ttfg~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.subset, y.variable = 'ttfg',y.lab = "Time to First Glow (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+# -------
+## Water Potential
+### PC1
+```{r}
+o.mod<-lme(PC1~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'PC1',y.lab = "PC1", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+### PC2
+```{r}
+o.mod<-lme(PC2~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'PC2',y.lab = "PC2", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+ 
+Ignitability Metrics:
+### Time to Ignition
+```{r}
+o.mod<-lme(tti~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+### Prop. Ignite (5%)
+```{r}
+o.mod<-lme(prop.ignite.bins5_nodate~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'prop.ignite.bins5_nodate',y.lab = "Proportion Ignted (5% Bins of LFM)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+### Glow to Ignition
+```{r}
+o.mod<-lme(gti~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'gti',y.lab = "Glow to Ignition (s)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+Combustibility Metrics:
+### Flame Height
+```{r}
+o.mod<-lme(fh~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+### Max. Temp.
+```{r}
+o.mod<-lme(temp.max~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'temp.max',y.lab = "Maximum Temperature (C)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+Sustainability Metrics:
+### Flame Duration
+```{r}
+o.mod<-lme(fd~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'fd',y.lab = "Flame Duration (s)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+Consumability Metrics:
+### Glow Duration
+```{r}
+o.mod<-lme(gd~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'gd',y.lab = "Glow Duration (s)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+### Post-Flame Glow
+```{r}
+o.mod<-lme(pfg~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'pfg',y.lab = "Post-Flame Glow (s)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+### Time to First Glow
+```{r}
+o.mod<-lme(ttfg~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.ceme.subset, y.variable = 'ttfg',y.lab = "Time to First Glow (s)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
+```
+
+#---------------------------------
+# ADFA
+## LFM
+### PC1
+```{r}
+o.mod<-lme(PC1~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+### PC2
+```{r}
+o.mod<-lme(PC2~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'PC2',y.lab = "PC2", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+ 
+Ignitability Metrics:
+### Time to Ignition
+```{r}
+o.mod<-lme(tti~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+### Prop. Ignite (5%)
+```{r}
+o.mod<-lme(prop.ignite.bins5_nodate~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'prop.ignite.bins5_nodate',y.lab = "Proportion Ignted (5% Bins of LFM)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+### Glow to Ignition
+```{r}
+o.mod<-lme(gti~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'gti',y.lab = "Glow to Ignition (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+Combustibility Metrics:
+### Flame Height
+```{r}
+o.mod<-lme(fh~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+### Max. Temp.
+```{r}
+o.mod<-lme(temp.max~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'temp.max',y.lab = "Maximum Temperature (C)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+Sustainability Metrics:
+### Flame Duration
+```{r}
+o.mod<-lme(fd~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'fd',y.lab = "Flame Duration (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+Consumability Metrics:
+### Glow Duration
+```{r}
+o.mod<-lme(gd~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'gd',y.lab = "Glow Duration (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+### Post-Flame Glow
+```{r}
+o.mod<-lme(pfg~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'pfg',y.lab = "Post-Flame Glow (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+### Time to First Glow
+```{r}
+o.mod<-lme(ttfg~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.subset, y.variable = 'ttfg',y.lab = "Time to First Glow (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
+```
+
+# ------
+## Water Potential
+### PC1
+```{r}
+o.mod<-lme(PC1~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, y.variable = 'PC1',y.lab = "PC1", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
+
+### PC2
+```{r}
+o.mod<-lme(PC2~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, y.variable = 'PC2',y.lab = "PC2", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
+ 
+Ignitability Metrics:
+### Time to Ignition
+```{r}
+o.mod<-lme(tti~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
+
+### Prop. Ignite (5%)
+```{r}
+o.mod<-lme(prop.ignite.bins5_nodate~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, y.variable = 'prop.ignite.bins5_nodate',y.lab = "Proportion Ignted (5% Bins of LFM)", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
+
+### Glow to Ignition
+```{r}
+o.mod<-lme(gti~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, y.variable = 'gti',y.lab = "Glow to Ignition (s)", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
+
+Combustibility Metrics:
+### Flame Height
+No threshold able to be identified (segmented.default returns error)
+
+### Max. Temp.
+No threshold able to be identified (segmented.default returns error)
+
+Sustainability Metrics:
+### Flame Duration
+No threshold able to be identified (segmented.default returns error)
+
+Consumability Metrics:
+### Glow Duration
+```{r}
+o.mod<-lme(gd~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, y.variable = 'gd',y.lab = "Glow Duration (s)", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
+
+### Post-Flame Glow
+```{r}
+o.mod<-lme(pfg~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, y.variable = 'pfg',y.lab = "Post-Flame Glow (s)", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
+
+### Time to First Glow
+No threshold able to be identified (segmented.default returns error)
+
+# ---------------------------------
 # Both Species 
 ## MPa x PC1
 ```{r}
@@ -239,174 +684,3 @@ os.fh.lfm<-segmented.default(o.fh.lfm, ~lfm, npsi=list(lfm=1))
 rsegplot.lfm(os.fh.lfm, seg.data.subset, y = 'fh', y.lab = "Flame Height (cm)")
 ```
 
-
---------------------------------------------------------------------------------
-
-
-# CEME Only
-## MPa x PC1
-```{r}
-o.pc1.mpa.c<-lme(PC1~mpa, random=~1|id, data=seg.ceme.subset)
-os.pc1.mpa.c<-segmented.default(o.pc1.mpa.c, ~mpa, npsi=list(mpa=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.pc1.mpa.c, .coef=fixef(os.pc1.mpa.c))
-plot.segmented(os.pc1.mpa.c, "mpa", .coef=fixef(os.pc1.mpa.c), conf.level=.95)
-confint.segmented(os.pc1.mpa.c, "mpa", .coef=fixef(os.pc1.mpa.c))
-```
-
-## LFM x PC1
-Tried out adding TLP and standard error for TLP below, and seemed to work out okay
-```{r}
-o.pc1.lfm.c<-lme(PC1~lfm, random=~1|id, data=seg.ceme.subset)
-os.pc1.lfm.c<-segmented.default(o.pc1.lfm.c, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.pc1.lfm.c)
-
-rsegplot.lfm(os.pc1.lfm.c, seg.ceme.subset, y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-```
-
-## MPa x TTI
-```{r}
-o.tti.mpa.c<-lme(tti~mpa, random=~1|id, data=seg.ceme.subset)
-os.tti.mpa.c<-segmented.default(o.tti.mpa.c, ~mpa, npsi=list(mpa=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.tti.mpa.c, .coef=fixef(os.tti.mpa.c))
-plot.segmented(os.tti.mpa.c, "mpa", .coef=fixef(os.tti.mpa.c), conf.level=.95)
-confint.segmented(os.tti.mpa.c, "mpa", .coef=fixef(os.tti.mpa.c))
-```
-
-## LFM x TTI
-```{r}
-o.tti.lfm.c<-lme(tti~lfm, random=~1|id, data=seg.ceme.subset)
-os.tti.lfm.c<-segmented.default(o.tti.lfm.c, ~lfm, npsi=list(lfm=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.tti.lfm.c, .coef=fixef(os.tti.lfm.c))
-plot.segmented(os.tti.lfm.c, "lfm", .coef=fixef(os.tti.lfm.c), conf.level=.95)
-confint.segmented(os.tti.lfm.c, "lfm", .coef=fixef(os.tti.lfm.c))
-```
-
-## MPa x FH
-```{r}
-o.fh.mpa.c<-lme(fh~mpa, random=~1|id, data=seg.ceme.subset)
-os.fh.mpa.c<-segmented.default(o.fh.mpa.c, ~mpa, npsi=list(mpa=1))
-
-#summarizing results (note the '.coef' argument)
-rsegplot.mpa(os.fh.mpa.c, seg.ceme.subset, y = 'fh', y.lab = "Flame Height (cm)", max.x = max.mpa.c) 
-```
-
-## LFM x FH
-```{r}
-o.fh.lfm.c<-lme(fh~lfm, random=~1|id, data=seg.ceme.subset)
-os.fh.lfm.c<-segmented.default(o.fh.lfm.c, ~lfm, npsi=list(lfm=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.fh.lfm.c, .coef=fixef(os.fh.lfm.c))
-plot.segmented(os.fh.lfm.c, "lfm", .coef=fixef(os.fh.lfm.c), conf.level=.95)
-confint.segmented(os.fh.lfm.c, "lfm", .coef=fixef(os.fh.lfm.c))
-```
-
-## LFM x Prop Ignite (5%)
-```{r}
-o.pi5.lfm.c<-lme(prop.ignite.bins5_nodate~lfm, random=~1|id, data=seg.ceme.subset)
-os.pi5.lfm.c<-segmented.default(o.pi5.lfm.c, ~lfm, npsi=list(lfm=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.pi5.lfm.c, .coef=fixef(os.pi5.lfm.c))
-plot.segmented(os.pi5.lfm.c, "lfm", .coef=fixef(os.pi5.lfm.c), conf.level=.95)
-confint.segmented(os.pi5.lfm.c, "lfm", .coef=fixef(os.pi5.lfm.c))
-```
-
-## LFM x GD
-```{r}
-o.gd.lfm.c<-lme(gd~lfm, random=~1|id, data=seg.ceme.subset)
-os.gd.lfm.c<-segmented.default(o.gd.lfm.c, ~lfm, npsi=list(lfm=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.gd.lfm.c, .coef=fixef(os.gd.lfm.c))
-plot.segmented(os.gd.lfm.c, "lfm", .coef=fixef(os.gd.lfm.c), conf.level=.95)
-summary.segmented(os.gd.lfm.c)
-confint.segmented(os.gd.lfm.c, "lfm", .coef=fixef(os.gd.lfm.c))
-```
-
-
-## LFM x Prop Ignite (10%)
-Code below popped up an error :(
-
-o.pi10.lfm.c<-lme(prop.ignite.bins10_nodate~lfm, random=~1|id, data=seg.ceme.subset)
-os.pi10.lfm.c<-segmented.default(o.pi10.lfm.c, ~lfm, npsi=list(lfm=1))
-
-slope(os.pi10.lfm.c, .coef=fixef(os.pi10.lfm.c))
-plot.segmented(os.pi10.lfm.c, "lfm", .coef=fixef(os.pi10.lfm.c), conf.level=.95)
-confint.segmented(os.pi10.lfm.c, "lfm", .coef=fixef(os.pi10.lfm.c))
-
-
---------------------------------------------------------------------------------
-
-# ADFA Only
-## MPa x PC1
-No threshold identified
-
-## LFM x PC1
-```{r}
-o.pc1.lfm.a<-lme(PC1~lfm, random=~1|id, data=seg.adfa.subset)
-os.pc1.lfm.a<-segmented.default(o.pc1.lfm.a, ~lfm, npsi=list(lfm=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.pc1.lfm.a, .coef=fixef(os.pc1.lfm.a))
-confint.segmented(os.pc1.lfm.a, "lfm", .coef=fixef(os.pc1.lfm.a))
-
-rsegplot.lfm(os.pc1.lfm.a, seg.adfa.subset, y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
-```
-
-## MPa x TTI
-No threshold identified
-
-## LFM x TTI
-```{r}
-o.tti.lfm.a<-lme(tti~lfm, random=~1|id, data=seg.adfa.subset)
-os.tti.lfm.a<-segmented.default(o.tti.lfm.a, ~lfm, npsi=list(lfm=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.tti.lfm.a, .coef=fixef(os.tti.lfm.a))
-plot.segmented(os.tti.lfm.a, "lfm", .coef=fixef(os.tti.lfm.a), conf.level=.95)
-confint.segmented(os.tti.lfm.a, "lfm", .coef=fixef(os.tti.lfm.a))
-```
-
-## MPa x FH
-```{r}
-o.fh.mpa.a<-lme(fh~mpa, random=~1|id, data=seg.adfa.subset)
-os.fh.mpa.a<-segmented.default(o.fh.mpa.a, ~mpa, npsi=list(mpa=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.fh.mpa.a, .coef=fixef(os.fh.mpa.a))
-plot.segmented(os.fh.mpa.a, "mpa", .coef=fixef(os.fh.mpa.a), conf.level=.95)
-confint.segmented(os.fh.mpa.a, "mpa", .coef=fixef(os.fh.mpa.a))
-```
-
-## LFM x FH
-```{r}
-o.fh.lfm.a<-lme(fh~lfm, random=~1|id, data=seg.adfa.subset)
-os.fh.lfm.a<-segmented.default(o.fh.lfm.a, ~lfm, npsi=list(lfm=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.fh.lfm.a, .coef=fixef(os.fh.lfm.a))
-plot.segmented(os.fh.lfm.a, "lfm", .coef=fixef(os.fh.lfm.a), conf.level=.95)
-confint.segmented(os.fh.lfm.a, "lfm", .coef=fixef(os.fh.lfm.a))
-```
-
-## LFM x Prop Ignite (5%)
-```{r}
-o.pi5.lfm.a<-lme(prop.ignite.bins5_nodate~lfm, random=~1|id, data=seg.adfa.subset)
-os.pi5.lfm.a<-segmented.default(o.pi5.lfm.a, ~lfm, npsi=list(lfm=1))
-
-#summarizing results (note the '.coef' argument)
-slope(os.pi5.lfm.a, .coef=fixef(os.pi5.lfm.a))
-plot.segmented(os.pi5.lfm.a, "lfm", .coef=fixef(os.pi5.lfm.a), conf.level=.95)
-confint.segmented(os.pi5.lfm.a, "lfm", .coef=fixef(os.pi5.lfm.a))
-```
-
-## LFM x Prop Ignite (10%)
-Did not work for some reason...

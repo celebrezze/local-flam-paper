@@ -174,7 +174,7 @@ data.with.na.new <- data.with.na.new %>%
 ### LFM
 ```{r}
 #impute rlm for each spp. 
-data.with.na.imputed <- data.with.na.new %>%
+data <- data.with.na.new %>%
   mutate(lfm.NAs.imputed = lfm.outliers.out) %>%
   impute_rlm(lfm.NAs.imputed ~ mpa + dry.wt + fresh.wt | year.month.spp)
 ```
@@ -182,7 +182,7 @@ data.with.na.imputed <- data.with.na.new %>%
 ### Weights and Temps
 ```{r include=FALSE}
 #impute values for missing weights:
-data <- data.with.na.imputed %>%
+data <- data %>%
   unite(individual, c("year", "month", "spp", "sample"), remove = FALSE) %>% #create 'individual' column
   impute_median_at(c("dry.wt", "fresh.wt", "water.wt", "sample.wt")) %>%
   ungroup() %>%

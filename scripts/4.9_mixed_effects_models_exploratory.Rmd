@@ -1391,3 +1391,47 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6,
   p.style = "stars")
 ```
 
+# ----------------------------------
+# Residuals of flam ~ sample.wt, flam ~ dry weight
+Based on Lee's suggestion, doing a variety of models and checking their residuals
+```{r}
+m1 <- lm(PC1 ~ sample.wt, data = scaled.mem.data.alldates.noNAs)
+res.m1 <- resid(m1)
+
+plot(fitted(m1), res.m1)
+abline(0,0)
+
+qqnorm(res.m1)
+```
+
+```{r}
+m2 <- lm(PC1 ~ dw.flam.sample, data = scaled.mem.data.alldates.noNAs)
+res.m2 <- resid(m2)
+
+plot(fitted(m2), res.m2)
+abline(0,0)
+
+qqnorm(res.m2)
+```
+
+```{r}
+m3 <- lm(PC1 ~ mpa + sample.wt + dw.flam.sample, data = scaled.mem.data.alldates.noNAs)
+res.m3 <- resid(m3)
+
+plot(fitted(m3), res.m3)
+abline(0,0)
+
+qqnorm(res.m3)
+```
+
+Note the effects of site, species, sampling date on residuals
+```{r}
+m4 <- lm(PC1 ~ mpa + site + spp + year.month, data = scaled.mem.data.alldates.noNAs)
+res.m4 <- resid(m4)
+
+plot(fitted(m4), res.m4)
+abline(0,0)
+
+qqnorm(res.m4)
+```
+

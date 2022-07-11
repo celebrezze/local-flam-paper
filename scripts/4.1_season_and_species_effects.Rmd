@@ -128,7 +128,7 @@ scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
 scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
 
 mem.data.predictors.alldates <- clean.mem.data.alldates %>%
-    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'gr', 'dw.unscaled') 
+    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'gr', 'dw.unscaled', 'season') 
 
 scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates, 
                          mem.data.predictors.alldates,
@@ -252,7 +252,7 @@ season_plot.pc1 <- precip_groups_ranis  %>%
               labeller = labeller(spp = spp.labs),
              scales = "free" ) +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
-  theme(legend.position = "top", 
+  theme(legend.position = "none", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
         strip.text = element_text(face = "italic", size = 12),
@@ -439,8 +439,8 @@ ggsave(here("figures", "precip_plot.jpg"),
        width = 6, height = 4, dpi = 300)
 ```
 
-
-## MPa vs LFM
+## 2.0.2 LFM, Dry Weight, MPa Relationships
+### MPa vs LFM
 ```{r}
 scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs %>%
   mutate(season = case_when(
@@ -450,64 +450,84 @@ scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs %>%
 ```
 
 ```{r}
-scaled.mem.data.alldates.noNAs %>%
-ggplot(aes(y = lfm.unscaled, 
-             x = mpa.unscaled, 
-             color = as.factor(season))) +
-  geom_point(size = 1, alpha = .7) +
-  #geom_line(data=x_mpa_fig.mpa, aes(x=mpa.unscaled, y=fit, color = year.month)) +
+mpa.vs.lfm.plot <- mem.data.predictors.alldates %>% 
+  ggplot(aes(y = lfm.unscaled, 
+             x = mpa.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .5, aes(color = season)) +
   geom_smooth(method = lm, 
-              size = 1, 
-              alpha = 1, 
-              se = FALSE) +
- # ggpubr::stat_regline_equation() +
+              se = TRUE, 
+              aes(fill = season),
+              show.legend = FALSE) +
+  ggpubr::stat_regline_equation(show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
        y = "Live Fuel Moisture (%)", 
+       fill = "Season",
        color = "Season") +
- # scale_color_discrete(name = "Site")+
   th +
- # scale_color_brewer(palette = "Dark2") +
   facet_wrap(~spp,
               labeller = labeller(spp = spp.labs),
              scales = "free" ) +
-  theme(legend.position = "bottom", 
-        strip.text = element_text(face = "italic", size = 12)) +
-  scale_color_manual(values=met.brewer("Morgenstern", 2)) +
-  facet_wrap(~Species) +
-  theme(legend.position = "bottom") +
-  scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 12),
+        axis.title.y = element_text(face = 'bold'),
+        axis.title.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+
+mpa.vs.lfm.plot
 ```
 
-##MPa vs. DW
-
+### MPa vs. DW
 ```{r}
-mem.data.predictors.alldates %>%
-ggplot(aes(y = dw.unscaled, 
-             x = mpa.unscaled, 
-             color = as.factor(season))) +
-  geom_point(size = 1, alpha = .7) +
-  #geom_line(data=x_mpa_fig.mpa, aes(x=mpa.unscaled, y=fit, color = year.month)) +
+mpa.vs.dw.plot <- mem.data.predictors.alldates %>% 
+  ggplot(aes(y = dw.unscaled, 
+             x = mpa.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .5, aes(color = season)) +
   geom_smooth(method = lm, 
-              size = 1, 
-              alpha = 1, 
-              se = FALSE) +
- # ggpubr::stat_regline_equation() +
+              se = TRUE, 
+              aes(fill = season),
+              show.legend = FALSE) +
+  ggpubr::stat_regline_equation(show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
        y = "Dry Weight (g)", 
+       fill = "Season",
        color = "Season") +
- # scale_color_discrete(name = "Site")+
   th +
- # scale_color_brewer(palette = "Dark2") +
   facet_wrap(~spp,
               labeller = labeller(spp = spp.labs),
              scales = "free" ) +
+  scale_y_continuous(limits=c(0.1,0.525), breaks=c(0.1,0.2,0.3,0.4,0.5)) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "bottom", 
-        strip.text = element_text(face = "italic", size = 12)) +
-  scale_color_manual(values=met.brewer("Morgenstern", 2)) +
-  facet_wrap(~Species) +
-  theme(legend.position = "bottom") +
-  scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 12),
+        axis.title = element_text(face = 'bold')) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+
+mpa.vs.dw.plot
 ```
+### Adding to 'main figure' (PC1 and PC2 figure)
+```{r}
+season_plot.w.dw.vs.mpa <- cowplot::plot_grid(season_plot.pc1, mpa.vs.lfm.plot, season_plot.pc2, mpa.vs.dw.plot, nrow = 2)
+
+season_plot.w.dw.vs.mpa
+
+ggsave(here("figures", "season_plot.expanded.jpg"),
+       plot = season_plot.w.dw.vs.mpa, 
+       width = 12, height = 8, dpi = 300)
+```
+
 
 ## Dry Weight vs PC1
 ```{r}
