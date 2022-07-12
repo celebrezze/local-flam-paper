@@ -359,7 +359,7 @@ segplot(seg.ceme.subset, lfm, PC2, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_cem
 
 #### ADFA
 ```{r}
-out.lm<-lm(PC3 ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset)
+out.lm<-lm(PC3 ~ lfm, data = seg.adfa.subset)
 davies.test(out.lm, ~lfm, k = 50)
 # Result: significant (p = 0.0303)
 
@@ -384,7 +384,7 @@ segplot(seg.adfa.subset, lfm, PC3, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adf
 
 #### CEME
 ```{r}
-out.lm<-lm(PC3 ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+out.lm<-lm(PC3 ~ lfm, data = seg.ceme.subset)
 davies.test(out.lm, ~lfm, k = 50)
 # Result: significant (p = 0.01461)
 
@@ -412,7 +412,7 @@ segplot(seg.ceme.subset, lfm, PC3, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_cem
 # Prop. Ignited (10% Bins)
 ## ADFA
 ```{r}
-out.lm<-lm(prop.ignite.bins10_nodate ~ lfm + site + year.month + sample.wt, data = seg.adfa.subset) 
+out.lm<-lm(prop.ignite.bins10_nodate ~ lfm, data = seg.adfa.subset) 
 davies.test(out.lm, ~lfm, k = 50)
 # Highly significant (p < 0.00005)
 
@@ -439,7 +439,7 @@ segplot(seg.adfa.subset, lfm, prop.ignite.bins10_nodate, fit, mean_lfm_ceme, lwr
 
 ## CEME
 ```{r}
-out.lm<-lm(prop.ignite.bins10_nodate ~ lfm + site + year.month + sample.wt, data = seg.ceme.subset)
+out.lm<-lm(prop.ignite.bins10_nodate ~ lfm, data = seg.ceme.subset)
 davies.test(out.lm, ~lfm, k = 50)
 #Result: marginally significant (p = 0.04587)
  

@@ -289,6 +289,10 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
 ```{r}
 mpa_mod_fig.mpa <- lmer(PC1 ~ mpa.unscaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
+qqnorm(resid(mpa_mod_fig.mpa))
+r <- resid(mpa_mod_fig.mpa)
+plot(fitted(mpa_mod_fig.mpa), r)
+
 performance::multicollinearity(mpa_mod_fig.mpa)
 ```
 
@@ -319,6 +323,10 @@ performance::multicollinearity(m3)
 ```{r}
 m6 <- lmer(PC1 ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
+qqnorm(resid(m6))
+r <- resid(m6)
+plot(fitted(m6), r)
+
 performance::multicollinearity(m6)
 ```
 
@@ -337,6 +345,10 @@ performance::multicollinearity(m7)
 ```{r}
 m10 <- lmer(PC1 ~ lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
+qqnorm(resid(m10))
+r <- resid(m10)
+plot(fitted(m10), r)
+
 performance::multicollinearity(m10)
 ```
 
@@ -353,7 +365,11 @@ performance::multicollinearity(m12)
 ```
 
 ```{r}
-m12.5 <- lmer(PC1 ~ excess_water.scaled + mpa + lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m12.5 <- lmer(PC1 ~ dw.flam.sample + mpa + lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+qqnorm(resid(m12.5))
+r <- resid(m12.5)
+plot(fitted(m12.5), r)
 
 performance::multicollinearity(m12.5) ##High correlation! Don't use
 ```
@@ -1389,6 +1405,15 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6,
          string.pred = "Coeffcient",
   string.p = "P-Value", 
   p.style = "stars")
+```
+```{r}
+a <- lmer(PC1 ~ dw.flam.sample + precip.2mo + site + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+summary(a)
+performance::multicollinearity(a)
+
+ggplot(scaled.mem.data.alldates.noNAs, aes(y = dw.flam.sample, x = as.factor(precip.2mo))) +
+  geom_boxplot() +
+  facet_wrap(~spp)
 ```
 
 # ----------------------------------
