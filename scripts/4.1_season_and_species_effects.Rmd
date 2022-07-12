@@ -89,75 +89,12 @@ ceme_max <- 140
 ```
 
 ### All dates datasets
-```{r, message=FALSE, warning=FALSE, include=FALSE}
-mem.data.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"), show_col_types = FALSE)
+```{r}
+seg.data.subset.alldates <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
 
-mem.data.raw.alldates <- mem.data.alldates %>%
-  mutate(mpa = case_when(
-    mpa > 0 ~ (-1*mpa), 
-    mpa < 0 ~ mpa)) %>% 
-  mutate(year = as.factor(year)) %>%
-  mutate(month = as.factor(month)) %>% 
-  mutate(mpa.unscaled = mpa) %>% 
-  mutate(lfm.unscaled = lfm)%>% 
-  mutate(lfm.NAs.imputed.unscaled = lfm.NAs.imputed) %>% 
-  mutate(dw.unscaled = dw.flam.sample) %>% 
-  mutate(excess_water.scaled = ww.flam.sample - dw.flam.sample) %>% 
-  mutate(excess_water.unscaled = excess_water.scaled)
- # mutate(lfm = lfm.NAs.imputed)
-
-clean.mem.data.alldates <- mem.data.raw.alldates
-  #na.omit() %>%
-  #filter(year.month == "2020_September")
-
-#Parsing out the variables of interest for the mixed effects modelling
-
-clean.mem.data.dependant.alldates <- clean.mem.data.alldates[,c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd','temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition")]
- 
-scaled.mem.data.predictors.alldates.adfa <- clean.mem.data.alldates %>%
-  filter(spp == "ADFA") %>% 
-  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
- scale()
-
-  
-scaled.mem.data.predictors.alldates.ceme <- clean.mem.data.alldates %>%
-  filter(spp == "CEME") %>% 
-  dplyr::select('lfm.NAs.imputed', 'lfm.outliers.out', 'mpa', 'dw.flam.sample', 'sample.wt', 'ww.flam.sample', 'lfm', 'excess_water.scaled') %>%
- scale()
-  
-scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme)
-
-mem.data.predictors.alldates <- clean.mem.data.alldates %>%
-    dplyr::select('spp', 'year.month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'gr', 'dw.unscaled', 'season') 
-
-scaled.mem.data.alldates <- cbind(scaled.mem.data.predictors.alldates, 
-                         mem.data.predictors.alldates,
-                         clean.mem.data.dependant.alldates) 
-
-#For sept. 2020 only: 
-scaled.mem.data.alldates <- scaled.mem.data.alldates %>% 
-  mutate(Species = case_when(
-    spp == "ADFA" ~ "Adenostoma fasciculatum", 
-    spp == "CEME" ~ "Ceanothus megacarpus"
-  )) %>% 
-  mutate(id = individual)  %>% 
-  mutate(timing = case_when(
-    year.month == "2016_December" ~ "Dec. 2016", 
-    year.month == "2019_December" ~ "Dec. 2019",
-    year.month == "2018_January" ~ "Jan. 2018",
-    year.month == "2020_January" ~ "Jan. 2020",
-    year.month == "2020_September" ~ "Sept. 2020"
-  ))
-
-scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
-  drop_na(mpa, lfm, PC1, timing, mpa.unscaled, lfm.unscaled)
-
-seg.data.subset.alldates <- scaled.mem.data.alldates.noNAs %>% 
-  mutate(id = individual) 
-
-seg.data.subset.alldates<-seg.data.subset.alldates[order(seg.data.subset.alldates$id),]
+seg.data.subset.alldates <- seg.data.subset.alldates %>% 
+  na.omit()
 ```
-
 
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 seg.adfa.subset <- seg.data.subset.alldates  %>% 
@@ -186,11 +123,10 @@ seg.CEME.subset.limited <- seg.CEME.subset %>%
 
 Scale LFM based on sample data: 
 ```{r}
-scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs %>%
+seg.data.subset.alldates <- seg.data.subset.alldates %>%
   group_by(year.month) %>% 
   mutate(lfm.scaled.by.year = scale(lfm), 
          mpa.scaled.by.year = scale(mpa))
-
 ```
 
 Labels for species names:
@@ -204,23 +140,32 @@ names(spp.labs) <- c("ADFA", "CEME")
 
 Model: 
 ```{r}
-scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs %>% 
+seg.data.subset.alldates <- seg.data.subset.alldates %>% 
   mutate(season = case_when(
     precip.2mo < 0.5 ~ "Dry", 
     precip.2mo > 0.5 ~ "Wet")
   )
 
-precip_mod <- lmer(PC1 ~ mpa.unscaled + Species + season + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+precip_mod <- lmer(PC1 ~ mpa.unscaled + Species + season + (1 | individual), data = seg.data.subset.alldates)
 
 summary(precip_mod)
 
 r1_1 <- remef(precip_mod ,  ran = "all")
 #summary(r1_1)
-
-#https://stats.stackexchange.com/questions/258285/how-to-do-partial-regression-plots-with-linear-mixed-effect-models/258292#258292?newreg=3b55c635f610441db980674675bc0051
-
 scaled_r1_1_df <- as.data.frame(r1_1)
-precip_groups_ranis <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
+#https://stats.stackexchange.com/questions/258285/how-to-do-partial-regression-plots-with-linear-mixed-effect-models/258292#258292?newreg=3b55c635f610441db980674675bc0051
+```
+
+```{r}
+precip_mod.2 <- lmer(PC2 ~ mpa.unscaled + Species + season + (1 | individual), data = seg.data.subset.alldates)
+
+r1_2 <- remef(precip_mod.2, ran = 'all')
+
+scaled_r1_2_df <- as.data.frame(r1_2)
+```
+
+```{r}
+precip_groups_ranis <- cbind(seg.data.subset.alldates, scaled_r1_1_df, scaled_r1_2_df)
 ```
 
 ## NOTE: How do we include r1_1 in figure?
@@ -231,7 +176,7 @@ precip_groups_ranis <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
 Ignitability + combustibility proxy (used as 'flammability' proxy)
 ```{r}
 season_plot.pc1 <- precip_groups_ranis  %>%
-  ggplot(aes(y = PC1, 
+  ggplot(aes(y = r1_1, 
              x = mpa.unscaled,
              fill = season,
              color = season,
@@ -268,7 +213,7 @@ season_plot.pc1
 Consumability proxy
 ```{r}
 season_plot.pc2 <- precip_groups_ranis  %>%
-  ggplot(aes(y = PC2, 
+  ggplot(aes(y = r1_2, 
              x = mpa.unscaled,
              fill = season,
              color = season,
@@ -315,45 +260,153 @@ ggsave(here("figures", "season_plot.jpg"),
 ### Significance Tests
 ```{r}
 # Is species significant predictor of PC1?
-precip_mod <- lmer(PC1 ~ mpa.unscaled + Species*season + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+precip_mod <- lmer(PC1 ~ mpa.unscaled + Species*season + (1 | individual), data = seg.data.subset.alldates)
 summary(precip_mod)
 # Yes
 
 # For CEME?
-scaled.mem.data.alldates.noNAs.ceme <- scaled.mem.data.alldates.noNAs %>%
+seg.data.subset.alldates.ceme <- seg.data.subset.alldates %>%
   filter(spp == "CEME")
-precip_mod.ceme <- lmer(PC1 ~ mpa.unscaled + season + (1 | individual), data = scaled.mem.data.alldates.noNAs.ceme)
+precip_mod.ceme <- lmer(PC1 ~ mpa.unscaled + season + (1 | individual), data = seg.data.subset.alldates.ceme)
 summary(precip_mod.ceme)
 # Yes
 
 # For ADFA?
-scaled.mem.data.alldates.noNAs.adfa <- scaled.mem.data.alldates.noNAs %>%
+seg.data.subset.alldates.adfa <- seg.data.subset.alldates %>%
   filter(spp == "ADFA")
-precip_mod.adfa <- lmer(PC1 ~ mpa.unscaled + season + (1 | individual), data = scaled.mem.data.alldates.noNAs.adfa)
+precip_mod.adfa <- lmer(PC1 ~ mpa.unscaled + season + (1 | individual), data = seg.data.subset.alldates.adfa)
 summary(precip_mod.adfa)
 # Yes
 
 # Is species significant predictor of PC1?
-precip_mod2 <- lmer(PC2 ~ mpa.unscaled + Species*season + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+precip_mod2 <- lmer(PC2 ~ mpa.unscaled + Species*season + (1 | individual), data = seg.data.subset.alldates)
 summary(precip_mod2)
 # Yes
 
 # For CEME?
-precip_mod.ceme2 <- lmer(PC2 ~ mpa.unscaled + season + (1 | individual), data = scaled.mem.data.alldates.noNAs.ceme)
+precip_mod.ceme2 <- lmer(PC2 ~ mpa.unscaled + season + (1 | individual), data = seg.data.subset.alldates.ceme)
 summary(precip_mod.ceme2)
 # Yes
 
 # For ADFA?
-precip_mod.adfa2 <- lmer(PC2 ~ mpa.unscaled + season + (1 | individual), data = scaled.mem.data.alldates.noNAs.adfa)
+precip_mod.adfa2 <- lmer(PC2 ~ mpa.unscaled + season + (1 | individual), data = seg.data.subset.alldates.adfa)
 summary(precip_mod.adfa2)
 # Yes
+```
+## 2.0.2 LFM, Dry Weight, MPa Relationships
+Models:
+```{r}
+mpalfm_mod <- lmer(lfm ~ mpa + Species + season + (1 | individual), data = seg.data.subset.alldates)
+
+summary(mpalfm_mod)
+
+r1_lfm <- remef(mpalfm_mod ,  ran = "all")
+scaled_r1_lfm_df <- as.data.frame(r1_lfm)
+###
+mpadw_mod <- lmer(dw.flam.sample ~ mpa + Species + season + (1 | individual), data = seg.data.subset.alldates)
+
+summary(mpadw_mod)
+
+r1_dw <- remef(mpadw_mod ,  ran = "all")
+scaled_r1_dw_df <- as.data.frame(r1_dw)
+```
+
+### MPa vs LFM
+```{r}
+seg.data.subset.alldates <- seg.data.subset.alldates %>%
+  mutate(season = case_when(
+    timing %in% c("Dec. 2019", "Dec. 2016", "Jan. 2018", "Jan. 2020") ~ "Wet", 
+    timing == "Sept. 2020" ~ "Dry"
+  ))
+
+mpa_rel_df <- cbind(scaled_r1_dw_df, scaled_r1_lfm_df, seg.data.subset.alldates)
+```
+
+```{r}
+mpa.vs.lfm.plot <- mpa_rel_df %>% 
+  ggplot(aes(y = r1_lfm, 
+             x = mpa.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .5, aes(color = season)) +
+  geom_smooth(method = lm, 
+              se = TRUE, 
+              aes(fill = season),
+              show.legend = FALSE) +
+  ggpubr::stat_regline_equation(show.legend = FALSE) +
+  labs(x = "Water Potential (MPa)", 
+       y = "Live Fuel Moisture (Scaled, Effects Removed)", 
+       fill = "Season",
+       color = "Season") +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 12),
+        axis.title.y = element_text(face = 'bold'),
+        axis.title.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+
+mpa.vs.lfm.plot
+```
+
+### MPa vs. DW
+```{r}
+mpa.vs.dw.plot <- mpa_rel_df %>% 
+  ggplot(aes(y = r1_dw, 
+             x = mpa.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .5, aes(color = season)) +
+  geom_smooth(method = lm, 
+              se = TRUE, 
+              aes(fill = season),
+              show.legend = FALSE) +
+  ggpubr::stat_regline_equation(show.legend = FALSE) +
+  labs(x = "Water Potential (MPa)", 
+       y = "Dry Weight (Scaled, Effects Removed)", 
+       fill = "Season",
+       color = "Season") +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  scale_y_continuous(limits=c(-2,2.5), breaks=c(-2, -1, 0, 1, 2)) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "bottom", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 12),
+        axis.title = element_text(face = 'bold')) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+
+mpa.vs.dw.plot
+```
+
+### Adding to 'main figure' (PC1 and PC2 figure)
+```{r}
+season_plot.w.dw.vs.mpa <- cowplot::plot_grid(season_plot.pc1, mpa.vs.lfm.plot, season_plot.pc2, mpa.vs.dw.plot, nrow = 2)
+
+season_plot.w.dw.vs.mpa
+
+ggsave(here("figures", "season_plot.expanded.jpg"),
+       plot = season_plot.w.dw.vs.mpa, 
+       width = 12, height = 8, dpi = 300)
 ```
 
 ## MPa vs PC1
 
 Timing (Year Month)
 ```{r}
-mpa_mod_fig.mpa <- lmer(PC1 ~ mpa.unscaled + Species + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+mpa_mod_fig.mpa <- lmer(PC1 ~ mpa.unscaled + Species + year.month + (1 | individual), data = seg.data.subset.alldates)
 
 effects_mpa_fig.mpa <- effects::effect(term= c("mpa.unscaled","year.month"),
                                    mod= mpa_mod_fig.mpa, 
@@ -365,7 +418,7 @@ x_mpa_fig.mpa <- as.data.frame(effects_mpa_fig.mpa)
 ```
 
 ```{r}
-precip_plot <- scaled.mem.data.alldates.noNAs %>%
+precip_plot <- seg.data.subset.alldates %>%
   ggplot(aes(y = PC1, x = mpa.unscaled, 
              #color = as.factor(timing)
              color = as.factor(precip.2mo)
@@ -403,7 +456,7 @@ ggsave(here("figures", "precip_plot.jpg"),
 
 ## LFM vs PC1
 ```{r}
-precip_plot <- scaled.mem.data.alldates.noNAs %>%
+precip_plot <- seg.data.subset.alldates %>%
   ggplot(aes(y = PC1, x = lfm.unscaled, 
              #color = as.factor(timing)
              color = as.factor(precip.2mo)
@@ -439,105 +492,15 @@ ggsave(here("figures", "precip_plot.jpg"),
        width = 6, height = 4, dpi = 300)
 ```
 
-## 2.0.2 LFM, Dry Weight, MPa Relationships
-### MPa vs LFM
-```{r}
-scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs %>%
-  mutate(season = case_when(
-    timing %in% c("Dec. 2019", "Dec. 2016", "Jan. 2018", "Jan. 2020") ~ "Wet", 
-    timing == "Sept. 2020" ~ "Dry"
-  ))
-```
-
-```{r}
-mpa.vs.lfm.plot <- mem.data.predictors.alldates %>% 
-  ggplot(aes(y = lfm.unscaled, 
-             x = mpa.unscaled,
-             fill = season,
-             color = season,
-             group = season)) +
-  geom_point(alpha = .5, aes(color = season)) +
-  geom_smooth(method = lm, 
-              se = TRUE, 
-              aes(fill = season),
-              show.legend = FALSE) +
-  ggpubr::stat_regline_equation(show.legend = FALSE) +
-  labs(x = "Water Potential (-MPa)", 
-       y = "Live Fuel Moisture (%)", 
-       fill = "Season",
-       color = "Season") +
-  th +
-  facet_wrap(~spp,
-              labeller = labeller(spp = spp.labs),
-             scales = "free" ) +
-  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
-  theme(legend.position = "none", 
-        legend.title = element_text(face = "bold"),
-        legend.key = element_rect(fill = 'white'),
-        strip.text = element_text(face = "italic", size = 12),
-        axis.title.y = element_text(face = 'bold'),
-        axis.title.x = element_blank()) +
-  guides(color = guide_legend(override.aes = list(size = 3))) +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
-
-mpa.vs.lfm.plot
-```
-
-### MPa vs. DW
-```{r}
-mpa.vs.dw.plot <- mem.data.predictors.alldates %>% 
-  ggplot(aes(y = dw.unscaled, 
-             x = mpa.unscaled,
-             fill = season,
-             color = season,
-             group = season)) +
-  geom_point(alpha = .5, aes(color = season)) +
-  geom_smooth(method = lm, 
-              se = TRUE, 
-              aes(fill = season),
-              show.legend = FALSE) +
-  ggpubr::stat_regline_equation(show.legend = FALSE) +
-  labs(x = "Water Potential (-MPa)", 
-       y = "Dry Weight (g)", 
-       fill = "Season",
-       color = "Season") +
-  th +
-  facet_wrap(~spp,
-              labeller = labeller(spp = spp.labs),
-             scales = "free" ) +
-  scale_y_continuous(limits=c(0.1,0.525), breaks=c(0.1,0.2,0.3,0.4,0.5)) +
-  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
-  theme(legend.position = "bottom", 
-        legend.title = element_text(face = "bold"),
-        legend.key = element_rect(fill = 'white'),
-        strip.text = element_text(face = "italic", size = 12),
-        axis.title = element_text(face = 'bold')) +
-  guides(color = guide_legend(override.aes = list(size = 3))) +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
-
-mpa.vs.dw.plot
-```
-### Adding to 'main figure' (PC1 and PC2 figure)
-```{r}
-season_plot.w.dw.vs.mpa <- cowplot::plot_grid(season_plot.pc1, mpa.vs.lfm.plot, season_plot.pc2, mpa.vs.dw.plot, nrow = 2)
-
-season_plot.w.dw.vs.mpa
-
-ggsave(here("figures", "season_plot.expanded.jpg"),
-       plot = season_plot.w.dw.vs.mpa, 
-       width = 12, height = 8, dpi = 300)
-```
-
-
 ## Dry Weight vs PC1
 ```{r}
-mod_dw <- lmer(PC1 ~ dw.flam.sample + Species * season + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+mod_dw <- lmer(PC1 ~ dw.flam.sample + Species * season + (1 | individual), data = seg.data.subset.alldates)
 
 summary(mod_dw)
 ```
 
 ```{r}
-precip_plot.dw <- scaled.mem.data.alldates.noNAs %>%
+precip_plot.dw <- seg.data.subset.alldates %>%
   ggplot(aes(y = PC1, x = dw.flam.sample,
              color = as.factor(precip.2mo)
              )) +
@@ -571,7 +534,7 @@ Precip. designated by size of point, timing by color
 
 Model: 
 ```{r}
-precip_mod <- lmer(lfm.unscaled ~ mpa.unscaled + Species + timing + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+precip_mod <- lmer(lfm.unscaled ~ mpa.unscaled + Species + timing + (1 | individual), data = seg.data.subset.alldates)
 
 #remove fixed effect of year.month
 #     see what names are associated: 
@@ -584,7 +547,7 @@ r1_1 <- remef(precip_mod ,  ran = "all")
 #https://stats.stackexchange.com/questions/258285/how-to-do-partial-regression-plots-with-linear-mixed-effect-models/258292#258292?newreg=3b55c635f610441db980674675bc0051
 
 scaled_r1_1_df <- as.data.frame(r1_1)
-precip_groups_ranis <- cbind(scaled.mem.data.alldates.noNAs, scaled_r1_1_df)
+precip_groups_ranis <- cbind(seg.data.subset.alldates, scaled_r1_1_df)
 ```
 
 Plot: 
@@ -626,7 +589,7 @@ ggsave(here("figures", "timing_precip_plot.jpg"),
 ```
 
 ```{r}
-mpa_lfm_mod <- lmer(lfm ~ mpa.unscaled + Species + year.month + (1| individual), data = scaled.mem.data.alldates.noNAs)
+mpa_lfm_mod <- lmer(lfm ~ mpa.unscaled + Species + year.month + (1| individual), data = seg.data.subset.alldates)
 mpa_lfm_mod
 
 tab_model(mpa_lfm_mod)
@@ -651,7 +614,7 @@ th_panels <- theme(
 ### 2.1.1 Data wrangling
 Since September 2020 is the only period of time that we tested both species at once, to compare species differences, we must use only these tests
 ```{r}
-scaled.mem.data.sept2020 <- scaled.mem.data.alldates.noNAs %>% 
+scaled.mem.data.sept2020 <- seg.data.subset.alldates %>% 
   filter(year.month == '2020_September')
 ```
 
@@ -1158,8 +1121,8 @@ season_plot.ceme
 Species effects plots
 ```{r}
 tti.mpa2 <- ggplot() + 
-  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, tti, color = Species ,shape = season), size = 1, alpha = .5) + 
-  geom_smooth(method = "lm", data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, tti, color = Species), se = FALSE, size = 1) +
+  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, tti, color = Species ,shape = season), size = 1, alpha = .5) + 
+  geom_smooth(method = "lm", data= seg.data.subset.alldates, aes(mpa.unscaled, tti, color = Species), se = FALSE, size = 1) +
   labs(x="Water Potential (-Mpa)", 
        y="Time to Ignition (sec)",
        shape = "Season") +
@@ -1168,8 +1131,8 @@ tti.mpa2 <- ggplot() +
 tti.mpa2
 
 gd.mpa2 <- ggplot() + 
-  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, gd, color = Species ,shape = season), size = 1, alpha = .5) + 
-  geom_smooth(method = "lm", data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, gd, color = Species), se = FALSE, size = 1) +
+  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, gd, color = Species ,shape = season), size = 1, alpha = .5) + 
+  geom_smooth(method = "lm", data= seg.data.subset.alldates, aes(mpa.unscaled, gd, color = Species), se = FALSE, size = 1) +
   labs(x="Water Potential (-Mpa)", 
        y="Glow Duration (sec)",
        shape = "Season") +
@@ -1178,8 +1141,8 @@ gd.mpa2 <- ggplot() +
 gd.mpa2
 
 fh.mpa2 <- ggplot() + 
-  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, fh, color = Species ,shape = season), size = 1, alpha = .5) + 
-  geom_smooth(method = "lm", data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, fh, color = Species), se = FALSE, size = 1) +
+  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, fh, color = Species ,shape = season), size = 1, alpha = .5) + 
+  geom_smooth(method = "lm", data= seg.data.subset.alldates, aes(mpa.unscaled, fh, color = Species), se = FALSE, size = 1) +
   labs(x="Water Potential (-Mpa)", 
        y="Flame Height (cm)",
        shape = "Season") +
@@ -1188,8 +1151,8 @@ fh.mpa2 <- ggplot() +
 fh.mpa2
 
 pc1.mpa2 <- ggplot() + 
-  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, PC1, color = Species ,shape = season), size = 1, alpha = .5) + 
-  geom_smooth(method = "lm", data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, PC1, color = Species), se = FALSE, size = 1) +
+  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, PC1, color = Species ,shape = season), size = 1, alpha = .5) + 
+  geom_smooth(method = "lm", data= seg.data.subset.alldates, aes(mpa.unscaled, PC1, color = Species), se = FALSE, size = 1) +
   labs(x="Water Potential (-Mpa)", 
        y="PC1",
        shape = "Season") +
