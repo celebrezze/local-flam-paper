@@ -1025,7 +1025,61 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12,
   file = here('MEM.figures','PC2.html')) # saving .html into figures folder
 ```
 # -----------------------------------
+# Visualizations: Dry Weight Effect
+## Models
+```{r}
+m.p1 <- lmer(PC1 ~ mpa + spp + site + year.month + sample.wt + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+  
+m.p2 <- lmer(PC2 ~ mpa + spp + site + year.month + sample.wt + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
 
+```{r}
+r_pc1 <- remef(m.p1, fix = 2, ran = list(individual = c("(Intercept)")))
+
+r_pc2 <- remef(m.p2, fix = 2, ran = list(individual = c("(Intercept)")))
+
+r_scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs
+
+r_scaled.mem.data.alldates.noNAs$r_pc1 <- r_pc1
+r_scaled.mem.data.alldates.noNAs$r_pc2 <- r_pc2
+```
+
+```{r}
+p1 <- ggplot(r_scaled.mem.data.alldates.noNAs, aes(x = dw.flam.sample, y = r_pc1)) +
+  geom_point(alpha = 0.6, size = 1) +
+  labs(x = "Dry Weight (scaled, centered)", y = "PC1 (Effects Removed)") +
+  geom_smooth(method = 'lm', color = 'black') +
+  facet_wrap(~spp) + 
+  th
+
+p2 <- ggplot(r_scaled.mem.data.alldates.noNAs, aes(x = dw.flam.sample, y = PC1)) +
+  geom_point(alpha = 0.6, size = 1) +
+  labs(x = "Dry Weight (scaled, centered)") +
+  geom_smooth(method = 'lm', color = 'black') +
+  facet_wrap(~spp) + 
+  th
+
+p3 <- ggplot(r_scaled.mem.data.alldates.noNAs, aes(x = dw.flam.sample, y = r_pc2)) +
+  geom_point(alpha = 0.6, size = 1) +
+  labs(x = "Dry Weight (scaled, centered)", y = "PC2 (Effects Removed)") +
+  geom_smooth(method = 'lm', color = 'black') +
+  facet_wrap(~spp) + 
+  th
+
+p4 <- ggplot(r_scaled.mem.data.alldates.noNAs, aes(x = dw.flam.sample, y = PC2)) +
+  geom_point(alpha = 0.6, size = 1) +
+  labs(x = "Dry Weight (scaled, centered)") +
+  geom_smooth(method = 'lm', color = 'black') +
+  facet_wrap(~spp) + 
+  th
+
+ggarrange(p1, p3, p2, p4)
+
+ggsave(here('MEM.figures', 'remef.dry.weight.jpg'), height = 8, width = 13)
+```
+
+
+# -----------------------------------
 ## 2.0.2 Tables of models
 
 "The variance inflation factor is a measure to analyze the magnitude of multicollinearity of model terms. A VIF less than 5 indicates a low correlation of that predictor with other predictors. A value between 5 and 10 indicates a moderate correlation, while VIF values larger than 10 are a sign for high, not tolerable correlation of model predictors.
