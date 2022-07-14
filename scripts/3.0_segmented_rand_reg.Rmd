@@ -18,7 +18,6 @@ library(nlme)
 library(lubridate)
 filter = dplyr::filter 
 here = here::here
-
 #source(here("source-code", "source-segmented.lme.R"))
 ```
 
@@ -131,6 +130,7 @@ lwr_mpa_ceme <- pv_local %>%
 This took a while to get running, but I think it works well now. I had to use base plot to get it to work. Note: x.variable and y.variable must be inputted as character strings.
 
 I split the function into two so that we could customize the plots for LFM and MPa separately and also make the lines of code shorter and neater by involving more default values for arguments in the function
+
 ```{r}
 rsegplot.lfm <- function(model, dataframe, species, x.variable = 'lfm', y.variable, max.x = max.lfm, x.lab = 'Live Fuel Moisture (%)', y.lab = NULL, tlp = NULL, tlp.upper = NULL, tlp.lower = NULL, color = 'color') {
   
