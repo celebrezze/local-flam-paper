@@ -668,13 +668,11 @@ r1_1 <- remef(mpa_mod_fig_tti, ran = list(individual = c("(Intercept)")))
 scaled_r1_1_df <- as.data.frame(r1_1)
 tti_groups_ranis <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-tti.mpa <- ggplot() + 
-  geom_point(data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species,shape = Species), size = 1.2, alpha = .6) + 
+tti.mpa <- ggplot(data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species, shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species, fill = Species), se = TRUE, size = 1) +
-  ggpubr::stat_regline_equation(show.legend = FALSE) +
-  labs(
-    x="Water Potential (-Mpa)", 
-    y="Time to Ignition (sec)")  +
+  ggpubr::stat_regline_equation(legend = FALSE) +
+  labs(x="Water Potential (-Mpa)", y="Time to Ignition (sec)")  +
   th +
   th_panels +
   color_panels
@@ -690,10 +688,10 @@ fd_remef_year <- remef(mpa_mod_fig_fd , ran = list(individual = c("(Intercept)")
 scaled_r1_1_df <- as.data.frame(fd_remef_year)
 fd_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-fd.mpa <- ggplot() + 
-  geom_point(data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
-  geom_smooth(method = "lm", data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species), se = TRUE, size = 1, alpha = .5) +
-   stat_regline_equation() +
+fd.mpa <- ggplot(data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_smooth(method = "lm", data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
+  ggpubr::stat_regline_equation(legend = FALSE) +
   labs(
     x="Water Potential (-Mpa)", 
        y="Flame Duration (sec)")  +
@@ -714,13 +712,14 @@ gd_remef_year <- remef(mpa_mod_fig_gd , ran = list(individual = c("(Intercept)")
 scaled_r1_1_df <- as.data.frame(gd_remef_year)
 gd_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-gd.mpa <- ggplot() + 
-  geom_point(data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
-  geom_smooth(method = "lm", data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species), se = TRUE, size = 1, alpha = .5) +
-   stat_regline_equation() +
+gd.mpa <- ggplot(data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_smooth(method = "lm", data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
+  ggpubr::stat_regline_equation(legend = FALSE) +
   labs(
     x="Water Potential (-Mpa)", 
        y="Glow Duration (sec)")  +
+  scale_y_continuous(limits = c(50,235), breaks = c(50, 100, 150, 200)) +
    th +
   th_panels +
   color_panels
@@ -736,10 +735,11 @@ pc1_remef_year <- remef(mpa_mod_fig_pc1 , ran = list(individual = c("(Intercept)
 scaled_r1_1_df <- as.data.frame(pc1_remef_year)
 pc1_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-pc1.mpa <- ggplot() + 
-  geom_point(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
-  geom_smooth(method = "lm", data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species), se = TRUE, size = 1, alpha = .5) +
-   stat_regline_equation() +  labs(x="Water Potential (-Mpa)", 
+pc1.mpa <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_smooth(method = "lm", data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
+  ggpubr::stat_regline_equation(legend = FALSE) +  
+  labs(x="Water Potential (-Mpa)", 
        y="Flammability Proxy") +
   th +
   th_panels +
@@ -784,7 +784,7 @@ plot_legend <- cowplot::plot_grid(scatterplot, legend, rel_widths = c(4, 1.1))
 plot_legend
 
 
-ggsave(here("figures", "scatterplot_ranef_all.jpg"),
+ggsave(here("figures", "species.plot.jpg"),
        plot = plot_legend, 
        width = 11, height = 8)
 ```

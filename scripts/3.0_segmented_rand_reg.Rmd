@@ -148,10 +148,10 @@ upper <- confint[3]
 ymax <- max(yvar)
 ymin <- min(yvar)
 
-wacky <- plot(xvar, yvar, xlim = c(0, max.x), ylim = c(ymin-1, ymax+1), 
+wacky <- plot(xvar, yvar, xlim = c(0, max.x), ylim = c(ymin-0.05*ymin, ymax+0.05*ymax), 
               xlab = x.lab, ylab = y.lab,
               pch = 16, col = alpha(colr, 0.8))
-polygon(x = c(lower, upper, upper, lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('gray', 0.3), lty = 2)
+polygon(x = c(lower, upper, upper, lower), y = c(ymax + 0.2*ymax, ymax +0.2*ymax, ymin - 30, ymin - 30), col = alpha('gray', 0.3), lty = 2)
 abline(v = tlp, col = alpha('#00C368', 0.7), cex = 3)
 polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.6))
 legend('topleft', legend=if(species == 'ADFA'){
