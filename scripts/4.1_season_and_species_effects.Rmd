@@ -147,7 +147,7 @@ seg.data.subset.alldates <- seg.data.subset.alldates %>%
     precip.2mo > 0.5 ~ "Wet")
   )
 
-precip_mod <- lmer(PC1 ~ mpa.unscaled + Species + season + (1 | individual), data = seg.data.subset.alldates)
+precip_mod <- lmer(PC1 ~ mpa.unscaled + Species + season + site + (1 | individual), data = seg.data.subset.alldates)
 
 summary(precip_mod)
 
@@ -158,7 +158,7 @@ scaled_r1_1_df <- as.data.frame(r1_1)
 ```
 
 ```{r}
-precip_mod.2 <- lmer(PC2 ~ mpa.unscaled + Species + season + (1 | individual), data = seg.data.subset.alldates)
+precip_mod.2 <- lmer(PC2 ~ mpa.unscaled + Species + season + site + (1 | individual), data = seg.data.subset.alldates)
 
 r1_2 <- remef(precip_mod.2, ran = 'all')
 
@@ -298,14 +298,14 @@ summary(precip_mod.adfa2)
 ## Main Figure (cont.) LFM, Dry Weight, MPa Relationships
 Models:
 ```{r}
-mpalfm_mod <- lmer(lfm ~ mpa + Species + season + (1 | individual), data = seg.data.subset.alldates)
+mpalfm_mod <- lmer(lfm ~ mpa + Species + season + site + (1 | individual), data = seg.data.subset.alldates)
 
 summary(mpalfm_mod)
 
 r1_lfm <- remef(mpalfm_mod ,  ran = "all")
 scaled_r1_lfm_df <- as.data.frame(r1_lfm)
 ###
-mpadw_mod <- lmer(dw.flam.sample ~ mpa + Species + season + (1 | individual), data = seg.data.subset.alldates)
+mpadw_mod <- lmer(dw.flam.sample ~ mpa + Species + season + site + (1 | individual), data = seg.data.subset.alldates)
 
 summary(mpadw_mod)
 
@@ -404,7 +404,6 @@ legend.sz <- get_legend(
     scale_color_manual(values=c("#c1121f","#669BBC")) +
     theme(legend.box.margin = margin(0, 0, 0, 0),
           legend.position = "top",
-          legend.text = element_text(face = "italic", size = 12),
           legend.title = element_text(face = 'bold', size = 16),
           legend.key = element_rect(fill = "white"))
 )
@@ -658,7 +657,7 @@ scaled.mem.data.sept2020 <- seg.data.subset.alldates %>%
 Remeff package
 
 ```{r}
-mpa_mod_fig_tti <- lmer(tti ~ mpa.unscaled + Species + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_tti <- lmer(tti ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
 
 summary(mpa_mod_fig_tti)
 
@@ -692,7 +691,7 @@ model_coef_plot
 
 #### Time to ignition
 ```{r}
-mpa_mod_fig_tti <- lmer(tti ~ mpa.unscaled + Species + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_tti <- lmer(tti ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
 
 r1_1 <- remef(mpa_mod_fig_tti, ran = list(individual = c("(Intercept)")))
 #summary(r1_1)
@@ -715,7 +714,7 @@ tti.mpa
 
 #### Flame duration
 ```{r}
-mpa_mod_fig_fd <- lmer(fd ~ mpa.unscaled + Species + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_fd <- lmer(fd ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
 
 fd_remef_year <- remef(mpa_mod_fig_fd , ran = list(individual = c("(Intercept)")))
 
@@ -737,7 +736,7 @@ fd.mpa
 
 #### Glow duration
 ```{r}
-mpa_mod_fig_gd <- lmer(gd ~ mpa.unscaled + Species + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_gd <- lmer(gd ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
 
 summary(mpa_mod_fig_gd)
 
@@ -762,7 +761,7 @@ gd.mpa
 
 #### PC1
 ```{r}
-mpa_mod_fig_pc1 <- lmer(PC1 ~ mpa.unscaled + Species + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_pc1 <- lmer(PC1 ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
 
 pc1_remef_year <- remef(mpa_mod_fig_pc1 , ran = list(individual = c("(Intercept)")))
 

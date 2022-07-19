@@ -456,7 +456,6 @@ m5 <- lmer(PC1 ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1
 
 Table
 ```{r}
-?tab_model
 tab_model(m1, m2, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
