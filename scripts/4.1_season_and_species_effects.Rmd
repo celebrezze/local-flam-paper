@@ -57,6 +57,7 @@ library(MetBrewer)
 #install.packages("segmented")
 #devtools::install_github("hohenstein/remef")
 library(remef)
+library(gridExtra)
 ```
 
 Set global options for color palettes and themes: 
@@ -188,7 +189,7 @@ season_plot.pc1 <- precip_groups_ranis  %>%
               show.legend = FALSE) +
   ggpubr::stat_regline_equation(show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
-       y = "Flammability Proxy", 
+       y = "Ignitability-Combustibility Proxy", 
        fill = "Season",
        color = "Season") +
   scale_y_continuous(limits=c(-5,6.25), breaks=c(-5,-2.5,0,2.5,5)) +
@@ -238,7 +239,8 @@ season_plot.pc2 <- precip_groups_ranis  %>%
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
         strip.text = element_text(face = "italic", size = 12),
-        axis.title = element_text(face = 'bold')) +
+        axis.title.y = element_text(face = 'bold'),
+        axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
          
@@ -293,7 +295,7 @@ precip_mod.adfa2 <- lmer(PC2 ~ mpa.unscaled + season + (1 | individual), data = 
 summary(precip_mod.adfa2)
 # Yes
 ```
-## 2.0.2 LFM, Dry Weight, MPa Relationships
+## Main Figure (cont.) LFM, Dry Weight, MPa Relationships
 Models:
 ```{r}
 mpalfm_mod <- lmer(lfm ~ mpa + Species + season + (1 | individual), data = seg.data.subset.alldates)
@@ -380,26 +382,58 @@ mpa.vs.dw.plot <- mpa_rel_df %>%
              scales = "free" ) +
   scale_y_continuous(limits=c(-2,2.5), breaks=c(-2, -1, 0, 1, 2)) +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
-  theme(legend.position = "bottom", 
+  theme(legend.position = "none", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
         strip.text = element_text(face = "italic", size = 12),
-        axis.title = element_text(face = 'bold')) +
+        axis.title.y = element_text(face = 'bold'),
+        axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
 
 mpa.vs.dw.plot
 ```
 
-### Adding to 'main figure' (PC1 and PC2 figure)
+### Main Figure: Arranging plots
 ```{r}
-season_plot.w.dw.vs.mpa <- cowplot::plot_grid(season_plot.pc1, mpa.vs.lfm.plot, season_plot.pc2, mpa.vs.dw.plot, nrow = 2)
+legend.sz <- get_legend(
+  # create some space to the top of the legend
+  ggplot() + 
+  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, PC1, color = season), size = 1, alpha = .8) +
+    labs(color = "Season", shape = "Season") +
+    scale_color_manual(values=c("#c1121f","#669BBC")) +
+    theme(legend.box.margin = margin(0, 0, 0, 0),
+          legend.position = "top",
+          legend.text = element_text(face = "italic", size = 12),
+          legend.title = element_text(face = 'bold', size = 16),
+          legend.key = element_rect(fill = "white"))
+)
 
-season_plot.w.dw.vs.mpa
+plot.sz <- cowplot::plot_grid(
+        season_plot.pc1 + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        mpa.vs.lfm.plot + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
+        season_plot.pc2 + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        mpa.vs.dw.plot + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
+        align='vh', vjust=.5, scale = 1,
+        ncol = 2
+          )
 
-ggsave(here("figures", "season_plot.expanded.jpg"),
-       plot = season_plot.w.dw.vs.mpa, 
-       width = 12, height = 8, dpi = 300)
+x.grob <- textGrob("Water Potential (MPa)", 
+                   gp=gpar(fontface="bold", 
+                           col="black", 
+                           fontsize=20))
+
+#add to plot
+scatterplot.sz <- gridExtra::grid.arrange(arrangeGrob(plot.sz, bottom = x.grob)) 
+scatterplot.sz
+
+plot_legend.sz <- cowplot::plot_grid(legend.sz, scatterplot.sz, ncol = 1, rel_heights = c(1,12))
+plot_legend.sz
+
+
+ggsave(here("figures", "season.plot.expanded.jpg"),
+       plot = plot_legend.sz,
+       width = 17, height = 10, dpi = 300)
 ```
 
 ## MPa vs PC1
@@ -740,7 +774,7 @@ pc1.mpa <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, col
   geom_smooth(method = "lm", data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
   ggpubr::stat_regline_equation(legend = FALSE) +  
   labs(x="Water Potential (-Mpa)", 
-       y="Flammability Proxy") +
+       y="Ignitability-Combustibility Proxy") +
   th +
   th_panels +
   color_panels
@@ -756,6 +790,7 @@ legend <- get_legend(
   geom_point(data= scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = Species, shape = Species), size = 1, alpha = .8) +
     color_panels +
     theme(legend.box.margin = margin(0, 0, 0, 0),
+          legend.position = "top",
           legend.text = element_text(face = "italic", size = 12),
           legend.title = element_text(face = 'bold', size = 16),
           legend.key = element_rect(fill = "white"))
@@ -775,18 +810,18 @@ x.grob <- textGrob("Water Potential (MPa)",
                            col="black", 
                            fontsize=20)
                    )
-library(gridExtra)
+
 #add to plot
 scatterplot <- gridExtra::grid.arrange(arrangeGrob(plot, bottom = x.grob)) 
 scatterplot
 
-plot_legend <- cowplot::plot_grid(scatterplot, legend, rel_widths = c(4, 1.1))
+plot_legend <- cowplot::plot_grid (legend, scatterplot, ncol = 1, rel_heights = c(1, 12))
 plot_legend
 
 
 ggsave(here("figures", "species.plot.jpg"),
        plot = plot_legend, 
-       width = 11, height = 8)
+       width = 10, height = 10, dpi = 300)
 ```
 
 
@@ -940,9 +975,10 @@ r1_1 <- remef(lfm_mod_fig_tti, ran = list(individual = c("(Intercept)")))
 scaled_r1_1_df <- as.data.frame(r1_1)
 tti_groups_ranis <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-tti.lfm <- ggplot() + 
-  geom_point(data= tti_groups_ranis, aes(lfm.unscaled, r1_1, color = Species,shape = Species), size = 1.2, alpha = .6) + 
-  geom_smooth(method = "lm", data= tti_groups_ranis, aes(lfm.unscaled, r1_1, color = Species), se = FALSE, size = 1) +
+tti.lfm <- ggplot(data= tti_groups_ranis, aes(lfm.unscaled, r1_1, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_smooth(method = "lm", data= tti_groups_ranis, aes(lfm.unscaled, r1_1, color = Species, fill = Species), se = TRUE, size = 1) +
+  ggpubr::stat_regline_equation(legend = FALSE) +
   labs(
     x="Live Fuel Moisture (%)", 
        y="Time to Ignition (sec)")  +
@@ -963,10 +999,10 @@ fd_remef_year <- remef(lfm_mod_fig_fd, ran = list(individual = c("(Intercept)"))
 scaled_r1_1_df <- as.data.frame(fd_remef_year)
 fd_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-fd.lfm <- ggplot() + 
-  geom_point(data= fd_remef_year_df, aes(lfm.unscaled, fd_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
-  geom_smooth(method = "lm", data= fd_remef_year_df, aes(lfm.unscaled, fd_remef_year, color = Species), se = FALSE, size = 1, alpha = .5) +
-   stat_regline_equation() +
+fd.lfm <- ggplot(data= fd_remef_year_df, aes(lfm.unscaled, fd_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_smooth(method = "lm", data= fd_remef_year_df, aes(lfm.unscaled, fd_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
+  ggpubr::stat_regline_equation(legend = FALSE) +
   labs(
     x="Live Fuel Moisture (%)", 
        y="Flame Duration (sec)")  +
@@ -987,10 +1023,11 @@ gd_remef_year <- remef(lfm_mod_fig_gd, ran = list(individual = c("(Intercept)"))
 scaled_r1_1_df <- as.data.frame(gd_remef_year)
 gd_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-gd.lfm <- ggplot() + 
-  geom_point(data= gd_remef_year_df, aes(lfm.unscaled, gd_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
-  geom_smooth(method = "lm", data= gd_remef_year_df, aes(lfm.unscaled, gd_remef_year, color = Species), se = FALSE, size = 1, alpha = .5) +
-   stat_regline_equation() +
+gd.lfm <- ggplot(data= gd_remef_year_df, aes(lfm.unscaled, gd_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_smooth(method = "lm", data= gd_remef_year_df, aes(lfm.unscaled, gd_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
+  scale_y_continuous(limits = c(50, 225), breaks = c(50, 100, 150, 200)) +
+  ggpubr::stat_regline_equation(legend = FALSE) +
   labs(
     x="Live Fuel Moisture (%)", 
        y="Glow Duration (sec)")  +
@@ -1011,13 +1048,13 @@ pc1_remef_year <- remef(lfm_mod_fig_pc1, ran = list(individual = c("(Intercept)"
 scaled_r1_1_df <- as.data.frame(pc1_remef_year)
 pc1_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-pc1.lfm <- ggplot() + 
-  geom_point(data= pc1_remef_year_df, aes(lfm.unscaled, pc1_remef_year, color = Species,shape = Species), size = 1.2, alpha = .6) + 
-  geom_smooth(method = "lm", data= pc1_remef_year_df, aes(lfm.unscaled, pc1_remef_year, color = Species), se = FALSE, size = 1, alpha = .5) +
-   stat_regline_equation() +
+pc1.lfm <- ggplot(data= pc1_remef_year_df, aes(lfm.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_smooth(method = "lm", data= pc1_remef_year_df, aes(lfm.unscaled, pc1_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
+  ggpubr::stat_regline_equation(legend = FALSE) +
   labs(
-    x="Live Fuel Moisture (%)", 
-       y="Flammability Proxy")  +
+    x= "Live Fuel Moisture (%)", 
+       y= "Ignitability-Combustibility Proxy")  +
    th +
   th_panels +
   color_panels
@@ -1033,6 +1070,7 @@ legend <- get_legend(
   geom_point(data= scaled.mem.data.sept2020, aes(lfm.unscaled, PC1, color = Species, shape = Species), size = 1, alpha = .8) +
     color_panels +
     theme(legend.box.margin = margin(0, 0, 0, 0),
+          legend.position = "top",
           legend.text = element_text(face = "italic", size = 12),
           legend.title = element_text(face = 'bold', size = 16),
           legend.key = element_rect(fill = "white"))
@@ -1057,13 +1095,13 @@ library(gridExtra)
 scatterplot <- gridExtra::grid.arrange(arrangeGrob(plot, bottom = x.grob)) 
 scatterplot
 
-plot_legend <- cowplot::plot_grid(scatterplot, legend, rel_widths = c(4, 1.1))
+plot_legend <- cowplot::plot_grid(legend, scatterplot, ncol = 1, rel_heights = c(1,12))
 plot_legend
 
 
 ggsave(here("figures", "lfm_spp_fx_ranef.jpg"),
        plot = plot_legend, 
-       width = 11, height = 8)
+       width = 10, height = 10, dpi = 300)
 ```
 
 # ------------------------------------
@@ -1161,3 +1199,17 @@ pc1.mpa2 <- ggplot() +
   th
 pc1.mpa2
 ```
+# ------
+# LFM vs. Water Potential (raw values)
+```{r}
+ggplot(seg.data.subset.alldates, aes(y = lfm.unscaled, x = mpa)) +
+  geom_point(fill = "#c1121f", alpha = 0.6) +
+  facet_wrap(~spp, labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  labs(x = "Water Potential (MPa)", y = "Live Fuel Moisture (%)") +
+  theme(strip.text = element_text(face = "italic")) +
+  th
+
+ggsave(here('figures', 'lfm.vs.mpa.raw.values.jpg'), height = 10, width = 18)
+```
+
