@@ -268,6 +268,10 @@ os.mod.a<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.a)
 
+u.mod <- lm(PC1~lfm + year.month + site, data = seg.ceme.subset)
+u.mod.a <- segmented(u.mod, ~lfm)
+davies.test(u.mod.a)
+
 rsegplot.lfm(os.mod.a, seg.ceme.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
 ```
 
@@ -307,6 +311,11 @@ o.mod<-lme(tti~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod.b<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.b)
+
+u.mod <- lm(tti~lfm + year.month + site, data = seg.ceme.subset)
+u.mod.b <- segmented(u.mod, ~lfm)
+davies.test(u.mod.b)
+summary.segmented(u.mod.b)
 
 rsegplot.lfm(os.mod.b, seg.ceme.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
 ```
