@@ -470,13 +470,17 @@ field_data_local <- field_data_local  %>%
      age == "new" ~ "new", 
      age == "old" ~ "old", 
      TRUE ~ as.character(age)
-   )) 
+   ))  %>% 
+    mutate(Species = case_when(
+    spp == "ADFA" ~ "Adenostoma fasciculatum", 
+    spp == "CEME" ~ "Ceanothus megacarpus"
+  ))
 ```
 
 Range of LFM in field data
 ```{r}
 field_data_local %>% 
-  ggplot(aes(y = lfm, x = spp, fill = spp)) +
+  ggplot(aes(y = lfm, x = Species, fill = Species)) +
   geom_point() +
   geom_boxplot(alpha = 0.7) +
   scale_fill_manual(values=c("#9D0208","#F48C06")) +
@@ -489,27 +493,45 @@ ggsave(here('figures', 'lfm.field.data.jpg'), height = 7, width = 9)
 Comparing field measurements of water status/content
 ```{r}
 field.plot1 <- field_data_local %>% 
-  ggplot(aes(y = lfm, x = midday*-1, color = spp)) +
-  geom_point() +
-  labs(x = "Midday Water Potential", y = "LFM", color = "Species") + 
-  scale_color_manual(values=c("#9D0208","#F48C06")) +
-  th
-
-field.plot2 <- field_data_local %>% 
-  ggplot(aes(y = lfm, x = predawn*-1, color = spp)) +
+  ggplot(aes(y = lfm, x = predawn*-1, color = Species)) +
   geom_point() +
   labs(x = "Predawn Water Potential", y = "LFM", color = "Species") + 
   scale_color_manual(values=c("#9D0208","#F48C06")) +
+  theme(legend.text = element_text(face = 'italic'),
+        legend.title = element_text(face = "bold"),
+        axis.title.y = element_text(face = 'bold'),
+        axis.title.x = element_blank(),
+        legend.key = element_rect(fill = "white")) +
+  th
+
+field.plot2 <- field_data_local %>% 
+  ggplot(aes(y = lfm, x = midday*-1, color = Species)) +
+  geom_point() +
+  labs(x = "Midday Water Potential", y = "LFM", color = "Species") + 
+  scale_color_manual(values=c("#9D0208","#F48C06")) +
+  theme(legend.text = element_text(face = 'italic'),
+        legend.title = element_text(face = "bold"),
+        axis.title.x = element_text(face = 'bold'),
+        axis.title.y = element_blank(),
+        legend.key = element_rect(fill = "white")) +
   th
 
 field.plot3 <- field_data_local %>% 
-  ggplot(aes(y = midday*-1, x = predawn*-1, color = spp)) +
+  ggplot(aes(y = midday*-1, x = predawn*-1, color = Species)) +
   geom_point() +
   labs(x = "Predawn Water Potential", y = "Midday Water Potential", color = "Species") +
   scale_color_manual(values=c("#9D0208","#F48C06")) +
+  theme(legend.text = element_text(face = 'italic'),
+        legend.title = element_text(face = "bold"),
+        axis.title = element_text(face = 'bold'),
+        legend.key = element_rect(fill = "white")) +
   th
 
-ggarrange(field.plot1, field.plot2, field.plot3, ncol = 3, common.legend = TRUE)
+blank.plot <- field_data_local %>% 
+  ggplot(aes(y = midday*-1, x = predawn*-1, color = Species)) +
+  theme_void()
 
-ggsave(here('figures', 'field.plots.jpg'), height = 4, width = 12)
+ggarrange(field.plot1, field.plot2, field.plot3, blank.plot, ncol = 2, nrow = 2, common.legend = TRUE)
+
+ggsave(here('figures', 'field.plots.jpg'), height = 8, width = 12)
 ```
