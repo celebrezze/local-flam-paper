@@ -5,10 +5,6 @@ date: "7/21/2022"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 #lots of extra here, but oh well... 
@@ -27,6 +23,7 @@ library(gtsummary)
 filter = dplyr::filter 
 rename = dplyr::rename
 here = here::here
+group_by = dplyr::group_by
 ```
 
 # Reading in Dataframes
@@ -35,8 +32,6 @@ Using all dates instead of just Sept. 2020 data
 seg.data.subset <- read.csv(here('processed-data', 'seg.reg.data.local.csv'))
 
 seg.data.subset.alldates <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
-
-scaled.mem.data.alldates <- read.csv(here('processed-data', 'mem.data.local.epi.alldates.csv'))
 ```
 
 # Data Wrangling
@@ -45,8 +40,235 @@ For the segmented regressions, we debated using seasonal LFM minimums and maximu
 ## Species Split
 ```{r}
 seg.adfa.subset <- seg.data.subset %>% 
-  filter(spp == "ADFA")
+  filter(spp == "ADFA") %>% 
+  group_by(lfm.bin = cut(lfm, breaks= seq(0, 120, by = 6))) %>%  #Fixing the bins
+  drop_na(PC1, lfm, year.month, site, id) %>% 
+  select(PC1, PC2, tti, fh, temp.max, gd, gti, pfg, ttfg, fd, prop.ignite.bins5_nodate, lfm, lfm.bin, mpa, year.month, site, id)
 
 seg.ceme.subset <- seg.data.subset %>% 
-  filter(spp == "CEME")
+  filter(spp == "CEME") %>% 
+  filter(lfm < 220) %>% 
+  group_by(lfm.bin = cut(lfm, breaks= seq(0, 220, by = 10))) %>%  #Fixing the bins
+  drop_na(PC1, lfm, year.month, site, id) %>% 
+  select(PC1, PC2, tti, fh, temp.max, gd, gti, pfg, ttfg, fd, prop.ignite.bins5_nodate, lfm, lfm.bin, mpa, year.month, site, id)
+```
+
+# CEME
+
+# 1. Pick the median bin density
+```{r}
+ceme.bin.n <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  count()
+
+median(ceme.bin.n$n) # Median: 4.5; round to 5
+```
+
+# 2. Resampling points from each bin
+```{r}
+ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(5, replace = T)
+```
+
+# 3. Segmented Regression
+```{r}
+out.lm<-lm(PC2 ~ lfm + site + year.month, data = ceme.binned.df)
+davies.test(out.lm, ~lfm, k = 50)
+
+segmented.mod <- segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
+summary(segmented.mod)
+```
+
+# 4. Iterating Above Process 1000 Times
+Holding vectors
+```{r}
+psi.PC1 <- c(rep(NaN, 100))
+psi.PC2 <- c(rep(NaN, 100))
+psi.tti <- c(rep(NaN, 100))
+psi.fh <- c(rep(NaN, 100))
+#psi.fd <- c(rep(NaN, 40))
+psi.gd <- c(rep(NaN, 100))
+psi.gti <- c(rep(NaN, 100))
+psi.pfg <- c(rep(NaN, 100))
+psi.ttfg <- c(rep(NaN, 100))
+psi.temp.max <- c(rep(NaN, 100))
+psi.prop.ignite <- c(rep(NaN, 100))
+ceme.thresholds <- data.frame(psi.PC1, psi.PC2, psi.tti, psi.fh, psi.temp.max, psi.gd, psi.gti, psi.pfg, psi.ttfg, psi.prop.ignite)
+```
+
+For loop
+It is a bit clunky, but seems to do the trick. Could not figure out how to iterate dependent variables in the linear models.
+
+Note: I did not include flame duration below, as it was interrupting the for loop when it did not return a threshold
+```{r}
+for(i in 1:10){
+   for(j in 1:nrow(ceme.thresholds)){
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(5, replace = T)
+  if(i == 1){
+    out.lm<-lm(PC1 ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 2) {
+  out.lm<-lm(PC2 ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 3) {
+    out.lm<-lm(tti ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 4) {
+    out.lm<-lm(fh ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 5) {
+    out.lm<-lm(temp.max ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 6) {
+    out.lm<-lm(gd ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 7) {
+  out.lm<-lm(gti ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 8) {
+    out.lm<-lm(pfg ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 9) {
+    out.lm<-lm(ttfg ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 10) {
+    out.lm<-lm(prop.ignite.bins5_nodate ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+   }}
+```
+
+# 5. Mean Threshold Values
+```{r}
+summary(ceme.thresholds)
+```
+
+#-------------------------------
+
+# ADFA
+
+# 1. Pick the median bin density
+```{r}
+adfa.bin.n <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  count()
+
+median(adfa.bin.n$n) # Median: 18.5; round to 19
+```
+
+# 2. Resampling points from each bin
+```{r}
+adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+```
+
+# 3. Segmented Regression
+```{r}
+out.lm<-lm(PC1 ~ lfm + site + year.month, data = adfa.binned.df)
+davies.test(out.lm, ~lfm, k = 50)
+
+segmented.mod <- segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
+summary(segmented.mod)
+```
+
+# 4. Iterating Above Process 1000 Times
+Holding vectors
+```{r}
+psi.PC1 <- c(rep(NaN, 100))
+psi.PC2 <- c(rep(NaN, 100))
+psi.tti <- c(rep(NaN, 100))
+psi.fh <- c(rep(NaN, 100))
+#psi.fd <- c(rep(NaN, 40))
+psi.gd <- c(rep(NaN, 100))
+psi.gti <- c(rep(NaN, 100))
+psi.pfg <- c(rep(NaN, 100))
+psi.ttfg <- c(rep(NaN, 100))
+psi.fd <- c(rep(NaN, 100))
+psi.prop.ignite <- c(rep(NaN, 100))
+adfa.thresholds <- data.frame(psi.PC1, psi.PC2, psi.tti, psi.fh, psi.fd, psi.gd, psi.gti, psi.pfg, psi.ttfg, psi.prop.ignite)
+```
+
+For loop
+It is a bit clunky, but seems to do the trick. Could not figure out how to iterate dependent variables in the linear models.
+
+Note: I did not include flame duration below, as it was interrupting the for loop when it did not return a threshold
+```{r}
+for(i in 1:10){
+   for(j in 1:nrow(adfa.thresholds)){
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+  if(i == 1){
+    out.lm<-lm(PC1 ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 2) {
+  out.lm<-lm(PC2 ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 3) {
+    out.lm<-lm(tti ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 4) {
+    out.lm<-lm(fh ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 5) {
+    out.lm<-lm(fd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 6) {
+  adfa.thresholds[j,i] <- NaN
+  }
+  else if(i == 7) {
+  adfa.thresholds[j,i] <- NaN
+  }
+  else if(i == 8) {
+    out.lm<-lm(pfg ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 9) {
+    out.lm<-lm(ttfg ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
+  }
+  else if(i == 10) {
+  adfa.thresholds[j,i] <- NaN
+  }
+   }}
+```
+
+# 5. Mean Threshold Values
+```{r}
+summary(adfa.thresholds)
 ```
