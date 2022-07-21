@@ -1,0 +1,52 @@
+---
+title: "Segmented Regressions: Bootstrapping Prior to Analysis"
+author: "Indra Boving & Joe Celebrezze"
+date: "7/21/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+#lots of extra here, but oh well... 
+library(ggplot2)
+library(gapminder)
+library(tidyverse)
+library(lme4)
+library(here)
+library(segmented)
+library(nlme)
+library(lubridate)
+library(MetBrewer)
+library(lattice)
+library(gt)
+library(gtsummary)
+filter = dplyr::filter 
+rename = dplyr::rename
+here = here::here
+```
+
+# Reading in Dataframes
+Using all dates instead of just Sept. 2020 data
+```{r}
+seg.data.subset <- read.csv(here('processed-data', 'seg.reg.data.local.csv'))
+
+seg.data.subset.alldates <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+
+scaled.mem.data.alldates <- read.csv(here('processed-data', 'mem.data.local.epi.alldates.csv'))
+```
+
+# Data Wrangling
+For the segmented regressions, we debated using seasonal LFM minimums and maximums to limit the dataset, but instead -- since we wanted to keep the datasets similar for each analysis -- we used the dataset that was used in the mixed effects model analysis
+
+## Species Split
+```{r}
+seg.adfa.subset <- seg.data.subset %>% 
+  filter(spp == "ADFA")
+
+seg.ceme.subset <- seg.data.subset %>% 
+  filter(spp == "CEME")
+```

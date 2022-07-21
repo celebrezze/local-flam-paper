@@ -145,22 +145,29 @@ seg.data.subset.alldates <- seg.data.subset.alldates %>%
   mutate(season = case_when(
     precip.2mo < 0.5 ~ "Dry", 
     precip.2mo > 0.5 ~ "Wet")
-  )
+  ) %>% 
+  mutate(site.test = case_when(
+    site == "St. Marys" ~ 1,
+    site == "Painted Caves" ~ 2
+  ))
 
-precip_mod <- lmer(PC1 ~ mpa.unscaled + Species + season + site + (1 | individual), data = seg.data.subset.alldates)
+precip_mod <- lmer(PC1 ~ mpa.unscaled + site.test + Species + season + (1 | individual), data = seg.data.subset.alldates)
 
 summary(precip_mod)
 
-r1_1 <- remef(precip_mod ,  ran = "all")
+r1_1 <- remef(precip_mod, fix = 'site.test',  ran = "all")
 #summary(r1_1)
 scaled_r1_1_df <- as.data.frame(r1_1)
+
+
+
 #https://stats.stackexchange.com/questions/258285/how-to-do-partial-regression-plots-with-linear-mixed-effect-models/258292#258292?newreg=3b55c635f610441db980674675bc0051
 ```
 
 ```{r}
-precip_mod.2 <- lmer(PC2 ~ mpa.unscaled + Species + season + site + (1 | individual), data = seg.data.subset.alldates)
+precip_mod.2 <- lmer(PC2 ~ mpa.unscaled + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
 
-r1_2 <- remef(precip_mod.2, ran = 'all')
+r1_2 <- remef(precip_mod.2, fix = 'site.test', ran = 'all')
 
 scaled_r1_2_df <- as.data.frame(r1_2)
 ```
@@ -169,15 +176,13 @@ scaled_r1_2_df <- as.data.frame(r1_2)
 precip_groups_ranis <- cbind(seg.data.subset.alldates, scaled_r1_1_df, scaled_r1_2_df)
 ```
 
-## NOTE: How do we include r1_1 in figure?
-
 ## 2.0.1 Main Figure
 
 ### PC1
 Ignitability + combustibility proxy (used as 'flammability' proxy)
 ```{r}
 season_plot.pc1 <- precip_groups_ranis  %>%
-  ggplot(aes(y = r1_1, 
+  ggplot(aes(y = PC1, 
              x = mpa.unscaled,
              fill = season,
              color = season,
@@ -214,7 +219,7 @@ season_plot.pc1
 Consumability proxy
 ```{r}
 season_plot.pc2 <- precip_groups_ranis  %>%
-  ggplot(aes(y = r1_2, 
+  ggplot(aes(y = PC2, 
              x = mpa.unscaled,
              fill = season,
              color = season,
@@ -298,18 +303,18 @@ summary(precip_mod.adfa2)
 ## Main Figure (cont.) LFM, Dry Weight, MPa Relationships
 Models:
 ```{r}
-mpalfm_mod <- lmer(lfm ~ mpa + Species + season + site + (1 | individual), data = seg.data.subset.alldates)
+mpalfm_mod <- lmer(lfm ~ mpa + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
 
 summary(mpalfm_mod)
 
-r1_lfm <- remef(mpalfm_mod ,  ran = "all")
+r1_lfm <- remef(mpalfm_mod, fix = 'site.test',  ran = "all")
 scaled_r1_lfm_df <- as.data.frame(r1_lfm)
 ###
-mpadw_mod <- lmer(dw.flam.sample ~ mpa + Species + season + site + (1 | individual), data = seg.data.subset.alldates)
+mpadw_mod <- lmer(dw.flam.sample ~ mpa + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
 
 summary(mpadw_mod)
 
-r1_dw <- remef(mpadw_mod ,  ran = "all")
+r1_dw <- remef(mpadw_mod , fix = 'site.test',  ran = "all")
 scaled_r1_dw_df <- as.data.frame(r1_dw)
 ```
 
@@ -326,7 +331,7 @@ mpa_rel_df <- cbind(scaled_r1_dw_df, scaled_r1_lfm_df, seg.data.subset.alldates)
 
 ```{r}
 mpa.vs.lfm.plot <- mpa_rel_df %>% 
-  ggplot(aes(y = r1_lfm, 
+  ggplot(aes(y = lfm.outliers.out, 
              x = mpa.unscaled,
              fill = season,
              color = season,
@@ -338,7 +343,7 @@ mpa.vs.lfm.plot <- mpa_rel_df %>%
               show.legend = FALSE) +
   ggpubr::stat_regline_equation(show.legend = FALSE) +
   labs(x = "Water Potential (MPa)", 
-       y = "Live Fuel Moisture (Scaled, Effects Removed)", 
+       y = "Live Fuel Moisture (Scaled)", 
        fill = "Season",
        color = "Season") +
   th +
@@ -361,7 +366,7 @@ mpa.vs.lfm.plot
 ### MPa vs. DW
 ```{r}
 mpa.vs.dw.plot <- mpa_rel_df %>% 
-  ggplot(aes(y = r1_dw, 
+  ggplot(aes(y = dw.flam.sample, 
              x = mpa.unscaled,
              fill = season,
              color = season,
@@ -373,7 +378,7 @@ mpa.vs.dw.plot <- mpa_rel_df %>%
               show.legend = FALSE) +
   ggpubr::stat_regline_equation(show.legend = FALSE) +
   labs(x = "Water Potential (MPa)", 
-       y = "Dry Weight (Scaled, Effects Removed)", 
+       y = "Dry Weight (Scaled)", 
        fill = "Season",
        color = "Season") +
   th +
@@ -430,7 +435,7 @@ plot_legend.sz <- cowplot::plot_grid(legend.sz, scatterplot.sz, ncol = 1, rel_he
 plot_legend.sz
 
 
-ggsave(here("figures", "season.plot.expanded.jpg"),
+ggsave(here("figures", "season.plot.expanded.noREMEF.jpg"),
        plot = plot_legend.sz,
        width = 17, height = 10, dpi = 300)
 ```
@@ -691,9 +696,9 @@ model_coef_plot
 
 #### Time to ignition
 ```{r}
-mpa_mod_fig_tti <- lmer(tti ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_tti <- lmer(tti ~ mpa.unscaled + Species + site.test + (1 | individual), data = scaled.mem.data.sept2020)
 
-r1_1 <- remef(mpa_mod_fig_tti, ran = list(individual = c("(Intercept)")))
+r1_1 <- remef(mpa_mod_fig_tti, fix = 'site.test', ran = list(individual = c("(Intercept)")))
 #summary(r1_1)
 
 #https://stats.stackexchange.com/questions/258285/how-to-do-partial-regression-plots-with-linear-mixed-effect-models/258292#258292?newreg=3b55c635f610441db980674675bc0051
@@ -701,7 +706,7 @@ r1_1 <- remef(mpa_mod_fig_tti, ran = list(individual = c("(Intercept)")))
 scaled_r1_1_df <- as.data.frame(r1_1)
 tti_groups_ranis <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-tti.mpa <- ggplot(data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species, shape = Species)) + 
+tti.mpa <- ggplot(data= tti_groups_ranis, aes(mpa.unscaled, tti, color = Species, shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species, fill = Species), se = TRUE, size = 1) +
   ggpubr::stat_regline_equation(legend = FALSE) +
@@ -714,14 +719,14 @@ tti.mpa
 
 #### Flame duration
 ```{r}
-mpa_mod_fig_fd <- lmer(fd ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_fd <- lmer(fd ~ mpa.unscaled + Species + site.test + (1 | individual), data = scaled.mem.data.sept2020)
 
-fd_remef_year <- remef(mpa_mod_fig_fd , ran = list(individual = c("(Intercept)")))
+fd_remef_year <- remef(mpa_mod_fig_fd, fix = 'site.test', ran = list(individual = c("(Intercept)")))
 
 scaled_r1_1_df <- as.data.frame(fd_remef_year)
 fd_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-fd.mpa <- ggplot(data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species,shape = Species)) + 
+fd.mpa <- ggplot(data= fd_remef_year_df, aes(mpa.unscaled, fd, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
   ggpubr::stat_regline_equation(legend = FALSE) +
@@ -736,16 +741,16 @@ fd.mpa
 
 #### Glow duration
 ```{r}
-mpa_mod_fig_gd <- lmer(gd ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_gd <- lmer(gd ~ mpa.unscaled + Species + site.test + (1 | individual), data = scaled.mem.data.sept2020)
 
 summary(mpa_mod_fig_gd)
 
-gd_remef_year <- remef(mpa_mod_fig_gd , ran = list(individual = c("(Intercept)")))
+gd_remef_year <- remef(mpa_mod_fig_gd , fix = 'site.test', ran = list(individual = c("(Intercept)")))
 
 scaled_r1_1_df <- as.data.frame(gd_remef_year)
 gd_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-gd.mpa <- ggplot(data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species,shape = Species)) + 
+gd.mpa <- ggplot(data= gd_remef_year_df, aes(mpa.unscaled, gd, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
   ggpubr::stat_regline_equation(legend = FALSE) +
@@ -761,14 +766,14 @@ gd.mpa
 
 #### PC1
 ```{r}
-mpa_mod_fig_pc1 <- lmer(PC1 ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+mpa_mod_fig_pc1 <- lmer(PC1 ~ mpa.unscaled + Species + site.test + (1 | individual), data = scaled.mem.data.sept2020)
 
-pc1_remef_year <- remef(mpa_mod_fig_pc1 , ran = list(individual = c("(Intercept)")))
+pc1_remef_year <- remef(mpa_mod_fig_pc1 , fix = 'site.test', ran = list(individual = c("(Intercept)")))
 
 scaled_r1_1_df <- as.data.frame(pc1_remef_year)
 pc1_remef_year_df <- cbind(scaled.mem.data.sept2020, scaled_r1_1_df)
 
-pc1.mpa <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
+pc1.mpa <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, PC1, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
   geom_smooth(method = "lm", data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species, fill = Species), se = TRUE, size = 1, alpha = .5) +
   ggpubr::stat_regline_equation(legend = FALSE) +  
@@ -818,7 +823,7 @@ plot_legend <- cowplot::plot_grid (legend, scatterplot, ncol = 1, rel_heights = 
 plot_legend
 
 
-ggsave(here("figures", "species.plot.jpg"),
+ggsave(here("figures", "species.plot.noREMEF.jpg"),
        plot = plot_legend, 
        width = 10, height = 10, dpi = 300)
 ```

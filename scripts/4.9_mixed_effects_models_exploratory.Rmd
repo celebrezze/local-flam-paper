@@ -1274,200 +1274,252 @@ annotate("text", x= -11, y= -3.5, label= "Less", size = 3) +
 
 #------------------------------------
 # 2.1. Predicting raw metrics (part 2)
-
-### 2.1.1 Flame height
+## Time to Ignition
+Models
 ```{r}
-mpa_mod_fig.mpa <- lmer(fh ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(tti ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m3 <- lmer(fh ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-  
-m6 <- lmer(fh ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m2 <- lmer(tti ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m7 <- lmer(fh ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-m7
+m3 <- lmer(tti ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m10 <- lmer(fh ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m4 <- lmer(tti ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m11 <- lmer(fh ~ mpa*spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-#tab_model(top_model, m7, m10, m3, m6) 
-tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
-          show.reflvl = TRUE, 
-          digits = 3, 
-          show.aic = TRUE, 
-          show.ci = FALSE,
-          show.icc = FALSE, 
-          pred.labels = c('Intercept', 
-                          'Water Potential (-Mpa)', 
-                          'C. megacarpus',
-                           'LFM (%)',
-                          'Water weight (g)', 
-                          'Dry weight (g)'), 
-         dv.labels = c("Model 1", 
-                       "Model 2", 
-                       "Model 3", 
-                       "Model 4", 
-                       "Model 5", 
-                       "Model 6"),
-         string.pred = "Coeffcient",
-  string.p = "P-Value", 
-  p.style = "stars")
-```
-
-### 2.1.2 Maximum temp.
-```{r}
-mpa_mod_fig.mpa <- lmer(temp.max ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m3 <- lmer(temp.max ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-  
-m6 <- lmer(temp.max ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m7 <- lmer(temp.max ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-m7
-
-m10 <- lmer(temp.max ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m11 <- lmer(temp.max ~ spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-#tab_model(top_model, m7, m10, m3, m6) 
-tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
-          show.reflvl = TRUE, 
-          digits = 3, 
-          show.aic = TRUE, 
-          show.ci = FALSE,
-          show.icc = FALSE, 
-          pred.labels = c('Intercept', 
-                          'Water Potential (-Mpa)', 
-                          'C. megacarpus',
-                           'LFM (%)',
-                          'Water weight (g)', 
-                          'Dry weight (g)'), 
-         dv.labels = c("Model 1", 
-                       "Model 2", 
-                       "Model 3", 
-                       "Model 4", 
-                       "Model 5", 
-                       "Model 6"),
-         string.pred = "Coeffcient",
-  string.p = "P-Value", 
-  p.style = "stars")
-```
-
-### 2.1.3 Flame duration 
-```{r}
-mpa_mod_fig.mpa <- lmer(fd ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m3 <- lmer(fd ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-  
-m6 <- lmer(fd ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m7 <- lmer(fd ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-m7
-
-m10 <- lmer(fd ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m11 <- lmer(fd ~ mpa*spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-#tab_model(top_model, m7, m10, m3, m6) 
-tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
-          show.reflvl = TRUE, 
-          digits = 3, 
-          show.aic = TRUE, 
-          show.ci = FALSE,
-          show.icc = FALSE, 
-          pred.labels = c('Intercept', 
-                          'Water Potential (-Mpa)', 
-                          'C. megacarpus',
-                           'LFM (%)',
-                          'Water weight (g)', 
-                          'Dry weight (g)'), 
-         dv.labels = c("Model 1", 
-                       "Model 2", 
-                       "Model 3", 
-                       "Model 4", 
-                       "Model 5", 
-                       "Model 6"),
-         string.pred = "Coeffcient",
-  string.p = "P-Value", 
-  p.style = "stars")
-```
-
-### 2.1.4 Time to ignition
-
-Plot
-```{r}
-mpa_mod_fig <- lmer(tti ~ mpa.unscaled + Species + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-effects_mpa_fig <- effects::effect(term= "mpa.unscaled", 
-                                   mod= mpa_mod_fig, 
-                                   se = TRUE, 
-                                   confidence.level=.95)
-# Save the effects values as a df:
-x_mpa_fig <- as.data.frame(effects_mpa_fig)
-
-# Separating by Species
-p <- ggplot() + 
-  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, tti, color = Species), size = 1) + 
-  geom_line(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), 
-            color="#a56457") +
-  labs(x="Water Potential (-Mpa)", 
-       y="Time to Ignition (sec)") +
-  scale_color_manual(values=met.brewer("Morgenstern", 7)) +
-  th 
-
-
-p +
-  th +
-  scale_x_continuous(limits = c(-12, 0), breaks= c(-10, -8, -6, -4, -2, 0)) +
-  theme(legend.position = "bottom")
+m5 <- lmer(tti ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-mpa_mod_fig.mpa <- lmer(tti ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m3 <- lmer(tti ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-  
-m6 <- lmer(tti ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m7 <- lmer(tti ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-m7
-
-m10 <- lmer(tti ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-m11 <- lmer(tti ~ mpa*spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-
-#tab_model(top_model, m7, m10, m3, m6) 
-tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
-          show.reflvl = TRUE, 
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
-          pred.labels = c('Intercept', 
-                          'Water Potential (-Mpa)', 
-                          'C. megacarpus',
-                           'LFM (%)',
-                          'Water weight (g)', 
-                          'Dry weight (g)'), 
-         dv.labels = c("Model 1", 
-                       "Model 2", 
-                       "Model 3", 
-                       "Model 4", 
-                       "Model 5", 
-                       "Model 6"),
-         string.pred = "Coeffcient",
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
   string.p = "P-Value", 
-  p.style = "stars")
+  p.style = "stars",
+  file = here('MEM.figures','mem.TTI.html')) # saving .html into figures folder
 ```
-```{r}
-a <- lmer(PC1 ~ dw.flam.sample + precip.2mo + site + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
-summary(a)
-performance::multicollinearity(a)
 
-ggplot(scaled.mem.data.alldates.noNAs, aes(y = dw.flam.sample, x = as.factor(precip.2mo))) +
-  geom_boxplot() +
-  facet_wrap(~spp)
+## Flame Height
+Models
+```{r}
+m1 <- lmer(fh ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(fh ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(fh ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(fh ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(fh ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','mem.FH.html')) # saving .html into figures folder
+```
+
+## Glow Duration
+Models
+```{r}
+m1 <- lmer(gd ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(gd ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(gd ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(gd ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(gd ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','mem.GD.html')) # saving .html into figures folder
+```
+
+## Flame Duration
+Models
+```{r}
+m1 <- lmer(fd ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(fd ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(fd ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(fd ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(fd ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','mem.FD.html')) # saving .html into figures folder
+```
+
+## Max. Temp.
+Models
+```{r}
+m1 <- lmer(temp.max ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(temp.max ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(temp.max ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(temp.max ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(temp.max ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','mem.MAXTEMP.html')) # saving .html into figures folder
+```
+
+## Post-Flame Glow
+Models
+```{r}
+m1 <- lmer(pfg ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(pfg ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(pfg ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(pfg ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(pfg ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','mem.PFG.html')) # saving .html into figures folder
+```
+
+## Time to First Glow
+Models
+```{r}
+m1 <- lmer(ttfg ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(ttfg ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(ttfg ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(ttfg ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(ttfg ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','mem.TTFG.html')) # saving .html into figures folder
+```
+
+## Glow to Ignition
+Models
+```{r}
+m1 <- lmer(gti ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(gti ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(gti ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(gti ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(gti ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','mem.GTI.html')) # saving .html into figures folder
 ```
 
 # ----------------------------------

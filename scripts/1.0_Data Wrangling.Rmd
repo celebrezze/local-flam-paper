@@ -765,7 +765,7 @@ clean.mem.data.alldates <- mem.data.alldates %>%
 
 #Parsing out the variables of interest for the mixed effects modeling including dependent variables and unscaled predictors
 clean.mem.data.alldates <- clean.mem.data.alldates %>% 
-  select(c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd', 'temp.max', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition", 'spp', 'year.month', 'year', 'month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'dw.flam.sample.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration')) %>% 
+  select(c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd', 'temp.max', 'pfg', 'gti', 'ttfg', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition", 'spp', 'year.month', 'year', 'month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'dw.flam.sample.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration')) %>% 
   arrange(individual)
 
 #Now, splitting by species and then scaling predictors and then using rbind to put back into a single dataframe (scaled.mem.data.predictors.alldates)

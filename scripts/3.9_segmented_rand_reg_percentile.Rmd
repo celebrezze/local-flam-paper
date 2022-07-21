@@ -22,6 +22,8 @@ library(gtsummary)
 filter = dplyr::filter 
 rename = dplyr::rename
 here = here::here
+group_by = dplyr::group_by
+summarise = dplyr::summarise
 ```
 
 # Reading in Dataframes
@@ -52,9 +54,8 @@ seg.ceme.subset <- seg.data.subset %>%
 ## Percentile Bins: Max's Suggestions
 ```{r}
 seg.ceme.subset.p <- seg.ceme.subset %>% 
-  filter(lfm < 220) %>% 
   group_by(gr) %>% 
-  summarise(PC1 = mean(PC1), PC2 = mean(PC2), tti = mean(tti), prop.ignite.bins10_nodate = mean(prop.ignite.bins10_nodate), gti = mean(gti), fh = mean(fh), temp.max = mean(temp.max), fd = mean(fd), gd = mean(gd), pfg = mean(pfg), ttfg = mean(ttfg), lfm = mean(lfm)) 
+  summarise(PC1 = mean(PC1), PC2 = mean(PC2), tti = mean(tti), prop.ignite.bins10_nodate = mean(prop.ignite.bins10_nodate), gti = mean(gti), fh = mean(fh), temp.max = mean(temp.max), fd = mean(fd), gd = mean(gd), pfg = mean(pfg), ttfg = mean(ttfg), lfm = mean(lfm))
 
 #seg.ceme.subset.p <- seg.ceme.subset.p %>% 
   #filter(id == '2020_September_EPI_CEME_(100,110]_1.6'| id == '2020_September_EPI_CEME_(110,120]_2.3'| id == '2019_December_EPI_CEME_(120,130]_8'| id == '2019_December_EPI_CEME_(130,140]_4'| id == 	'2019_December_EPI_CEME_(140,150]_4'| id == '2020_September_EPI_CEME_(150,160]_2.3'| id == '2019_December_EPI_CEME_(160,170]_5'| id == '2019_December_EPI_CEME_(170,180]_2'| id == '2020_January_EPI_CEME_(180,190]_3' | id == '2019_December_EPI_CEME_(190,200]_8' | id == '2020_September_EPI_CEME_(20,30]_1.6' | id == '2020_January_EPI_CEME_(200,210]_1' | id == '2019_December_EPI_CEME_(220,230]_8' | id == '2020_January_EPI_CEME_(230,240]_5' | id == '2020_January_EPI_CEME_(240,250]_2' | id == '2019_December_EPI_CEME_(270,280]_1' | id == '2020_January_EPI_CEME_(280,290]_3' | id == '2020_September_EPI_CEME_(30,40]_2.2' | id == '2020_September_EPI_CEME_(90,100]_1.6' | id == '2020_September_EPI_CEME_(80,90]_2.4' | id == '2020_September_EPI_CEME_(70,80]_1.5' | id == '2020_September_EPI_CEME_(60,70]_2.2' | id == '2020_September_EPI_CEME_(50,60]_1.2' | id == '2019_December_EPI_CEME_(40,50]_4' | id == '2019_December_EPI_CEME_(350,360]_7')
@@ -304,60 +305,6 @@ fit <- numeric(length(seg.ceme.subset.p$lfm)) * NA
 fit[complete.cases(rowSums(cbind(seg.ceme.subset.p$PC1, seg.ceme.subset.p$lfm)))] <- broken.line(segmented.mod)$fit
 
 segplot(seg.ceme.subset.p, lfm, PC2, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
-```
-
-# PC3
-
-#### ADFA
-```{r}
-out.lm<-lm(PC3 ~ lfm, data = seg.adfa.subset.p)
-davies.test(out.lm, ~lfm, k = 50)
-# Result: significant (p = 0.0303)
-
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
-segmented.mod
-
-confint <- confint(segmented.mod)
-confint
-
-lower <- confint[2]
-lower
-
-upper <- confint[3]
-upper
-
-fit <- numeric(length(seg.adfa.subset.p$lfm)) * NA
-
-fit[complete.cases(rowSums(cbind(seg.adfa.subset.p$PC1, seg.adfa.subset.p$lfm)))] <- broken.line(segmented.mod)$fit
-
-segplot(seg.adfa.subset.p, lfm, PC3, fit, mean_lfm_adfa, lwr_lfm_adfa, upr_lfm_adfa, lower, upper)
-```
-
-#### CEME
-```{r}
-out.lm<-lm(PC3 ~ lfm, data = seg.ceme.subset.p)
-davies.test(out.lm, ~lfm, k = 50)
-# Result: significant (p = 0.01461)
-
-segmented.mod <-segmented(out.lm) #1 breakpoint for x
-segmented.mod
-summary(segmented.mod)
-
-
-confint <- confint(segmented.mod)
-confint
-
-lower <- confint[2]
-lower
-
-upper <- confint[3]
-upper
-
-fit <- numeric(length(seg.ceme.subset.p$lfm)) * NA
-
-fit[complete.cases(rowSums(cbind(seg.ceme.subset.p$PC1, seg.ceme.subset.p$lfm)))] <- broken.line(segmented.mod)$fit
-
-segplot(seg.ceme.subset.p, lfm, PC3, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_ceme, lower, upper)
 ```
 
 # Prop. Ignited (10% Bins)
@@ -690,7 +637,6 @@ segplot(seg.ceme.subset.p, lfm, gti, fit, mean_lfm_ceme, lwr_lfm_ceme, upr_lfm_c
 ```
 
 # PFG
-No significant thresholds identified
 ### ADFA
 ```{r}
 out.lm<-lm(pfg ~ lfm, data = seg.adfa.subset.p)
