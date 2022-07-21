@@ -1025,8 +1025,9 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12,
   file = here('MEM.figures','PC2.html')) # saving .html into figures folder
 ```
 # -----------------------------------
-# Visualizations: Dry Weight Effect
-## Models
+# Visualizations
+## Dry Weight Effect
+### Models
 ```{r}
 m.p1 <- lmer(PC1 ~ mpa + spp + site + year.month + sample.wt + (1 | individual), data = scaled.mem.data.alldates.noNAs)
   
@@ -1043,7 +1044,7 @@ r_scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates.noNAs
 r_scaled.mem.data.alldates.noNAs$r_pc1 <- r_pc1
 r_scaled.mem.data.alldates.noNAs$r_pc2 <- r_pc2
 ```
-
+### Plots
 ```{r}
 p1 <- ggplot(r_scaled.mem.data.alldates.noNAs, aes(x = dw.flam.sample, y = r_pc1)) +
   geom_point(alpha = 0.6, size = 1) +
@@ -1076,6 +1077,47 @@ p4 <- ggplot(r_scaled.mem.data.alldates.noNAs, aes(x = dw.flam.sample, y = PC2))
 ggarrange(p1, p3, p2, p4)
 
 ggsave(here('MEM.figures', 'remef.dry.weight.jpg'), height = 8, width = 13)
+```
+
+## Composite Model
+```{r}
+comp.model.df <- scaled.mem.data.alldates.noNAs %>% 
+  mutate(site.n = case_when(
+    site == "St. Marys" ~ 1,
+    site == "Painted Caves" ~ 2)) %>% 
+  mutate(spp.n = case_when(
+    spp == "ADFA" ~ 1,
+    spp == "CEME" ~ 2))
+  
+
+model <- lmer(PC1 ~ mpa + dw.flam.sample + spp.n + site.n + year.month + sample.wt + (1 | individual), data = comp.model.df)
+
+comp.model.df$r_pc1 <- remef(model, fix = c("mpa", "sample.wt", "spp.n", "site.n"))
+```
+
+### Plots
+```{r}
+p1 <- ggplot(comp.model.df, aes(x = mpa, y = r_pc1)) +
+  geom_point(alpha = 0.6, size = 1) +
+  labs(x = "Water Potential (scaled, centered)", y = "PC1 (Effects Removed)") +
+  geom_smooth(method = 'lm', color = 'black') +
+  th
+
+p2 <- ggplot(comp.model.df, aes(x = dw.flam.sample, y = r_pc1)) +
+  geom_point(alpha = 0.6, size = 1) +
+  labs(x = "Dry Weight (scaled, centered)", y = "PC1 (Effects Removed)") +
+  geom_smooth(method = 'lm', color = 'black') +
+  theme(axis.title.y = element_blank()) +
+  th
+
+p3 <- ggplot(comp.model.df, aes(x = sample.wt, y = r_pc1)) +
+  geom_point(alpha = 0.6, size = 1) +
+  labs(x = "Sample Weight (scaled, centered)", y = "PC1 (Effects Removed)") +
+  geom_smooth(method = 'lm', color = 'black') +
+  theme(axis.title.y = element_blank()) +
+  th
+
+ggarrange(p1,p2,p3, nrow = 1)
 ```
 
 
