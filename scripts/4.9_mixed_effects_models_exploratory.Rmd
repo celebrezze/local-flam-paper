@@ -909,6 +909,197 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12,
   file = here('MEM.figures','modelselection.html')) # saving .html into figures folder
 ```
 
+# -------------------------------
+# Splitting by Species (Supplemental Table)
+## PC1
+```{r}
+c.p1 <- lmer(PC1 ~ mpa.scaled + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.p2 <- lmer(PC1 ~ lfm + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.p3 <- lmer(PC1 ~ ww.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.p4 <- lmer(PC1 ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.p5 <- lmer(PC1 ~ mpa.scaled + dw.flam.sample + sample.wt   + site + year.month + (1 | individual), data = mem.CEME.subset)
+```
+
+```{r}
+a.p1 <- lmer(PC1 ~ mpa.scaled + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.p2 <- lmer(PC1 ~ lfm + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.p3 <- lmer(PC1 ~ ww.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.p4 <- lmer(PC1 ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.p5 <- lmer(PC1 ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
+```
+
+### Table
+```{r}
+tab_model(a.p1, a.p5, a.p3, a.p2, a.p4, c.p1, c.p3, c.p4, c.p5, c.p2,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE,
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1 (ADFA)", "Model 5 (ADFA)", "Model 3 (ADFA)", "Model 2 (ADFA)",  "Model 4 (ADFA)", "Model 1 (CEME)", "Model 3 (CEME)",  "Model 4 (CEME)", "Model 5 (CEME)",  "Model 2 (CEME)"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','PC1.by.species.html')) # saving .html into figures folder
+```
+
+## Time to Ignition
+```{r}
+c.t1 <- lmer(tti ~ mpa.scaled + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.t2 <- lmer(tti ~ lfm + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.t3 <- lmer(tti ~ ww.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.t4 <- lmer(tti ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.t5 <- lmer(tti ~ mpa.scaled + dw.flam.sample + sample.wt   + site + year.month + (1 | individual), data = mem.CEME.subset)
+```
+
+```{r}
+a.t1 <- lmer(tti ~ mpa.scaled + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.t2 <- lmer(tti ~ lfm + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.t3 <- lmer(tti ~ ww.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.t4 <- lmer(tti ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.t5 <- lmer(tti ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
+```
+
+### Table
+```{r}
+tab_model(a.t5, a.t1, a.t3, a.t2, a.t4, c.t5, c.t1, c.t3, c.t4, c.t2,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 5 (ADFA)", "Model 1 (ADFA)", "Model 3 (ADFA)", "Model 2 (ADFA)",   "Model 4 (ADFA)", "Model 5 (CEME)", "Model 1 (CEME)", "Model 3 (CEME)",  "Model 4 (CEME)", "Model 2 (CEME)"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','TTI.by.species.html')) # saving .html into figures folder
+```
+
+## Flame Duration
+```{r}
+c.f1 <- lmer(fd ~ mpa.scaled + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.f2 <- lmer(fd ~ lfm + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.f3 <- lmer(fd ~ ww.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.f4 <- lmer(fd ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.f5 <- lmer(fd ~ mpa.scaled + dw.flam.sample + sample.wt   + site + year.month + (1 | individual), data = mem.CEME.subset)
+```
+
+```{r}
+a.f1 <- lmer(fd ~ mpa.scaled + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.f2 <- lmer(fd ~ lfm + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.f3 <- lmer(fd ~ ww.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.f4 <- lmer(fd ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.f5 <- lmer(fd ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
+```
+
+### Table
+```{r}
+tab_model(a.f1, a.f4, a.f2, a.f3, a.f5, c.f4, c.f2, c.f1, c.f3, c.f5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1 (ADFA)",  "Model 4 (ADFA)", "Model 2 (ADFA)", "Model 3 (ADFA)", "Model 5 (ADFA)",  "Model 4 (CEME)", "Model 2 (CEME)", "Model 1 (CEME)", "Model 3 (CEME)", "Model 5 (CEME)"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','FD.by.species.html')) # saving .html into figures folder
+```
+
+## Glow Duration
+```{r}
+c.g1 <- lmer(gd ~ mpa.scaled + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.g2 <- lmer(gd ~ lfm + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.g3 <- lmer(gd ~ ww.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.g4 <- lmer(gd ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.g5 <- lmer(gd ~ mpa.scaled + dw.flam.sample + sample.wt   + site + year.month + (1 | individual), data = mem.CEME.subset)
+```
+
+```{r}
+a.g1 <- lmer(gd ~ mpa.scaled + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.g2 <- lmer(gd ~ lfm + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.g3 <- lmer(gd ~ ww.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.g4 <- lmer(gd ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.g5 <- lmer(gd ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
+```
+
+### Table
+```{r}
+tab_model(a.g5, a.g4, a.g2, a.g3, a.g1, c.g5, c.g4, c.g1, c.g2, c.g3,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 5 (ADFA)", "Model 4 (ADFA)", "Model 2 (ADFA)",  "Model 3 (ADFA)", "Model 1 (ADFA)", "Model 5 (CEME)", "Model 4 (CEME)", "Model 1 (CEME)",  "Model 2 (CEME)", "Model 3 (CEME)"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','GD.by.species.html')) # saving .html into figures folder
+```
+
+## SUPP: Kable Table
+```{r}
+dep.var <- c("PC1", " ", " ", " ", " ",  " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " "," ", " ", " ", " ",  " ", "Flame Duration (s)", " ", " ", " ", " "," ", " ", " ", " ",  " ", "Glow Duration (s)", " ", " ", " "," ", " ", " ", " ",  " ", " ")
+sp.lab <- c("Adenostoma fasciculatum", " ", " ", " ", " ", "Ceanothus megacarpus", " ", " ", " ", " ", "Adenostoma fasciculatum", " ", " ", " ", " ", "Ceanothus megacarpus", " ", " ", " ", " ", "Adenostoma fasciculatum", " ", " ", " ", " ", "Ceanothus megacarpus", " ", " ", " ", " ", "Adenostoma fasciculatum", " ", " ", " ", " ", "Ceanothus megacarpus", " ", " ", " ", " ")
+fix.fx <- c("Water Potential", "Water Potential, Sample Weight & Dry Weight", "Wet Weight", "Live Fuel Moisture", "Dry Weight", "Water Potential", "Wet Weight", "Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Live Fuel Moisture", "Water Potential, Sample Weight & Dry Weight", "Water Potential", "Wet Weight", "Live Fuel Moisture", "Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Water Potential", "Wet Weight", "Dry Weight", "Live Fuel Moisture", "Water Potential", "Dry Weight", "Live Fuel Moisture", "Wet Weight", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Live Fuel Moisture", "Water Potential", "Wet Weight", "Water Potential, Sample Weight & Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Live Fuel Moisture", "Wet Weight", "Water Potential", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Water Potential", "Live Fuel Moisture", "Wet Weight")
+est <- c('-0.419***',	'-0.477***', '-0.314**', '-0.186', '0.107', '-0.430***', '-0.427***', '0.363***', '-0.317*', '-0.347**', "4.578***",	'4.239***', '3.329***', '2.013**', '-1.452', '5.159***',	'5.501***', '4.798***', '-3.901***', '3.714***', '0.677*', '0.642*', '-0.566', '-0.574', '-0.561', '0.646', '-0.569', '-0.475', '-0.324', '-0.296', '0.065', '5.119**', '-2.799', '-2.381', '-1.922', '-2.357', '3.973', '-2.619', '-2.084', '-0.411')
+aic.values <- c(1002.567, 1006.955,	1011.885,	1015.979,	1018.052,	675.567,	679.110,	682.000,	682.408,	683.557, 1943.187,	1948.918,	1970.582,	1980.425,	1984.906,	1381.167,	1382.278,	1403.649,	1411.852,	1415.261, 1514.945,	1516.389,	1516.763,	1517.257,	1518.621,	1054.163,	1055.065,	1055.530,	1056.797,	1057.601, 2403.453,	2406.658,	2411.868,	2412.876,	2413.393,	1735.668,	1741.923,	1743.649,	1744.252,	1745.063)
+bic.values <- c(1027.5186, 1039.0352, 1036.8362, 1040.9305, 1043.0035,  698.1477,  701.6903, 704.5801,  711.4394,  706.1369, 1975.2679, 1973.8693, 1995.5338, 2005.3769, 2009.8577, 1410.1989, 1404.8579, 1426.2289, 1434.4318, 1437.8416, 1539.8966,1541.3407, 1541.7144, 1542.2083, 1550.7014, 1076.7429, 1077.6451, 1078.1099, 1079.3774, 1086.6325, 2435.5335, 2431.6095, 2436.8196, 2437.8279, 2438.3448, 1764.7001, 1764.5028, 1766.2295, 1766.8324, 1767.6434)
+r2.values <- c('0.154 / NA','	0.166 / NA',	'0.122 / 0.125',	'0.110 / 0.116',	'0.101 / NA',	'0.150 / 0.230',	'0.130 / 0.232',	'0.115 / 0.233',	'0.155 / 0.238',	'0.107 / 0.224', '0.250 / NA',	'0.232 / 0.237',	'0.167 / 0.202',	'0.136 / 0.185',	'0.118 / 0.156',	'0.286 / 0.308',	'0.282 / 0.313',	'0.190 / 0.246',	'0.151 / 0.244',	'0.133 / 0.239', '0.063 / 0.162',	'0.056 / 0.157',	'0.055 / 0.174',	'0.053 / 0.174',	'0.066 / 0.160',	'0.043 / 0.162',	'0.037 / 0.129',	'0.037 / 0.135',	'0.028 / 0.107',	'0.047 / 0.177', '0.249 / 0.290',	'0.247 / 0.289',	'0.233 / 0.283',	'0.230 / 0.282',	'0.230 / 0.280',	'0.125 / 0.171',	'0.113 / 0.131',	'0.106 / 0.126',	'0.101 / 0.112',	'0.098 / 0.110')
+d.aic <- c(0, 4.388, 9.318, 13.412, 15.485, 0, 3.543, 6.433, 6.841, 7.990, 0, 5.731, 27.395, 37.238, 41.719, 0, 1.111, 22.482, 30.685, 34.094, 0, 1.444, 1.818, 2.312, 3.676, 0, 0.902, 1.367, 2.634, 3.438, 0, 3.205, 8.415, 9.423, 9.940, 0, 6.255, 7.981, 8.584, 9.395)
+mem.spp.table.df <- data.frame(dep.var, sp.lab, fix.fx, est, d.aic, aic.values, bic.values, r2.values)
+```
+
+```{r}
+mem.spp.table.df %>%
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Species', 'Model Fixed Effects', 'Water Estimate','Change in AIC', 'AIC', 'BIC', expression('Marginal R2/Conditional R2'))) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  row_spec(c(1, 6, 11, 16, 21, 26, 31, 36), background = "#D3D3D3") %>% 
+  save_kable(here('figures', 'Supp_Species_Split_MEM_kable.html'))
+```
+
 # -----------------------------------
 # Predicting PC2
 From our first round of model selection, it appears that site, species, and year.month are all important variables to include, and sample.wt should probably be included as well despite worsening the models slightly.
@@ -1319,7 +1510,7 @@ annotate("text", x= -11, y= -3.5, label= "Less", size = 3) +
 ## Time to Ignition
 Models
 ```{r}
-m1 <- lmer(tti ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(tti ~ mpa.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m2 <- lmer(tti ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
@@ -1327,7 +1518,7 @@ m3 <- lmer(tti ~ ww.flam.sample + spp + site + year.month + (1 | individual), da
 
 m4 <- lmer(tti ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m5 <- lmer(tti ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m5 <- lmer(tti ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
@@ -1350,7 +1541,7 @@ tab_model(m1, m2, m3, m4, m5,
 ## Flame Height
 Models
 ```{r}
-m1 <- lmer(fh ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(fh ~ mpa.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m2 <- lmer(fh ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
@@ -1358,7 +1549,7 @@ m3 <- lmer(fh ~ ww.flam.sample + spp + site + year.month + (1 | individual), dat
 
 m4 <- lmer(fh ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m5 <- lmer(fh ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m5 <- lmer(fh ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
@@ -1381,7 +1572,7 @@ tab_model(m1, m2, m3, m4, m5,
 ## Glow Duration
 Models
 ```{r}
-m1 <- lmer(gd ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(gd ~ mpa.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m2 <- lmer(gd ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
@@ -1389,7 +1580,7 @@ m3 <- lmer(gd ~ ww.flam.sample + spp + site + year.month + (1 | individual), dat
 
 m4 <- lmer(gd ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m5 <- lmer(gd ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m5 <- lmer(gd ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
@@ -1412,7 +1603,7 @@ tab_model(m1, m2, m3, m4, m5,
 ## Flame Duration
 Models
 ```{r}
-m1 <- lmer(fd ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(fd ~ mpa.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m2 <- lmer(fd ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
@@ -1420,7 +1611,7 @@ m3 <- lmer(fd ~ ww.flam.sample + spp + site + year.month + (1 | individual), dat
 
 m4 <- lmer(fd ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m5 <- lmer(fd ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m5 <- lmer(fd ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
@@ -1443,7 +1634,7 @@ tab_model(m1, m2, m3, m4, m5,
 ## Max. Temp.
 Models
 ```{r}
-m1 <- lmer(temp.max ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(temp.max ~ mpa.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m2 <- lmer(temp.max ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
@@ -1451,7 +1642,7 @@ m3 <- lmer(temp.max ~ ww.flam.sample + spp + site + year.month + (1 | individual
 
 m4 <- lmer(temp.max ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m5 <- lmer(temp.max ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m5 <- lmer(temp.max ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
@@ -1474,7 +1665,7 @@ tab_model(m1, m2, m3, m4, m5,
 ## Post-Flame Glow
 Models
 ```{r}
-m1 <- lmer(pfg ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(pfg ~ mpa.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m2 <- lmer(pfg ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
@@ -1482,7 +1673,7 @@ m3 <- lmer(pfg ~ ww.flam.sample + spp + site + year.month + (1 | individual), da
 
 m4 <- lmer(pfg ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m5 <- lmer(pfg ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m5 <- lmer(pfg ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
@@ -1505,7 +1696,7 @@ tab_model(m1, m2, m3, m4, m5,
 ## Time to First Glow
 Models
 ```{r}
-m1 <- lmer(ttfg ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(ttfg ~ mpa.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m2 <- lmer(ttfg ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
@@ -1513,7 +1704,7 @@ m3 <- lmer(ttfg ~ ww.flam.sample + spp + site + year.month + (1 | individual), d
 
 m4 <- lmer(ttfg ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m5 <- lmer(ttfg ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m5 <- lmer(ttfg ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
@@ -1536,7 +1727,7 @@ tab_model(m1, m2, m3, m4, m5,
 ## Glow to Ignition
 Models
 ```{r}
-m1 <- lmer(gti ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m1 <- lmer(gti ~ mpa.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m2 <- lmer(gti ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
@@ -1544,7 +1735,7 @@ m3 <- lmer(gti ~ ww.flam.sample + spp + site + year.month + (1 | individual), da
 
 m4 <- lmer(gti ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
-m5 <- lmer(gti ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m5 <- lmer(gti ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
@@ -1552,7 +1743,7 @@ Table
 tab_model(m1, m2, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
-          show.aic = TRUE, 
+          show.aic = TRUE,
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
@@ -1562,6 +1753,42 @@ tab_model(m1, m2, m3, m4, m5,
   string.p = "P-Value", 
   p.style = "stars",
   file = here('MEM.figures','mem.GTI.html')) # saving .html into figures folder
+```
+
+# MAIN TABLE
+```{r}
+dep.var <- c("PC1", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " ", "Flame Duration (s)", " ", " ", " ", " ", "Glow Duration (s)", " ", " ", " ", " ")
+fix.fx <- c("Water Potential","Water Potential, Sample Weight & Dry Weight", "Wet Weight", "LFM", "Dry Weight",
+            "Water Potential, Sample Weight & Dry Weight", "Water Potential",  "Wet Weight", "LFM", "Dry Weight",
+            "Water Potential",  "Dry Weight", "LFM",  "Water Potential, Sample Weight & Dry Weight", "Wet Weight",
+             "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "LFM", "Water Potential", "Wet Weight")
+est1 <- c('-0.140***', '-0.141***', '-0.364***', '-0.246**','-0.215*',
+           '4.890***','4.776***', '3.955***', '2.636***', '-2.502***',
+          '-0.591**',  '0.645**', '-0.570*', '-0.455', '-0.468*',
+          '-0.879', '4.668***','-2.567', '-2.261', '-1.544')
+aic.values <- c(1674.577, 1680.822, 1686.568, 1695.289, 1697.884,
+                3327.326, 3332.028,	3375.534,	3397.523,	3400.992,
+                2566.495,	2566.660,	2567.954,	2569.929,	2570.455,
+              	4147.778, 4152.387,	4159.953, 4160.481,	4162.278)
+bic.values <- c(1715.603, 1730.053, 1727.594, 1736.315, 1738.909,
+                3376.557, 3373.053, 3416.559, 3438.548, 3442.017, 
+                2607.521, 2607.685, 2608.980, 2619.160, 2611.481,
+                4197.009, 4193.413, 4200.978, 4201.506, 4203.303)
+r2.values <- c('0.225/0.237','0.230/0.237', '0.201/0.224', '0.185/0.217', '0.180/0.206',
+              	'0.345 / 0.345', '0.336 / 0.346',	'0.269 / 0.306',	'0.233 / 0.293', '0.225 / 0.273',
+               '0.059 / 0.154',	'0.058 / 0.156',	'0.055 / 0.156',	'0.063 / 0.160',	'0.049 / 0.149',
+               '0.238 / 0.275', '0.233 / 0.269', '0.220 / 0.259',	'0.220 / 0.260',	'0.216 / 0.258')
+d.aic <- c(0, 6.25, 11.99, 20.71, 23.31,
+           0, 4.702, 48.208, 70.197, 73.666,
+           0, 0.165, 1.459, 3.434, 3.960,
+           0, 4.609, 12.175, 12.703, 14.500)
+mem.table.df <- data.frame(dep.var, fix.fx, est1, d.aic, aic.values, bic.values, r2.values)
+
+mem.table.df %>%
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','Change in AIC', 'AIC', 'BIC', expression('Marginal R2/Conditional R2'))) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  row_spec(c(1, 6, 11, 16), background = "#D3D3D3") %>% 
+  save_kable(here('figures', 'expanded_MEM_kable.html'))
 ```
 
 # ----------------------------------

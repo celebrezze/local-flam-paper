@@ -83,9 +83,9 @@ mem.data.adfa <- scaled.mem.data.alldates.noNAs %>%
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+m1.pa <- lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
 
-m2 <- lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+m2.pa <- lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
 
 m3 <- lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
 
@@ -96,7 +96,7 @@ m5 <- lme(PC1~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|i
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.pa, m2.pa, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -114,12 +114,12 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+os.m1.pa<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
 summary.segmented(os.m1)
 #AIC: 997.4369
 
 s.m2<-lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+os.m2.pa<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.m2)
 #AIC: 1015.843
 
@@ -138,9 +138,9 @@ summary.segmented(os.m4)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+m1.pc <- lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
 
-m2 <- lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+m2.pc <- lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
 
 m3 <- lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
 
@@ -151,7 +151,7 @@ m5 <- lme(PC1~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|i
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.pc, m2.pc, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -169,12 +169,12 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+os.m1.pc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
 summary.segmented(os.m1)
 #AIC: 677.2741
 
 s.m2<-lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+os.m2.pc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.m2)
 #AIC: 677.3073
 
@@ -194,9 +194,9 @@ summary.segmented(os.m4)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+m1.ta <- lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
 
-m2 <- lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+m2.ta <- lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
 
 m3 <- lme(tti~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
 
@@ -207,7 +207,7 @@ m5 <- lme(tti~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|i
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.ta, m2.ta, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -225,12 +225,12 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+os.m1.ta<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
 summary.segmented(os.m1)
 #AIC: 1937.612
 
 s.m2<-lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+os.m2.ta<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.m2)
 #AIC: 1967.475
 
@@ -249,9 +249,9 @@ summary.segmented(os.m4)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+m1.tc <- lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
 
-m2 <- lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+m2.tc <- lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
 
 m3 <- lme(tti~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
 
@@ -262,7 +262,7 @@ m5 <- lme(tti~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|i
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.tc, m2.tc, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -280,12 +280,12 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+os.m1.tc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
 summary.segmented(os.m1)
 #AIC: 1381.347
 
 s.m2<-lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+os.m2.tc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.m2)
 #AIC: 1392.99
 
@@ -306,9 +306,9 @@ summary.segmented(os.m4)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+m1.fha <- lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
 
-m2 <- lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+m2.fha <- lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
 
 m3 <- lme(fh~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
 
@@ -319,7 +319,7 @@ m5 <- lme(fh~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.fha, m2.fha, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -337,12 +337,12 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+os.m1.fha<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
 summary.segmented(os.m1)
 #AIC: 1479.476
 
 s.m2<-lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+os.m2.fha<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.m2)
 #AIC: 1490.198
 
@@ -361,9 +361,9 @@ summary.segmented(os.m4)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+m1.fhc <- lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
 
-m2 <- lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+m2.fhc <- lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
 
 m3 <- lme(fh~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
 
@@ -374,7 +374,7 @@ m5 <- lme(fh~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.fhc, m2.fhc, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -392,12 +392,12 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+os.m1.fhc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
 summary.segmented(os.m1)
 #AIC: 1028.431
 
 s.m2<-lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+os.m2.fhc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.m2)
 #AIC: 1027.519
 
@@ -414,9 +414,9 @@ summary.segmented(os.m3)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+m1.ga <- lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
 
-m2 <- lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+m2.ga <- lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
 
 m3 <- lme(gd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
 
@@ -427,7 +427,7 @@ m5 <- lme(gd~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.ga, m2.ga, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -445,13 +445,13 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+os.m1.ga<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1.ga)
 #AIC: 2407.953
 
 s.m2<-lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+os.m2.ga<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2.ga)
 #AIC: 2405.708
 
 s.m3<-lme(gd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
@@ -469,9 +469,9 @@ summary.segmented(os.m4)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+m1.gc <- lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
 
-m2 <- lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+m2.gc <- lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
 
 m3 <- lme(gd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
 
@@ -482,7 +482,7 @@ m5 <- lme(gd~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.gc, m2.gc, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -500,13 +500,13 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+os.m1.gc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1.gc)
 #AIC: 1737.204
 
 s.m2<-lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+os.m2.gc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2.gc)
 #AIC: 1737.134
 
 s.m3<-lme(gd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
@@ -525,9 +525,9 @@ summary.segmented(os.m4)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+m1.fda <- lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
 
-m2 <- lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+m2.fda <- lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
 
 m3 <- lme(fd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
 
@@ -538,7 +538,7 @@ m5 <- lme(fd~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.fda, m2.fda, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -556,13 +556,13 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+os.m1.fda<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1.fda)
 #AIC: 1513.617
 
 s.m2<-lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+os.m2.fda<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2.fda)
 #AIC: 1514.792
 
 s.m3<-lme(fd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
@@ -580,9 +580,9 @@ summary.segmented(os.m4)
 
 ### Mixed Effects Models
 ```{r}
-m1 <- lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+m1.fdc <- lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
 
-m2 <- lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+m2.fdc <- lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
 
 m3 <- lme(fd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
 
@@ -593,7 +593,7 @@ m5 <- lme(fd~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1.fdc, m2.fdc, m3, m4, m5,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -611,13 +611,13 @@ tab_model(m1, m2, m3, m4, m5,
 ### Segmented Regressions
 ```{r}
 s.m1<-lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m1<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+os.m1.fdc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1.fdc)
 #AIC: 1053.864
 
 s.m2<-lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
-os.m2<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+os.m2.fdc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2.fdc)
 #AIC: 1052.68
 
 s.m3<-lme(fd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
@@ -630,3 +630,41 @@ os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
 summary.segmented(os.m4)
 #AIC: 1052.069
 ```
+
+#-----------------------------------
+
+# Summary Table
+```{r}
+fix.fx <- c(rep(c("Water Potential", "Water Potential", "Live Fuel Moisture", "Live Fuel Moisture"), 10))
+
+aic.values <- AIC(m1.pa, os.m1.pa, m2.pa, os.m2.pa, m1.pc, os.m1.pc, m2.pc, os.m2.pc, m1.ta, os.m1.ta, m2.ta, os.m2.ta, m1.tc, os.m1.tc, m2.tc, os.m2.tc, m1.fha, os.m1.fha, m2.fha, os.m2.fha, m1.fhc, os.m1.fhc, m2.fhc, os.m2.fhc, m1.ga, os.m1.ga, m2.ga, os.m2.ga, m1.gc, os.m1.gc, m2.gc, os.m2.gc, m1.fda, os.m1.fda, m2.fda, os.m2.fda, m1.fdc, os.m1.fdc, m2.fdc, os.m2.fdc)$AIC
+
+diff.aic <- AIC(m1.pa, m2.pa, m1.pc, m2.pc, m1.ta, m2.ta, m1.tc, m2.tc, m1.fha, m2.fha, m1.fhc, m2.fhc, m1.ga, m2.ga, m1.gc, m2.gc, m1.fda, m2.fda, m1.fdc, m2.fdc)$AIC - AIC(os.m1.pa, os.m2.pa, os.m1.pc, os.m2.pc, os.m1.ta, os.m2.ta, os.m1.tc, os.m2.tc, os.m1.fha, os.m2.fha, os.m1.fhc, os.m2.fhc, os.m1.ga, os.m2.ga, os.m1.gc, os.m2.gc, os.m1.fda, os.m2.fda, os.m1.fdc, os.m2.fdc)$AIC 
+diff.aic
+
+d.aic <- c('7.3382544', " ", '0.1354309', " ", '-319.6370663', " ",  '6.2493515', " ", '13.5140596', " ",  '12.9497412', " ",  '3.1629817', " ",  '22.2718000', " ",  '9.2936522', " ",  '8.5088373', " ",  '16.8151998', " ",  '13.8684488', " ",  '7.6481625', " ",  '6.1603456', " ",  '8.6774760', " ",  '7.1176700', " ",  '3.5365891', " ",  '1.9709327', " ",  '3.8982039', " ",  '2.3846002', ' ')
+
+bic.values <- BIC(m1.pa, os.m1.pa, m2.pa, os.m2.pa, m1.pc, os.m1.pc, m2.pc, os.m2.pc, m1.ta, os.m1.ta, m2.ta, os.m2.ta, m1.tc, os.m1.tc, m2.tc, os.m2.tc, m1.fha, os.m1.fha, m2.fha, os.m2.fha, m1.fhc, os.m1.fhc, m2.fhc, os.m2.fhc, m1.ga, os.m1.ga, m2.ga, os.m2.ga, m1.gc, os.m1.gc, m2.gc, os.m2.gc, m1.fda, os.m1.fda, m2.fda, os.m2.fda, m1.fdc, os.m1.fdc, m2.fdc, os.m2.fdc)$BIC
+
+diff.bic <- BIC(m1.pa, m2.pa, m1.pc, m2.pc, m1.ta, m2.ta, m1.tc, m2.tc, m1.fha, m2.fha, m1.fhc, m2.fhc, m1.ga, m2.ga, m1.gc, m2.gc, m1.fda, m2.fda, m1.fdc, m2.fdc)$BIC - BIC(os.m1.pa, os.m2.pa, os.m1.pc, os.m2.pc, os.m1.ta, os.m2.ta, os.m1.tc, os.m2.tc, os.m1.fha, os.m2.fha, os.m1.fhc, os.m2.fhc, os.m1.ga, os.m2.ga, os.m1.gc, os.m2.gc, os.m1.fda, os.m2.fda, os.m1.fdc, os.m2.fdc)$BIC
+diff.bic
+
+d.bic <- c('0.31848815', " ", '-6.88433538', " ", '-329.08359545', " ", '-0.04764151', " ",  '6.49429335', " ", '5.92997495', " ", '-3.13401131', " ", '15.97480701', " ", '2.27388591', " ", '1.48907102', " ", '10.51820680', " ", '7.57145578', " ", '0.62839626', " ", '-0.85942067', " ",    '2.38048296', " ", '0.82067692', " ", '-3.48317716', " ", '-5.04883355', " ", '-2.39878913', " ",  '-3.91239284', " ")
+
+dep.var <- c("PC1", " ", " ", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " "," ", " ", " ", " ", "Flame Height (cm)", " ", " ", " "," ", " ", " ", " ", "Glow Duration (s)", " ", " ", " "," ", " ", " ", " ", "Flame Duration (s)", " ", " ", " "," ", " ", " ", " ")
+
+sp.lab <- c("ADFA", " ", " ", " ", "CEME", " ", " ", " ", "ADFA", " ", " ", " ", "CEME", " ", " ", " ", "ADFA", " ", " ", " ", "CEME", " ", " ", " ", "ADFA", " ", " ", " ", "CEME", " ", " ", " ", "ADFA", " ", " ", " ", "CEME", " ", " ", " ")
+
+an.lab <- c(rep(c("Linear MEM", "Segmented Regression"), 20))
+```
+
+```{r}
+mem.vs.seg.table.df <- data.frame(dep.var, sp.lab, an.lab, fix.fx, aic.values, d.aic, bic.values, d.bic)
+
+mem.vs.seg.table.df %>%
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Species', 'Analysis', 'Model Fixed Effects', 'AIC', 'Change in AIC', 'BIC', 'Change in BIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  row_spec(c(1, 9, 17, 25, 33), background = "#D3D3D3") %>% 
+  save_kable(here('figures', 'MEM_vs_SegReg_kable.html'))
+```
+
