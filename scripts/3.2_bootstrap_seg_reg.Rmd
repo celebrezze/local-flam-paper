@@ -48,7 +48,7 @@ seg.adfa.subset <- seg.data.subset %>%
 seg.ceme.subset <- seg.data.subset %>% 
   filter(spp == "CEME") %>% 
   filter(lfm < 220) %>% 
-  group_by(lfm.bin = cut(lfm, breaks= seq(0, 220, by = 10))) %>%  #Fixing the bins
+  group_by(lfm.bin = cut(lfm, breaks= seq(0, 216, by = 12))) %>%  #Fixing the bins
   drop_na(PC1, lfm, year.month, site, id) %>% 
   select(PC1, PC2, tti, fh, temp.max, gd, gti, pfg, ttfg, fd, prop.ignite.bins5_nodate, lfm, lfm.bin, mpa, year.month, site, id)
 ```
@@ -61,14 +61,14 @@ ceme.bin.n <- seg.ceme.subset %>%
   group_by(lfm.bin) %>% 
   count()
 
-median(ceme.bin.n$n) # Median: 4.5; round to 5
+median(ceme.bin.n$n) # Median: 8
 ```
 
 # 2. Resampling points from each bin
 ```{r}
 ceme.binned.df <- seg.ceme.subset %>% 
   group_by(lfm.bin) %>% 
-  sample_n(5, replace = T)
+  sample_n(8, replace = T)
 ```
 
 # 3. Segmented Regression
@@ -80,33 +80,33 @@ segmented.mod <- segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 summary(segmented.mod)
 ```
 
-# 4. Iterating Above Process 1000 Times
+# 4. Iterating Above Process 100 Times
 Holding vectors
 ```{r}
 psi.PC1 <- c(rep(NaN, 100))
 psi.PC2 <- c(rep(NaN, 100))
 psi.tti <- c(rep(NaN, 100))
 psi.fh <- c(rep(NaN, 100))
-#psi.fd <- c(rep(NaN, 40))
+psi.fd <- c(rep(NaN, 100))
 psi.gd <- c(rep(NaN, 100))
 psi.gti <- c(rep(NaN, 100))
 psi.pfg <- c(rep(NaN, 100))
 psi.ttfg <- c(rep(NaN, 100))
 psi.temp.max <- c(rep(NaN, 100))
 psi.prop.ignite <- c(rep(NaN, 100))
-ceme.thresholds <- data.frame(psi.PC1, psi.PC2, psi.tti, psi.fh, psi.temp.max, psi.gd, psi.gti, psi.pfg, psi.ttfg, psi.prop.ignite)
+ceme.thresholds <- data.frame(psi.PC1, psi.PC2, psi.tti, psi.fh, psi.temp.max, psi.gd, psi.gti, psi.pfg, psi.ttfg, psi.prop.ignite, psi.fd)
 ```
 
 For loop
 It is a bit clunky, but seems to do the trick. Could not figure out how to iterate dependent variables in the linear models.
 
-Note: I did not include flame duration below, as it was interrupting the for loop when it did not return a threshold
+Note: I did not include flame duration, glow-to-ignition or flame height below, as those variables were interrupting the for loop when they did not return a threshold
 ```{r}
 for(i in 1:10){
    for(j in 1:nrow(ceme.thresholds)){
   ceme.binned.df <- seg.ceme.subset %>% 
   group_by(lfm.bin) %>% 
-  sample_n(5, replace = T)
+  sample_n(8, replace = T)
   if(i == 1){
     out.lm<-lm(PC1 ~ lfm + site + year.month, data = ceme.binned.df)
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
@@ -122,11 +122,6 @@ for(i in 1:10){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
   }
-  else if(i == 4) {
-    out.lm<-lm(fh ~ lfm + site + year.month, data = ceme.binned.df)
-  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
-  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
-  }
   else if(i == 5) {
     out.lm<-lm(temp.max ~ lfm + site + year.month, data = ceme.binned.df)
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
@@ -134,11 +129,6 @@ for(i in 1:10){
   }
   else if(i == 6) {
     out.lm<-lm(gd ~ lfm + site + year.month, data = ceme.binned.df)
-  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
-  ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
-  }
-  else if(i == 7) {
-  out.lm<-lm(gti ~ lfm + site + year.month, data = ceme.binned.df)
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   ceme.thresholds[j,i] <- summary(segmented.mod)$psi[2]
   }
@@ -159,6 +149,107 @@ for(i in 1:10){
   }
    }}
 ```
+
+Since the above for loop kept getting interrupted when thresholds were not discovered, I set up a new for loop to figure out which seeds are causing the interruptions and manually removing those seeds. For CEME, I did this for flame height, glow to ignition and flame duration
+
+Flame Height:
+```{r}
+for(j in 1:nrow(ceme.thresholds)){
+    set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+
+  out.lm<-lm(fh ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.fh[j] <- summary(segmented.mod)$psi[2]}
+```
+Huh.. Luckily, seeds 1:100 did not cause the for loop to be interrupted!
+
+Glow to Ignition:
+```{r}
+for(j in 1:25){
+  set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+  
+ out.lm<-lm(gti ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 26:48){
+  set.seed(seed = j+1, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+  
+ out.lm<-lm(gti ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 49:69){
+  set.seed(seed = j+2, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+  
+ out.lm<-lm(gti ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 70:93){
+  set.seed(seed = j+4, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+  
+ out.lm<-lm(gti ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 94:100){
+  set.seed(seed = j+5, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+  
+ out.lm<-lm(gti ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+```
+
+Flame Duration:
+```{r}
+for(j in 1:68){
+    set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+
+  out.lm<-lm(fd ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.fd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 69:100){
+    set.seed(seed = j+1, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+
+  out.lm<-lm(fd ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.fd[j] <- summary(segmented.mod)$psi[2]}
+```
+
 
 # 5. Mean Threshold Values
 ```{r}
@@ -201,20 +292,20 @@ psi.PC1 <- c(rep(NaN, 100))
 psi.PC2 <- c(rep(NaN, 100))
 psi.tti <- c(rep(NaN, 100))
 psi.fh <- c(rep(NaN, 100))
-#psi.fd <- c(rep(NaN, 40))
+psi.fd <- c(rep(NaN, 100))
 psi.gd <- c(rep(NaN, 100))
 psi.gti <- c(rep(NaN, 100))
 psi.pfg <- c(rep(NaN, 100))
 psi.ttfg <- c(rep(NaN, 100))
 psi.fd <- c(rep(NaN, 100))
 psi.prop.ignite <- c(rep(NaN, 100))
-adfa.thresholds <- data.frame(psi.PC1, psi.PC2, psi.tti, psi.fh, psi.fd, psi.gd, psi.gti, psi.pfg, psi.ttfg, psi.prop.ignite)
+psi.temp.max <- c(rep(NaN, 100))
+adfa.thresholds <- data.frame(psi.PC1, psi.PC2, psi.tti, psi.fh, psi.fd, psi.gd, psi.gti, psi.pfg, psi.ttfg, psi.prop.ignite, psi.temp.max)
 ```
 
 For loop
 It is a bit clunky, but seems to do the trick. Could not figure out how to iterate dependent variables in the linear models.
 
-Note: I did not include flame duration below, as it was interrupting the for loop when it did not return a threshold
 ```{r}
 for(i in 1:10){
    for(j in 1:nrow(adfa.thresholds)){
@@ -246,12 +337,6 @@ for(i in 1:10){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
   }
-  else if(i == 6) {
-  adfa.thresholds[j,i] <- NaN
-  }
-  else if(i == 7) {
-  adfa.thresholds[j,i] <- NaN
-  }
   else if(i == 8) {
     out.lm<-lm(pfg ~ lfm + site + year.month, data = adfa.binned.df)
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
@@ -262,10 +347,297 @@ for(i in 1:10){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds[j,i] <- summary(segmented.mod)$psi[2]
   }
-  else if(i == 10) {
-  adfa.thresholds[j,i] <- NaN
-  }
    }}
+```
+
+Since the above for loop kept getting interrupted when thresholds were not discovered, I set up a new for loop to figure out which seeds are causing the interruptions and manually removing those seeds. For ADFA, I did this for glow duration, glow to ignition, proportion ignited, and max. temp.
+
+Glow Duration:
+```{r}
+for(j in 1:8){
+  set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 9:17){
+  set.seed(seed = j+3, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 18:24){
+  set.seed(seed = j+9, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 25:29){
+  set.seed(seed = j+11, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 30:33){
+  set.seed(seed = j+15, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 34:37){
+  set.seed(seed = j+16, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 38:42){
+  set.seed(seed = j+17, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 43:50){
+  set.seed(seed = j+46, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 51:60){
+  set.seed(seed = j+64, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 60:68){
+  set.seed(seed = j+68, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 69:81){
+  set.seed(seed = j+83, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 82:87){
+  set.seed(seed = j+89, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 88:95){
+  set.seed(seed = j+96, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 95:100){
+  set.seed(seed = j+98, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
+```
+Oh boy that took a while.
+
+Glow to Ignition:
+```{r}
+for(j in 1:28){
+  set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gti ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 29:77){
+  set.seed(seed = j+10, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gti ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 78:100){
+  set.seed(seed = j+50, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(gti ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+```
+
+Proportion Ignition:
+No breakpoints estimated!
+
+Maximum Temp.:
+```{r}
+for(j in 1:6){
+  set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 7:29){
+  set.seed(seed = j+9, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 30:38){
+  set.seed(seed = j+12, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 39:47){
+  set.seed(seed = j+19, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 48:64){
+  set.seed(seed = j+21, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 65:77){
+  set.seed(seed = j+29, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 78:91){
+  set.seed(seed = j+33, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 91:100){
+  set.seed(seed = j+78, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
 ```
 
 # 5. Mean Threshold Values
