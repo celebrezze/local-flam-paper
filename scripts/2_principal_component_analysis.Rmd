@@ -158,6 +158,10 @@ ggplot(PCAvalues, aes(x = PC1, y = PC2)) +
            y = (PCA_consumability$PC2 * 1.1), 
            label = PCA_consumability$Variables, size = 3.2,
            fontface = 'bold') + 
+  geom_segment(aes(x = -3.1, xend = -3.1, y = -3.45, yend = -1.85), arrow = arrow(length = unit(1/2, 'picas')), size = 0.35, alpha = 0.85) +
+  annotate('text', x = -3.25, y = -2.6, label = "Less Consumable", angle = 90, size = 2.45) +
+  geom_segment(aes(x = -3.1, xend = -1.35, y = -3.45, yend = -3.45), arrow = arrow(length = unit(1/2, 'picas')), size = 0.35, alpha = 0.85) +
+  annotate('text', x = -2.25, y = -3.65, label = "Larger & Hotter Flames, \n Faster Ignition", size = 2.45) +
   theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
           panel.grid.major = element_blank(),  # Hide major gridlines
           panel.grid.minor = element_blank(),

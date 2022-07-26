@@ -97,6 +97,19 @@ seg.data.subset.alldates <- seg.data.subset.alldates %>%
   na.omit()
 ```
 
+Numerical 1 or 0 for site, dry vs. wet season
+```{r}
+seg.data.subset.alldates <- seg.data.subset.alldates %>% 
+  mutate(season = case_when(
+    precip.2mo < 0.5 ~ "Dry", 
+    precip.2mo > 0.5 ~ "Wet")
+  ) %>% 
+  mutate(site.test = case_when(
+    site == "St. Marys" ~ 1,
+    site == "Painted Caves" ~ 2
+  ))
+```
+
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
 seg.adfa.subset <- seg.data.subset.alldates  %>% 
   filter(spp == "ADFA") %>% 
@@ -136,8 +149,73 @@ spp.labs <- c("Adenostoma fasciculatum", "Ceanothus megacarpus")
 names(spp.labs) <- c("ADFA", "CEME")
 ```
 
+
 #------------------------------------
 # 2.0 Season Effects Plot(s)
+## REMEF
+Although this step actually occurred AFTER the model selection, in the script it is included prior to the model selection, so that I could include the REMEF values in the models so I could see what the slopes/intercepts are for the REMEF visualizations of the mixed effects models
+### PC1
+```{r}
+precip_mod <- lmer(PC1 ~ mpa.unscaled + site.test + Species + season + (1 | individual), data = seg.data.subset.alldates)
+
+summary(precip_mod)
+
+r1_1 <- remef(precip_mod, fix = 'site.test',  ran = "all")
+#summary(r1_1)
+scaled_r1_1_df <- as.data.frame(r1_1)
+#https://stats.stackexchange.com/questions/258285/how-to-do-partial-regression-plots-with-linear-mixed-effect-models/258292#258292?newreg=3b55c635f610441db980674675bc0051
+```
+
+### PC2
+```{r}
+precip_mod.2 <- lmer(PC2 ~ mpa.unscaled + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
+
+r1_2 <- remef(precip_mod.2, fix = 'site.test', ran = 'all')
+
+scaled_r1_2_df <- as.data.frame(r1_2)
+```
+
+```{r}
+precip_groups_ranis <- cbind(seg.data.subset.alldates, scaled_r1_1_df, scaled_r1_2_df)
+
+precip_groups_ranis.adfa <- precip_groups_ranis %>% 
+  filter(spp == 'ADFA')
+precip_groups_ranis.ceme <- precip_groups_ranis %>% 
+  filter(spp == 'CEME')
+```
+
+### LFM, DW
+```{r}
+mpalfm_mod <- lmer(lfm ~ mpa + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
+
+summary(mpalfm_mod)
+
+r1_lfm <- remef(mpalfm_mod, fix = 'site.test',  ran = "all")
+scaled_r1_lfm_df <- as.data.frame(r1_lfm)
+###
+mpadw_mod <- lmer(dw.flam.sample ~ mpa + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
+
+summary(mpadw_mod)
+
+r1_dw <- remef(mpadw_mod , fix = 'site.test',  ran = "all")
+scaled_r1_dw_df <- as.data.frame(r1_dw)
+```
+
+```{r}
+seg.data.subset.alldates <- seg.data.subset.alldates %>%
+  mutate(season = case_when(
+    timing %in% c("Dec. 2019", "Dec. 2016", "Jan. 2018", "Jan. 2020") ~ "Wet", 
+    timing == "Sept. 2020" ~ "Dry"
+  ))
+
+mpa_rel_df <- cbind(scaled_r1_dw_df, scaled_r1_lfm_df, seg.data.subset.alldates)
+
+mpa_rel_df.adfa <- mpa_rel_df %>% 
+  filter(spp == 'ADFA')
+mpa_rel_df.ceme <- mpa_rel_df %>% 
+  filter(spp == 'CEME')
+```
+
 ## Model Selection
 ### PC1
 ```{r}
@@ -151,7 +229,11 @@ m.adfa <- lmer(PC1 ~ mpa.unscaled + site + season + (1 | individual), data = seg
 
 m.ceme <- lmer(PC1 ~ mpa.unscaled + site + season + (1 | individual), data = seg.CEME.subset)
 
-tab_model(m1, m2, m3, m.adfa, m.ceme,
+m.adfa.remef <- lmer(r1_1 ~ mpa.unscaled + site + season + (1 | individual), data = precip_groups_ranis.adfa)
+
+m.ceme.remef <- lmer(r1_1 ~ mpa.unscaled + site + season + (1 | individual), data = precip_groups_ranis.ceme)
+
+tab_model(m1, m2, m3, m.adfa, m.ceme, m.adfa.remef, m.ceme.remef,
           show.reflvl = TRUE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -159,7 +241,7 @@ tab_model(m1, m2, m3, m.adfa, m.ceme,
           show.icc = FALSE,
           string.pred = "Coeffcient", 
          title = "season plot model selection",
-         dv.labels = c('Model 1', 'Model 2', 'Model 3', 'Model 1 - ADFA', 'Model 1 - CEME'),
+         dv.labels = c('Model 1', 'Model 2', 'Model 3', 'Model 1 - ADFA', 'Model 1 - CEME', 'REMEF - ADFA', 'REMEF - CEME'),
   string.p = "P-Value", 
   p.style = "stars")
 # Best model is as expected -- PC1 ~ mpa + season + species + site + (1|ind); added models split by species into table
@@ -177,7 +259,11 @@ m.adfa <- lmer(PC2 ~ mpa.unscaled + site + season + (1 | individual), data = seg
 
 m.ceme <- lmer(PC2 ~ mpa.unscaled + site + season + (1 | individual), data = seg.CEME.subset)
 
-tab_model(m1, m2, m3, m.adfa, m.ceme,
+m.adfa.remef <- lmer(r1_2 ~ mpa.unscaled + site + season + (1 | individual), data = precip_groups_ranis.adfa)
+
+m.ceme.remef <- lmer(r1_2 ~ mpa.unscaled + site + season + (1 | individual), data = precip_groups_ranis.ceme)
+
+tab_model(m1, m2, m3, m.adfa, m.ceme, m.adfa.remef, m.ceme.remef,
           show.reflvl = TRUE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -185,7 +271,7 @@ tab_model(m1, m2, m3, m.adfa, m.ceme,
           show.icc = FALSE,
           string.pred = "Coeffcient", 
          title = "season plot model selection",
-         dv.labels = c('Model 1', 'Model 2', 'Model 3', 'Model 1 - ADFA', 'Model 1 - CEME'),
+         dv.labels = c('Model 1', 'Model 2', 'Model 3', 'Model 1 - ADFA', 'Model 1 - CEME', 'REMEF - ADFA', 'REMEF - CEME'),
   string.p = "P-Value", 
   p.style = "stars")
 ```
@@ -202,7 +288,11 @@ m.adfa <- lmer(lfm.outliers.out ~ mpa.unscaled + site + season + (1 | individual
 
 m.ceme <- lmer(lfm.outliers.out ~ mpa.unscaled + site + season + (1 | individual), data = seg.CEME.subset)
 
-tab_model(m1, m2, m3, m.adfa, m.ceme,
+m.adfa.remef <- lmer(r1_lfm ~ mpa.unscaled + site + season + (1 | individual), data = mpa_rel_df.adfa)
+
+m.ceme.remef <- lmer(r1_lfm ~ mpa.unscaled + site + season + (1 | individual), data = mpa_rel_df.ceme)
+
+tab_model(m1, m2, m3, m.adfa, m.ceme, m.adfa.remef, m.ceme.remef,
           show.reflvl = TRUE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -210,48 +300,12 @@ tab_model(m1, m2, m3, m.adfa, m.ceme,
           show.icc = FALSE,
           string.pred = "Coeffcient", 
          title = "season plot model selection",
-         dv.labels = c('Model 1', 'Model 2', 'Model 3', 'Model 1 - ADFA', 'Model 1 - CEME'),
+         dv.labels = c('Model 1', 'Model 2', 'Model 3', 'Model 1 - ADFA', 'Model 1 - CEME', 'REMEF - ADFA', 'REMEF - CEME'),
   string.p = "P-Value", 
   p.style = "stars")
 ```
 
 
-Model: 
-```{r}
-seg.data.subset.alldates <- seg.data.subset.alldates %>% 
-  mutate(season = case_when(
-    precip.2mo < 0.5 ~ "Dry", 
-    precip.2mo > 0.5 ~ "Wet")
-  ) %>% 
-  mutate(site.test = case_when(
-    site == "St. Marys" ~ 1,
-    site == "Painted Caves" ~ 2
-  ))
-
-precip_mod <- lmer(PC1 ~ mpa.unscaled + site.test + Species + season + (1 | individual), data = seg.data.subset.alldates)
-
-summary(precip_mod)
-
-r1_1 <- remef(precip_mod, fix = 'site.test',  ran = "all")
-#summary(r1_1)
-scaled_r1_1_df <- as.data.frame(r1_1)
-
-
-
-#https://stats.stackexchange.com/questions/258285/how-to-do-partial-regression-plots-with-linear-mixed-effect-models/258292#258292?newreg=3b55c635f610441db980674675bc0051
-```
-
-```{r}
-precip_mod.2 <- lmer(PC2 ~ mpa.unscaled + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
-
-r1_2 <- remef(precip_mod.2, fix = 'site.test', ran = 'all')
-
-scaled_r1_2_df <- as.data.frame(r1_2)
-```
-
-```{r}
-precip_groups_ranis <- cbind(seg.data.subset.alldates, scaled_r1_1_df, scaled_r1_2_df)
-```
 
 ## Visualizations
 
@@ -294,18 +348,18 @@ season_plot.pc1
 
 #### ADFA
 ```{r}
-precip_groups_ranis  %>%
+pc1.vs.lfm.adfa <- precip_groups_ranis  %>%
   filter(spp == 'ADFA') %>% 
-  ggplot(aes(y = PC1, 
+  ggplot(aes(y = r1_1, 
              x = mpa.unscaled,
              fill = season,
              color = season,
              group = season)) +
   geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = -0.122, intercept = -1.065,
+  geom_abline(slope = -0.122, intercept = -0.109,
               color = '#c1121f', cex = 1,
               show.legend = FALSE) +
-  geom_abline(slope = -0.122, intercept = -0.413,
+  geom_abline(slope = -0.122, intercept = 0.587,
               color = '#669bbc', cex = 1,
               show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
@@ -326,22 +380,23 @@ precip_groups_ranis  %>%
         axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
+pc1.vs.lfm.adfa
 ```
 
 #### CEME
 ```{r}
-precip_groups_ranis  %>%
+pc1.vs.lfm.ceme <- precip_groups_ranis  %>%
   filter(spp == 'CEME') %>% 
-  ggplot(aes(y = PC1, 
+  ggplot(aes(y = r1_1, 
              x = mpa.unscaled,
              fill = season,
              color = season,
              group = season)) +
   geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = -0.147, intercept = -1.789,
+  geom_abline(slope = -0.147, intercept = -0.834,
               color = '#c1121f', cex = 1,
               show.legend = FALSE) +
-  geom_abline(slope = -0.147, intercept = -1.33,
+  geom_abline(slope = -0.147, intercept = -0.375,
               color = '#669bbc', cex = 1,
               show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
@@ -361,6 +416,7 @@ precip_groups_ranis  %>%
         axis.title = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
+pc1.vs.lfm.ceme
 ```
 
 ### PC2
@@ -402,18 +458,18 @@ season_plot.pc2
 
 #### ADFA
 ```{r}
-precip_groups_ranis  %>%
+pc2.vs.lfm.adfa <- precip_groups_ranis  %>%
   filter(spp == "ADFA") %>% 
-  ggplot(aes(y = PC2, 
+  ggplot(aes(y = r1_2, 
              x = mpa.unscaled,
              fill = season,
              color = season,
              group = season)) +
   geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = 0.119, intercept = 0.159,
+  geom_abline(slope = 0.120, intercept = 0.144,
               color = '#c1121f', cex = 1,
               show.legend = FALSE) +
-  geom_abline(slope = 0.119, intercept = 1.239,
+  geom_abline(slope = 0.121, intercept = 1.186,
               color = '#669bbc', cex = 1,
               show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
@@ -434,22 +490,23 @@ precip_groups_ranis  %>%
         axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
+pc2.vs.lfm.adfa
 ```
 
 #### CEME
 ```{r}
-precip_groups_ranis  %>%
+pc2.vs.lfm.ceme <- precip_groups_ranis  %>%
   filter(spp == 'CEME') %>% 
-  ggplot(aes(y = PC2, 
+  ggplot(aes(y = r1_2, 
              x = mpa.unscaled,
              fill = season,
              color = season,
              group = season)) +
   geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = 0.119, intercept = -0.027,
+  geom_abline(slope = 0.121, intercept = -0.032,
               color = '#c1121f', cex = 1,
               show.legend = FALSE) +
-  geom_abline(slope = 0.119, intercept = 0.781,
+  geom_abline(slope = 0.121, intercept = 0.752,
               color = '#669bbc', cex = 1,
               show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
@@ -469,6 +526,7 @@ precip_groups_ranis  %>%
         axis.title = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
+pc2.vs.lfm.ceme
 ```
 
 Both PC1 and PC2
@@ -482,34 +540,7 @@ ggsave(here("figures", "season_plot.jpg"),
        width = 6, height = 8, dpi = 300)
 ```
 
-Models:
-```{r}
-mpalfm_mod <- lmer(lfm ~ mpa + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
-
-summary(mpalfm_mod)
-
-r1_lfm <- remef(mpalfm_mod, fix = 'site.test',  ran = "all")
-scaled_r1_lfm_df <- as.data.frame(r1_lfm)
-###
-mpadw_mod <- lmer(dw.flam.sample ~ mpa + Species + season + site.test + (1 | individual), data = seg.data.subset.alldates)
-
-summary(mpadw_mod)
-
-r1_dw <- remef(mpadw_mod , fix = 'site.test',  ran = "all")
-scaled_r1_dw_df <- as.data.frame(r1_dw)
-```
-
 ### MPa vs LFM
-```{r}
-seg.data.subset.alldates <- seg.data.subset.alldates %>%
-  mutate(season = case_when(
-    timing %in% c("Dec. 2019", "Dec. 2016", "Jan. 2018", "Jan. 2020") ~ "Wet", 
-    timing == "Sept. 2020" ~ "Dry"
-  ))
-
-mpa_rel_df <- cbind(scaled_r1_dw_df, scaled_r1_lfm_df, seg.data.subset.alldates)
-```
-
 ```{r}
 mpa.vs.lfm.plot <- mpa_rel_df %>% 
   ggplot(aes(y = lfm.outliers.out, 
@@ -543,6 +574,78 @@ mpa.vs.lfm.plot <- mpa_rel_df %>%
 
 mpa.vs.lfm.plot
 ```
+
+#### ADFA
+```{r}
+mpa.vs.lfm.adfa <- mpa_rel_df %>% 
+  filter(spp == 'ADFA') %>% 
+  ggplot(aes(y = r1_lfm, 
+             x = mpa.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .5, aes(color = season)) +
+  geom_abline(slope = 0.03, intercept = 0.01,
+              color = '#c1121f', cex = 1,
+              show.legend = FALSE) +
+  geom_abline(slope = 0.03, intercept = 0.216,
+              color = '#669bbc', cex = 1,
+              show.legend = FALSE) +
+  labs(x = "Water Potential (MPa)", 
+       y = "Live Fuel Moisture (Scaled, Effects Removed)", 
+       fill = "Season",
+       color = "Season") +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 12),
+        axis.title.y = element_text(face = 'bold'),
+        axis.title.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+mpa.vs.lfm.adfa
+```
+
+#### CEME
+```{r}
+mpa.vs.lfm.ceme <- mpa_rel_df %>% 
+  filter(spp == 'CEME') %>% 
+  ggplot(aes(y = r1_lfm, 
+             x = mpa.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .5, aes(color = season)) +
+  geom_abline(slope = 0.031, intercept = -0.037,
+              color = '#c1121f', cex = 1,
+              show.legend = FALSE) +
+  geom_abline(slope = 0.031, intercept = 0.182,
+              color = '#669bbc', cex = 1,
+              show.legend = FALSE) +
+  labs(x = "Water Potential (MPa)", 
+       y = "Live Fuel Moisture (Scaled, Effects Removed)", 
+       fill = "Season",
+       color = "Season") +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 12),
+        axis.title = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+mpa.vs.lfm.ceme
+```
+
 
 ### MPa vs. DW
 Likely going to omit from final figure
@@ -582,6 +685,8 @@ mpa.vs.dw.plot
 ```
 
 ## Arranging Main Plots
+
+### Linear Regressions
 ```{r}
 legend.sz <- get_legend(
   # create some space to the top of the legend
@@ -620,6 +725,31 @@ plot_legend.sz
 ggsave(here("figures", "season.plot.expanded.noREMEF.jpg"),
        plot = plot_legend.sz,
        width = 17, height = 10, dpi = 300)
+```
+
+### Mixed Effects Models
+```{r}
+plot.sz.mem <- cowplot::plot_grid(
+        pc1.vs.lfm.adfa + theme(plot.margin = unit(c(0.25, 0.1, 0.25, 0.25), "cm")), 
+        pc1.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.1), "cm")),
+        pc2.vs.lfm.adfa + theme(plot.margin = unit(c(0.25, 0.1, 0.25, 0.25), "cm")), 
+        pc2.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.1), "cm")),
+        mpa.vs.lfm.adfa + theme(plot.margin = unit(c(0.25, 0.1, 0.25, 0.25), "cm")),
+        mpa.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.1), "cm")),
+        align='vh', vjust=.5, scale = 1,
+        ncol = 2
+          )
+
+#add to plot
+scatterplot.sz.mem <- gridExtra::grid.arrange(arrangeGrob(plot.sz.mem, bottom = x.grob)) 
+scatterplot.sz.mem
+
+plot_legend.sz.mem <- cowplot::plot_grid(legend.sz, scatterplot.sz.mem, ncol = 1, rel_heights = c(1,20))
+plot_legend.sz.mem
+
+ggsave(here("figures", "season.plot.MEM.REMEF.jpg"),
+       plot = plot_legend.sz.mem,
+       width = 10, height = 18, dpi = 300)
 ```
 
 
@@ -1156,6 +1286,130 @@ ggsave(here("figures", "scatterplot_noremef.jpg"),
        plot = plot_legend, 
        width = 6.5, height = 4.5, dpi = 300)
 ```
+
+## 3.0.4 Using Mixed Effects Models
+#### Models
+```{r}
+m.tti <- lmer(r1_1 ~ mpa.unscaled + Species + site + (1 | individual), data = tti_groups_ranis)
+
+m.fd <- lmer(fd_remef_year ~ mpa.unscaled + Species + site + (1 | individual), data = fd_remef_year_df)
+
+m.gd <- lmer(gd_remef_year ~ mpa.unscaled + Species + site + (1 | individual), data = gd_remef_year_df)
+
+m.pc1 <- lmer(pc1_remef_year ~ mpa.unscaled + Species + site + (1 | individual), data = pc1_remef_year_df)
+
+tab_model(m.tti, m.fd, m.gd, m.pc1,
+          show.reflvl = TRUE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE,
+          string.pred = "Coeffcient", 
+         title = "season plot model selection",
+         dv.labels = c('TTI Model', 'FD Model', 'GD Model', 'PC1 Model'),
+  string.p = "P-Value", 
+  p.style = "stars")
+```
+
+#### Time to ignition
+```{r}
+tti.mpa.mem <- ggplot(data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species, shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_abline(slope = 1.381, intercept = 47.489, color = "#9D0208", cex = 1) +
+  geom_abline(slope = 1.381, intercept = 54.879, color = "#F48C06", cex = 1) +
+  annotate('text', x = -8, y = 12, label = 'Species Difference: *** p < 0.001', size = 3) +
+  labs(x="Water Potential (-Mpa)", y="Time to Ignition (s)")  +
+  th +
+  th_panels +
+  color_panels
+tti.mpa.mem
+```
+
+#### Flame duration
+```{r}
+fd.mpa.mem <- ggplot(data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_abline(slope = -0.133, intercept = 7.162, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -0.133, intercept = 5.056, color = "#F48C06", cex = 1) +
+  labs(x="Water Potential (-Mpa)", y="Flame Duration (s)")  +
+  annotate('text', x = -8, y = 1, label = 'Species Difference: *** p < 0.001', size = 3) +
+   th +
+  th_panels +
+  color_panels
+fd.mpa.mem
+```
+
+#### Glow duration
+```{r}
+gd.mpa.mem <- ggplot(data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_abline(slope = -1.18, intercept = 125.59, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -1.18, intercept = 131.917, color = "#F48C06", cex = 1) +
+  labs(x="Water Potential (-Mpa)", y="Glow Duration (s)")  +
+  scale_y_continuous(limits = c(50,235), breaks = c(50, 100, 150, 200)) +
+  annotate('text', x = -8, y = 55, label = 'Species Difference: insignificant', size = 3) +
+   th +
+  th_panels +
+  color_panels
+gd.mpa.mem
+```
+
+#### PC1
+```{r}
+pc1.mpa.mem <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 1.2, alpha = .6) + 
+  geom_abline(slope = -0.109, intercept = -0.882, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -0.109, intercept = -1.674, color = "#F48C06", cex = 1) +
+  labs(x="Water Potential (-Mpa)", y="Ignitability-Combustibility Proxy") +
+  annotate('text', x = -8, y = -4.55, label = 'Species Difference: *** p < 0.001', size = 3) +
+  th +
+  th_panels +
+  color_panels
+pc1.mpa.mem
+```
+
+#### Main Figure: Arranging Above Plots
+```{r}
+legend <- get_legend(
+  # create some space to the left of the legend
+  ggplot() + 
+  geom_point(data= scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = Species, shape = Species), size = 1, alpha = .8) +
+    color_panels +
+    theme(legend.box.margin = margin(0, 0, 0, 0),
+          legend.position = "top",
+          legend.text = element_text(face = "italic", size = 12),
+          legend.title = element_text(face = 'bold', size = 16),
+          legend.key = element_rect(fill = "white"))
+)
+
+plot <- cowplot::plot_grid(
+        pc1.mpa.mem + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
+        tti.mpa.mem + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        fd.mpa.mem + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        gd.mpa.mem + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
+        align='vh', vjust=.5, scale = 1,
+        ncol = 2
+          )
+
+x.grob <- textGrob("Water Potential (MPa)", 
+                   gp=gpar(fontface="bold", 
+                           col="black", 
+                           fontsize=20)
+                   )
+
+#add to plot
+scatterplot.mem <- gridExtra::grid.arrange(arrangeGrob(plot, bottom = x.grob)) 
+scatterplot.mem
+
+plot_legend.mem <- cowplot::plot_grid (legend, scatterplot.mem, ncol = 1, rel_heights = c(1, 12))
+plot_legend.mem
+
+ggsave(here("figures", "species.scatterplot.MEM.jpg"),
+       plot = plot_legend.mem, 
+       width = 10, height = 10, dpi = 300)
+```
+
+
 #--------
 ## 3.1 LFM species effects (supplemental figure)
 Using remeff to remove random effects
