@@ -15,6 +15,7 @@ library(lme4)
 library(here)
 library(segmented)
 library(nlme)
+citation('nlme')
 library(lubridate)
 library(plotrix)
 filter = dplyr::filter 
