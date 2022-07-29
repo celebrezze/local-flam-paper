@@ -1758,10 +1758,11 @@ tab_model(m1, m2, m3, m4, m5,
 # MAIN TABLE
 ```{r}
 dep.var <- c("PC1", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " ", "Flame Duration (s)", " ", " ", " ", " ", "Glow Duration (s)", " ", " ", " ", " ")
-fix.fx <- c("Water Potential","Water Potential, Sample Weight & Dry Weight", "Wet Weight", "LFM", "Dry Weight",
-            "Water Potential, Sample Weight & Dry Weight", "Water Potential",  "Wet Weight", "LFM", "Dry Weight",
-            "Water Potential",  "Dry Weight", "LFM",  "Water Potential, Sample Weight & Dry Weight", "Wet Weight",
-             "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "LFM", "Water Potential", "Wet Weight")
+dep.varb <- c(" ","PC1", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " ", " ", "Flame Duration (s)", " ", " ", " ", " ", " ", "Glow Duration (s)", " ", " ", " ", " ")
+fix.fx <- c("Water Potential","Composite Model", "Wet Weight", "LFM", "Dry Weight",
+            "Composite Model", "Water Potential",  "Wet Weight", "LFM", "Dry Weight",
+            "Water Potential",  "Dry Weight", "LFM",  "Composite Model", "Wet Weight",
+             "Composite Model", "Dry Weight", "LFM", "Water Potential", "Wet Weight")
 est1 <- c('-0.140***', '-0.141***', '-0.364***', '-0.246**','-0.215*',
            '4.890***','4.776***', '3.955***', '2.636***', '-2.502***',
           '-0.591**',  '0.645**', '-0.570*', '-0.455', '-0.468*',
@@ -1783,12 +1784,18 @@ d.aic <- c(0, 6.25, 11.99, 20.71, 23.31,
            0, 0.165, 1.459, 3.434, 3.960,
            0, 4.609, 12.175, 12.703, 14.500)
 mem.table.df <- data.frame(dep.var, fix.fx, est1, d.aic, aic.values, bic.values, r2.values)
-
+shmoo <- data.frame(dep.varb, d.aic)
 mem.table.df %>%
+  mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), aic.values = cell_spec(aic.values, 'html', color = 'black'), bic.values = cell_spec(bic.values, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','Change in AIC', 'AIC', 'BIC', expression('Marginal R2/Conditional R2'))) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1, 6, 11, 16), background = "#D3D3D3") %>% 
+  row_spec(c(1, 6, 11, 16), background = "#D3D3D3", bold = T) %>% 
   save_kable(here('figures', 'expanded_MEM_kable.html'))
+
+shmoo %>%
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable','Change in AIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  row_spec(c(1, 6, 11, 16), background = "#D3D3D3", bold = T)
 ```
 
 # ----------------------------------

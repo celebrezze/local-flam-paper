@@ -152,7 +152,7 @@ names(spp.labs) <- c("ADFA", "CEME")
 
 #------------------------------------
 # 2.0 Season Effects Plot(s)
-## REMEF
+## 2.0.1 REMEF
 Although this step actually occurred AFTER the model selection, in the script it is included prior to the model selection, so that I could include the REMEF values in the models so I could see what the slopes/intercepts are for the REMEF visualizations of the mixed effects models
 ### PC1
 ```{r}
@@ -216,7 +216,7 @@ mpa_rel_df.ceme <- mpa_rel_df %>%
   filter(spp == 'CEME')
 ```
 
-## Model Selection
+## 2.0.2 Model Selection
 ### Effect of Season - All Flam Metrics
 #### ADFA
 ```{r}
@@ -274,45 +274,45 @@ tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m
 
 #### CEME
 ```{r}
-pc1.m <- lmer(PC1 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+pc1.m <- lmer(PC1 ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-pc1.x <- lmer(PC1 ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+pc1.x <- lmer(PC1 ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-pc2.m <- lmer(PC2 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+pc2.m <- lmer(PC2 ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-pc2.x <- lmer(PC2 ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+pc2.x <- lmer(PC2 ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-tti.m <- lmer(tti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+tti.m <- lmer(tti ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-tti.x <- lmer(tti ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+tti.x <- lmer(tti ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-fd.m <- lmer(fd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+fd.m <- lmer(fd ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-fd.x <- lmer(fd ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+fd.x <- lmer(fd ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-gd.m <- lmer(gd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+gd.m <- lmer(gd ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-gd.x <- lmer(gd ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+gd.x <- lmer(gd ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-fh.m <- lmer(fh ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+fh.m <- lmer(fh ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-fh.x <- lmer(fh ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+fh.x <- lmer(fh ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-gti.m <- lmer(gti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+gti.m <- lmer(gti ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-gti.x <- lmer(gti ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+gti.x <- lmer(gti ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-ttfg.m <- lmer(ttfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+ttfg.m <- lmer(ttfg ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-ttfg.x <- lmer(ttfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+ttfg.x <- lmer(ttfg ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-pfg.m <- lmer(pfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+pfg.m <- lmer(pfg ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-pfg.x <- lmer(pfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+pfg.x <- lmer(pfg ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
-temp.m <- lmer(temp.max ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+temp.m <- lmer(temp.max ~ lfm.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
 
-temp.x <- lmer(temp.max ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+temp.x <- lmer(temp.max ~ lfm.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
 
 tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m, fh.x, pfg.m, pfg.x, ttfg.m, ttfg.x, temp.m, temp.x, gti.m, gti.x,
           show.reflvl = TRUE, 
@@ -417,7 +417,7 @@ tab_model(m1, m2, m3, m.adfa, m.ceme, m.adfa.remef, m.ceme.remef,
 
 
 
-## Visualizations
+## 2.0.3 Visualizations
 
 ### PC1
 Ignitability + combustibility proxy (used as 'flammability' proxy)
@@ -864,7 +864,7 @@ ggsave(here("figures", "season.plot.MEM.REMEF.jpg"),
 ```
 
 
-## Statistical Tests
+## 2.0.4 Statistical Tests
 ### Significance Tests
 ```{r}
 # Is species significant predictor of PC1?
@@ -900,6 +900,40 @@ summary(precip_mod.ceme2)
 precip_mod.adfa2 <- lmer(PC2 ~ mpa.unscaled + season + (1 | individual), data = seg.data.subset.alldates.adfa)
 summary(precip_mod.adfa2)
 # Yes
+```
+
+### ANOVA
+```{r}
+# Is model with season sig. better than w/o?
+## PC1
+### ADFA
+pc1.w.szn.a <- lmer(PC1 ~ mpa.unscaled + season + site + (1 | individual), data = seg.data.subset.alldates.adfa)
+pc1.wo.szn.a <- lmer(PC1 ~ mpa.unscaled + site + (1 | individual), data = seg.data.subset.alldates.adfa)
+anova(pc1.w.szn.a, pc1.wo.szn.a)
+### CEME
+pc1.w.szn.c <- lmer(PC1 ~ mpa.unscaled + season + site + (1 | individual), data = seg.data.subset.alldates.ceme)
+pc1.wo.szn.c <- lmer(PC1 ~ mpa.unscaled + site + (1 | individual), data = seg.data.subset.alldates.ceme)
+anova(pc1.w.szn.c, pc1.wo.szn.c)
+
+## PC2
+### ADFA
+pc2.w.szn.a <- lmer(PC2 ~ mpa.unscaled + season + site + (1 | individual), data = seg.data.subset.alldates.adfa)
+pc2.wo.szn.a <- lmer(PC2 ~ mpa.unscaled + site + (1 | individual), data = seg.data.subset.alldates.adfa)
+anova(pc2.w.szn.a, pc2.wo.szn.a)
+### CEME
+pc2.w.szn.c <- lmer(PC2 ~ mpa.unscaled + season + site + (1 | individual), data = seg.data.subset.alldates.ceme)
+pc2.wo.szn.c <- lmer(PC2 ~ mpa.unscaled + site + (1 | individual), data = seg.data.subset.alldates.ceme)
+anova(pc2.w.szn.c, pc2.wo.szn.c)
+
+## MPa vs. LFM
+### ADFA
+lfm.w.szn.a <- lmer(lfm.outliers.out ~ mpa.unscaled + site + season + (1 | individual), data = seg.data.subset.alldates.adfa)
+lfm.wo.szn.a <- lmer(lfm.outliers.out ~ mpa.unscaled + site + (1 | individual), data = seg.data.subset.alldates.adfa)
+anova(lfm.w.szn.a, lfm.wo.szn.a)
+### CEME
+lfm.w.szn.c <- lmer(lfm.outliers.out ~ mpa.unscaled + site + season + (1 | individual), data = seg.data.subset.alldates.ceme)
+lfm.wo.szn.c <- lmer(lfm.outliers.out ~ mpa.unscaled + site + (1 | individual), data = seg.data.subset.alldates.ceme)
+anova(lfm.w.szn.c, lfm.wo.szn.c)
 ```
 
 #--------------------------------
@@ -1114,15 +1148,15 @@ th_panels <- theme(
         )
 ```
 
-### 3.0.1 Data wrangling
+# 3.0.1 Data wrangling
 Since September 2020 is the only period of time that we tested both species at once, to compare species differences, we must use only these tests
 ```{r}
 scaled.mem.data.sept2020 <- seg.data.subset.alldates %>% 
   filter(year.month == '2020_September')
 ```
 
-### 3.0.2 Model Selection
-#### Effect of Species - All Flam Metrics
+# 3.0.2 Model Selection
+## Effect of Species - All Flam Metrics
 ```{r}
 pc1.m <- lmer(PC1 ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
 
@@ -1176,7 +1210,22 @@ tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m
   p.style = "stars")
 ```
 
-### 3.0.3 Removing effects of random effects
+# 3.0.3 Statistical Tests
+## ANOVA
+Does species significantly improve model?
+- Only testing variables in our plot (for now)
+```{r}
+# PC1
+anova(pc1.m, pc1.x)
+# TTI
+anova(tti.m, tti.x)
+# FD
+anova(fd.m, fd.x)
+# GD
+anova(gd.m, gd.x)
+```
+
+# 3.0.4 Removing effects of random effects
 Remeff package
 
 ```{r}
@@ -1212,7 +1261,7 @@ model_coef_plot <- ggplot(data = tti_groups_ranis,
 model_coef_plot
 ```
 
-#### Time to ignition
+## Time to ignition
 ```{r}
 mpa_mod_fig_tti <- lmer(tti ~ mpa.unscaled + Species + site.test + (1 | individual), data = scaled.mem.data.sept2020)
 
@@ -1235,7 +1284,7 @@ tti.mpa <- ggplot(data= tti_groups_ranis, aes(mpa.unscaled, tti, color = Species
 tti.mpa
 ```
 
-#### Flame duration
+## Flame duration
 ```{r}
 mpa_mod_fig_fd <- lmer(fd ~ mpa.unscaled + Species + site.test + (1 | individual), data = scaled.mem.data.sept2020)
 
@@ -1257,7 +1306,7 @@ fd.mpa <- ggplot(data= fd_remef_year_df, aes(mpa.unscaled, fd, color = Species,s
 fd.mpa
 ```
 
-#### Glow duration
+## Glow duration
 ```{r}
 mpa_mod_fig_gd <- lmer(gd ~ mpa.unscaled + Species + site.test + (1 | individual), data = scaled.mem.data.sept2020)
 
@@ -1282,7 +1331,7 @@ gd.mpa <- ggplot(data= gd_remef_year_df, aes(mpa.unscaled, gd, color = Species,s
 gd.mpa
 ```
 
-#### PC1
+## PC1
 ```{r}
 mpa_mod_fig_pc1 <- lmer(PC1 ~ mpa.unscaled + Species + site.test + (1 | individual), data = scaled.mem.data.sept2020)
 
@@ -1304,7 +1353,7 @@ pc1.mpa <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, PC1, color = Specie
 pc1.mpa
 ```
 
-#### Main Figure: Arranging plots
+## Main Figure: Arranging plots
 ```{r}
 legend <- get_legend(
   # create some space to the left of the legend
@@ -1347,7 +1396,7 @@ ggsave(here("figures", "species.plot.noREMEF.jpg"),
 ```
 
 
-## 3.0.4 Keeping random effects
+# 3.0.5 Keeping random effects
 
 #### Time to ignition
 ```{r}
@@ -1451,7 +1500,7 @@ ggsave(here("figures", "scatterplot_noremef.jpg"),
        width = 6.5, height = 4.5, dpi = 300)
 ```
 
-## 3.0.5 Using Mixed Effects Models
+# 3.0.6 Using Mixed Effects Models
 #### Models
 ```{r}
 m.tti <- lmer(r1_1 ~ mpa.unscaled + Species + site + (1 | individual), data = tti_groups_ranis)
@@ -1580,6 +1629,7 @@ ggsave(here("figures", "species.scatterplot.MEM.jpg"),
        plot = plot_legend.mem, 
        width = 10, height = 10, dpi = 300)
 ```
+
 
 
 #--------
