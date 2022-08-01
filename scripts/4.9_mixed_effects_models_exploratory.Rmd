@@ -1757,45 +1757,51 @@ tab_model(m1, m2, m3, m4, m5,
 
 # MAIN TABLE
 ```{r}
-dep.var <- c("PC1", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " ", "Flame Duration (s)", " ", " ", " ", " ", "Glow Duration (s)", " ", " ", " ", " ")
-dep.varb <- c(" ","PC1", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " ", " ", "Flame Duration (s)", " ", " ", " ", " ", " ", "Glow Duration (s)", " ", " ", " ", " ")
-fix.fx <- c("Water Potential","Composite Model", "Wet Weight", "LFM", "Dry Weight",
-            "Composite Model", "Water Potential",  "Wet Weight", "LFM", "Dry Weight",
-            "Water Potential",  "Dry Weight", "LFM",  "Composite Model", "Wet Weight",
-             "Composite Model", "Dry Weight", "LFM", "Water Potential", "Wet Weight")
-est1 <- c('-0.140***', '-0.141***', '-0.364***', '-0.246**','-0.215*',
-           '4.890***','4.776***', '3.955***', '2.636***', '-2.502***',
-          '-0.591**',  '0.645**', '-0.570*', '-0.455', '-0.468*',
-          '-0.879', '4.668***','-2.567', '-2.261', '-1.544')
-aic.values <- c(1674.577, 1680.822, 1686.568, 1695.289, 1697.884,
-                3327.326, 3332.028,	3375.534,	3397.523,	3400.992,
-                2566.495,	2566.660,	2567.954,	2569.929,	2570.455,
-              	4147.778, 4152.387,	4159.953, 4160.481,	4162.278)
-bic.values <- c(1715.603, 1730.053, 1727.594, 1736.315, 1738.909,
-                3376.557, 3373.053, 3416.559, 3438.548, 3442.017, 
-                2607.521, 2607.685, 2608.980, 2619.160, 2611.481,
-                4197.009, 4193.413, 4200.978, 4201.506, 4203.303)
-r2.values <- c('0.225/0.237','0.230/0.237', '0.201/0.224', '0.185/0.217', '0.180/0.206',
-              	'0.345 / 0.345', '0.336 / 0.346',	'0.269 / 0.306',	'0.233 / 0.293', '0.225 / 0.273',
-               '0.059 / 0.154',	'0.058 / 0.156',	'0.055 / 0.156',	'0.063 / 0.160',	'0.049 / 0.149',
-               '0.238 / 0.275', '0.233 / 0.269', '0.220 / 0.259',	'0.220 / 0.260',	'0.216 / 0.258')
-d.aic <- c(0, 6.25, 11.99, 20.71, 23.31,
-           0, 4.702, 48.208, 70.197, 73.666,
-           0, 0.165, 1.459, 3.434, 3.960,
-           0, 4.609, 12.175, 12.703, 14.500)
+dep.var <- c("PC1", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " ", " ", "Flame Duration (s)", " ", " ", " ", " ", " ", "Glow Duration (s)", " ", " ", " ", " ", " ")
+fix.fx <- c(" ", "Water Potential","Composite Model", "Wet Weight", "LFM", "Dry Weight",
+            " ", "Composite Model", "Water Potential",  "Wet Weight", "LFM", "Dry Weight",
+            " ", "Water Potential",  "Dry Weight", "LFM",  "Composite Model", "Wet Weight",
+             " ", "Composite Model", "Dry Weight", "LFM", "Water Potential", "Wet Weight")
+est1 <- c(" ", '-0.140***', '-0.141***', '-0.364***', '-0.246**','-0.215*',
+           " ", '4.890***','4.776***', '3.955***', '2.636***', '-2.502***',
+          " ", '-0.591**',  '0.645**', '-0.570*', '-0.455', '-0.468*',
+          " ", '-0.879', '4.668***','-2.567', '-2.261', '-1.544')
+aic.values <- c(" ", '1674.577', '1680.822', '1686.568', '1695.289', '1697.884',
+                " ", '3327.326', '3332.028',	'3375.534',	'3397.523',	'3400.992',
+                " ", '2566.495',	'2566.660',	'2567.954',	'2569.929',	'2570.455',
+              	" ", '4147.778', '4152.387',	'4159.953', '4160.481',	'4162.278')
+bic.values <- c(" ", '1715.603', '1730.053', '1727.594', '1736.315', '1738.909',
+                " ", '3376.557', '3373.053', '3416.559', '3438.548', '3442.017', 
+                " ", '2607.521', '2607.685', '2608.980', '2619.160', '2611.481',
+               " ",  '4197.009', '4193.413', '4200.978', '4201.506', '4203.303')
+r2.values <- c(" ", '0.225/0.237','0.230/0.237', '0.201/0.224', '0.185/0.217', '0.180/0.206',
+              	" ", '0.345 / 0.345', '0.336 / 0.346',	'0.269 / 0.306',	'0.233 / 0.293', '0.225 / 0.273',
+               " ", '0.059 / 0.154',	'0.058 / 0.156',	'0.055 / 0.156',	'0.063 / 0.160',	'0.049 / 0.149',
+               " ", '0.238 / 0.275', '0.233 / 0.269', '0.220 / 0.259',	'0.220 / 0.260',	'0.216 / 0.258')
+d.aic <- c(" ", '0', '6.25', '11.99', '20.71', '23.31',
+           " ", '0', '4.702', '48.208', '70.197', '73.666',
+           " ", '0', '0.165', '1.459', '3.434', '3.960',
+           " ", '0', '4.609', '12.175', '12.703', '14.500')
 mem.table.df <- data.frame(dep.var, fix.fx, est1, d.aic, aic.values, bic.values, r2.values)
-shmoo <- data.frame(dep.varb, d.aic)
 mem.table.df %>%
   mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), aic.values = cell_spec(aic.values, 'html', color = 'black'), bic.values = cell_spec(bic.values, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','Change in AIC', 'AIC', 'BIC', expression('Marginal R2/Conditional R2'))) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1, 6, 11, 16), background = "#D3D3D3", bold = T) %>% 
+  row_spec(c(1, 7, 13, 19), background = "#D3D3D3", bold = T, font_size = 16) %>% 
+  row_spec(c(2, 8, 14, 15, 16, 20), bold = T) %>% 
   save_kable(here('figures', 'expanded_MEM_kable.html'))
+```
 
-shmoo %>%
-  kable(format = 'html', escape = F, col.names = c('Dependent Variable','Change in AIC')) %>% 
+Table 2:
+```{r}
+mem.table2.df <- data.frame(dep.var, fix.fx, est1, d.aic, r2.values)
+mem.table2.df %>%
+  mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','Change in AIC', expression('Marginal R2/Conditional R2'))) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1, 6, 11, 16), background = "#D3D3D3", bold = T)
+  row_spec(c(1, 7, 13, 19), background = "#D3D3D3", bold = T, font_size = 16) %>% 
+  row_spec(c(2, 8, 14, 15, 16, 20), bold = T) %>% 
+  save_kable(here('figures', 'Table2_MEM_kable.html'))
 ```
 
 # ----------------------------------

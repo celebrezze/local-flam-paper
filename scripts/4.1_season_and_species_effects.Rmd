@@ -458,19 +458,19 @@ season_plot.pc1
 
 #### ADFA
 ```{r}
-pc1.vs.lfm.adfa <- precip_groups_ranis  %>%
+pc1.vs.mpa.adfa <- precip_groups_ranis  %>%
   filter(spp == 'ADFA') %>% 
   ggplot(aes(y = r1_1, 
              x = mpa.unscaled,
              fill = season,
              color = season,
              group = season)) +
-  geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = -0.122, intercept = -0.109,
-              color = '#c1121f', cex = 1,
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = -0.137, intercept = -0.022,
+              color = '#c1121f', cex = 1, alpha = .9,
               show.legend = FALSE) +
-  geom_abline(slope = -0.122, intercept = 0.587,
-              color = '#669bbc', cex = 1,
+  geom_abline(slope = -0.137, intercept = 0.723,
+              color = '#669bbc', cex = 1, alpha = .9,
               show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
        y = "Ignitability-Combustibility Proxy", 
@@ -485,29 +485,30 @@ pc1.vs.lfm.adfa <- precip_groups_ranis  %>%
   theme(legend.position = "none", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
-        strip.text = element_text(face = "italic", size = 12),
-        axis.title.y = element_text(face = 'bold'),
+        strip.text = element_text(face = "italic", size = 18),
+        axis.title.y = element_text(face = 'bold', size = 18),
         axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = -9.7, y = 6, label = 'a', size = 12, face = 'bold') +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
-pc1.vs.lfm.adfa
+pc1.vs.mpa.adfa
 ```
 
 #### CEME
 ```{r}
-pc1.vs.lfm.ceme <- precip_groups_ranis  %>%
+pc1.vs.mpa.ceme <- precip_groups_ranis  %>%
   filter(spp == 'CEME') %>% 
   ggplot(aes(y = r1_1, 
              x = mpa.unscaled,
              fill = season,
              color = season,
              group = season)) +
-  geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = -0.147, intercept = -0.834,
-              color = '#c1121f', cex = 1,
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = -0.147, intercept = -0.678,
+              color = '#c1121f', cex = 1, alpha = .9,
               show.legend = FALSE) +
-  geom_abline(slope = -0.147, intercept = -0.375,
-              color = '#669bbc', cex = 1,
+  geom_abline(slope = -0.147, intercept = -0.219,
+              color = '#669bbc', cex = 1, alpha = .9,
               show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
        y = "Ignitability-Combustibility Proxy", 
@@ -522,11 +523,12 @@ pc1.vs.lfm.ceme <- precip_groups_ranis  %>%
   theme(legend.position = "none", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
-        strip.text = element_text(face = "italic", size = 12),
+        strip.text = element_text(face = "italic", size = 18),
         axis.title = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = -9.7, y = 6, label = 'b', size = 12, face = 'bold') +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
-pc1.vs.lfm.ceme
+pc1.vs.mpa.ceme
 ```
 
 ### PC2
@@ -568,19 +570,19 @@ season_plot.pc2
 
 #### ADFA
 ```{r}
-pc2.vs.lfm.adfa <- precip_groups_ranis  %>%
+pc2.vs.mpa.adfa <- precip_groups_ranis  %>%
   filter(spp == "ADFA") %>% 
   ggplot(aes(y = r1_2, 
              x = mpa.unscaled,
              fill = season,
              color = season,
              group = season)) +
-  geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = 0.120, intercept = 0.144,
-              color = '#c1121f', cex = 1,
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = 0.109, intercept = 0.589,
+              color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.121, intercept = 1.186,
-              color = '#669bbc', cex = 1,
+  geom_abline(slope = 0.109, intercept = 1.26,
+              color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
        y = "Consumability Proxy", 
@@ -595,35 +597,36 @@ pc2.vs.lfm.adfa <- precip_groups_ranis  %>%
   theme(legend.position = "none", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
-        strip.text = element_text(face = "italic", size = 12),
-        axis.title.y = element_text(face = 'bold'),
+        strip.text = element_text(face = "italic", size = 18),
+        axis.title.y = element_text(face = 'bold', size = 18),
         axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = -9.7, y = 4.9, label = 'c', size = 12, face = 'bold') +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
-pc2.vs.lfm.adfa
+pc2.vs.mpa.adfa
 ```
 
 #### CEME
 ```{r}
-pc2.vs.lfm.ceme <- precip_groups_ranis  %>%
+pc2.vs.mpa.ceme <- precip_groups_ranis  %>%
   filter(spp == 'CEME') %>% 
   ggplot(aes(y = r1_2, 
              x = mpa.unscaled,
              fill = season,
              color = season,
              group = season)) +
-  geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = 0.121, intercept = -0.032,
-              color = '#c1121f', cex = 1,
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = 0.12, intercept = 0.435,
+              color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.121, intercept = 0.752,
-              color = '#669bbc', cex = 1,
+  geom_abline(slope = 0.12, intercept = 1.18,
+              color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   labs(x = "Water Potential (-MPa)", 
        y = "Consumability Proxy", 
        fill = "Season",
        color = "Season") +
-  scale_y_continuous(limits=c(-5,6.25), breaks=c(-5,-2.5,0,2.5,5)) +
+  scale_y_continuous(limits=c(-5,5), breaks=c(-5,-2.5,0,2.5,5)) +
   th +
   facet_wrap(~spp,
               labeller = labeller(spp = spp.labs),
@@ -632,11 +635,12 @@ pc2.vs.lfm.ceme <- precip_groups_ranis  %>%
   theme(legend.position = "none", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
-        strip.text = element_text(face = "italic", size = 12),
+        strip.text = element_text(face = "italic", size = 18),
         axis.title = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = -9.7, y = 4.85, label = 'd', size = 12, face = 'bold') +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
-pc2.vs.lfm.ceme
+pc2.vs.mpa.ceme
 ```
 
 Both PC1 and PC2
@@ -694,12 +698,12 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
              fill = season,
              color = season,
              group = season)) +
-  geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = 0.03, intercept = 0.01,
-              color = '#c1121f', cex = 1,
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = 0.033, intercept = -0.063,
+              color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.03, intercept = 0.216,
-              color = '#669bbc', cex = 1,
+  geom_abline(slope = 0.033, intercept = 0.178,
+              color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   labs(x = "Water Potential (MPa)", 
        y = "Live Fuel Moisture (Scaled, Effects Removed)", 
@@ -713,10 +717,11 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
   theme(legend.position = "none", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
-        strip.text = element_text(face = "italic", size = 12),
-        axis.title.y = element_text(face = 'bold'),
+        strip.text = element_text(face = "italic", size = 18),
+        axis.title.y = element_text(face = 'bold', size = 18),
         axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = -9.7, y = 0.46, label = 'e', size = 12, face = 'bold') +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.adfa
 ```
@@ -730,12 +735,12 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
              fill = season,
              color = season,
              group = season)) +
-  geom_point(alpha = .5, aes(color = season)) +
-  geom_abline(slope = 0.031, intercept = -0.037,
-              color = '#c1121f', cex = 1,
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = 0.032, intercept = -0.186,
+              color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.031, intercept = 0.182,
-              color = '#669bbc', cex = 1,
+  geom_abline(slope = 0.032, intercept = 0.222,
+              color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   labs(x = "Water Potential (MPa)", 
        y = "Live Fuel Moisture (Scaled, Effects Removed)", 
@@ -749,9 +754,10 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
   theme(legend.position = "none", 
         legend.title = element_text(face = "bold"),
         legend.key = element_rect(fill = 'white'),
-        strip.text = element_text(face = "italic", size = 12),
+        strip.text = element_text(face = "italic", size = 18),
         axis.title = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = -9.7, y = 0.2, label = 'f', size = 12, face = 'bold') +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.ceme
 ```
@@ -801,12 +807,13 @@ mpa.vs.dw.plot
 legend.sz <- get_legend(
   # create some space to the top of the legend
   ggplot() + 
-  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, PC1, color = season), size = 1, alpha = .8) +
+  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, PC1, color = season), size = 5, alpha = .8) +
     labs(color = "Season", shape = "Season") +
     scale_color_manual(values=c("#c1121f","#669BBC")) +
     theme(legend.box.margin = margin(0, 0, 0, 0),
-          legend.position = "top",
-          legend.title = element_text(face = 'bold', size = 16),
+          legend.position = "right",
+          legend.title = element_text(face = 'bold', size = 26),
+          legend.text = element_text(size = 22),
           legend.key = element_rect(fill = "white"))
 )
 
@@ -822,7 +829,7 @@ plot.sz <- cowplot::plot_grid(
 x.grob <- textGrob("Water Potential (MPa)", 
                    gp=gpar(fontface="bold", 
                            col="black", 
-                           fontsize=20))
+                           fontsize=24))
 
 #add to plot
 scatterplot.sz <- gridExtra::grid.arrange(arrangeGrob(plot.sz, bottom = x.grob)) 
@@ -840,22 +847,20 @@ ggsave(here("figures", "season.plot.expanded.noREMEF.jpg"),
 ### Mixed Effects Models
 ```{r}
 plot.sz.mem <- cowplot::plot_grid(
-        pc1.vs.lfm.adfa + theme(plot.margin = unit(c(0.25, 0.1, 0.25, 0.25), "cm")), 
-        pc1.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.1), "cm")),
-        pc2.vs.lfm.adfa + theme(plot.margin = unit(c(0.25, 0.1, 0.25, 0.25), "cm")), 
-        pc2.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.1), "cm")),
+        pc1.vs.mpa.adfa + theme(plot.margin = unit(c(0.25, 0.1, 0.25, 0.25), "cm")), 
+        pc1.vs.mpa.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.1), "cm")),
+        pc2.vs.mpa.adfa + theme(plot.margin = unit(c(0.25, 0.1, 0.25, 0.25), "cm")), 
+        pc2.vs.mpa.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.1), "cm")),
         mpa.vs.lfm.adfa + theme(plot.margin = unit(c(0.25, 0.1, 0.25, 0.25), "cm")),
         mpa.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.1), "cm")),
         align='vh', vjust=.5, scale = 1,
-        ncol = 2, labels = c('A', ' ', 'B', ' ', 'C', ' ', 'D', ' '),
-        label_size = 24
-          )
+        ncol = 2)
 
 #add to plot
 scatterplot.sz.mem <- gridExtra::grid.arrange(arrangeGrob(plot.sz.mem, bottom = x.grob)) 
 scatterplot.sz.mem
 
-plot_legend.sz.mem <- cowplot::plot_grid(legend.sz, scatterplot.sz.mem, ncol = 1, rel_heights = c(1,20))
+plot_legend.sz.mem <- cowplot::plot_grid(scatterplot.sz.mem, legend.sz, ncol = 2, rel_widths = c(5,1))
 plot_legend.sz.mem
 
 ggsave(here("figures", "season.plot.MEM.REMEF.jpg"),
@@ -1141,7 +1146,7 @@ color_panels <- scale_color_manual(values=c("#9D0208","#F48C06"))
 
 th_panels <- theme(
         axis.title.x=element_blank(),
-        axis.title.y=element_text(face = 'bold', size = 14),
+        axis.title.y=element_text(face = 'bold', size = 18),
         legend.position = "none", 
         aspect.ratio = 1, 
         plot.margin = unit(c(0,0,0,0), "cm")
@@ -1532,13 +1537,29 @@ tab_model(m.tti, m.tti.nospp, m.fd, m.fd.nospp, m.gd, m.gd.nospp, m.pc1, m.pc1.n
   p.style = "stars")
 ```
 
+#### PC1
+```{r}
+pc1.mpa.mem <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
+  geom_point(size = 2, alpha = .65) + 
+  geom_abline(slope = -0.109, intercept = -0.882, color = "#9D0208", cex = 1, alpha = 0.9) +
+  geom_abline(slope = -0.109, intercept = -1.674, color = "#F48C06", cex = 1, alpha = 0.9) +
+  labs(x="Water Potential (-Mpa)", y="Ignitability-Combustibility Proxy") +
+  annotate('text', x = -7.69, y = -4.76, label = 'Species Difference: *** p < 0.001', size = 3) +
+  annotate('text', x = -9.7, y = 3.775, label = 'a', size = 12) +
+  th +
+  th_panels +
+  color_panels
+pc1.mpa.mem
+```
+
 #### Time to ignition
 ```{r}
 tti.mpa.mem <- ggplot(data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species, shape = Species)) + 
-  geom_point(size = 1.2, alpha = .6) + 
-   geom_abline(slope = 1.381, intercept = 47.489, color = "#9D0208", cex = 1) +
-  geom_abline(slope = 1.381, intercept = 54.879, color = "#F48C06", cex = 1) +
-  annotate('text', x = -8, y = 12, label = 'Species Difference: *** p < 0.001', size = 3) +
+  geom_point(size = 2, alpha = .65) + 
+  geom_abline(slope = 1.381, intercept = 47.489, color = "#9D0208", cex = 1, alpha = 0.9) +
+  geom_abline(slope = 1.381, intercept = 54.879, color = "#F48C06", cex = 1, alpha = 0.9) +
+  annotate('text', x = -7.5, y = 2, label = 'Species Difference: *** p < 0.001', size = 3) +
+  annotate('text', x = -9.7, y = 80, label = 'b', size = 12) +
   labs(x="Water Potential (-Mpa)", y="Time to Ignition (s)")  +
   th +
   th_panels +
@@ -1549,12 +1570,13 @@ tti.mpa.mem
 #### Flame duration
 ```{r}
 fd.mpa.mem <- ggplot(data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species,shape = Species)) + 
-  geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -0.133, intercept = 7.162, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -0.133, intercept = 5.056, color = "#F48C06", cex = 1) +
+  geom_point(size = 2, alpha = .65) + 
+  geom_abline(slope = -0.133, intercept = 7.162, color = "#9D0208", cex = 1, alpha = 0.9) +
+  geom_abline(slope = -0.133, intercept = 5.056, color = "#F48C06", cex = 1, alpha = 0.9) +
   labs(x="Water Potential (-Mpa)", y="Flame Duration (s)")  +
-  annotate('text', x = -8, y = 1, label = 'Species Difference: *** p < 0.001', size = 3) +
-   th +
+  annotate('text', x = -7.5, y = 0.783, label = 'Species Difference: *** p < 0.001', size = 3) +
+  annotate('text', x = -9.7, y = 21.75, label = 'c', size = 12) +
+  th +
   th_panels +
   color_panels
 fd.mpa.mem
@@ -1563,30 +1585,17 @@ fd.mpa.mem
 #### Glow duration
 ```{r}
 gd.mpa.mem <- ggplot(data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species,shape = Species)) + 
-  geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -1.18, intercept = 125.59, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -1.18, intercept = 131.917, color = "#F48C06", cex = 1) +
+  geom_point(size = 2, alpha = .65) + 
+  geom_abline(slope = -1.18, intercept = 125.59, color = "#9D0208", cex = 1, alpha = 0.9) +
+  geom_abline(slope = -1.18, intercept = 131.917, color = "#F48C06", cex = 1, alpha = 0.9) +
   labs(x="Water Potential (-Mpa)", y="Glow Duration (s)")  +
   scale_y_continuous(limits = c(50,235), breaks = c(50, 100, 150, 200)) +
-  annotate('text', x = -8, y = 55, label = 'Species Difference: insignificant', size = 3) +
-   th +
-  th_panels +
-  color_panels
-gd.mpa.mem
-```
-
-#### PC1
-```{r}
-pc1.mpa.mem <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
-  geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -0.109, intercept = -0.882, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -0.109, intercept = -1.674, color = "#F48C06", cex = 1) +
-  labs(x="Water Potential (-Mpa)", y="Ignitability-Combustibility Proxy") +
-  annotate('text', x = -8, y = -4.55, label = 'Species Difference: *** p < 0.001', size = 3) +
+  annotate('text', x = -7.5, y = 52, label = 'Species Difference: insignificant', size = 3) +
+  annotate('text', x = -9.7, y = 225, label = 'd', size = 12) +
   th +
   th_panels +
   color_panels
-pc1.mpa.mem
+gd.mpa.mem
 ```
 
 #### Main Figure: Arranging Above Plots
@@ -1594,12 +1603,12 @@ pc1.mpa.mem
 legend <- get_legend(
   # create some space to the left of the legend
   ggplot() + 
-  geom_point(data= scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = Species, shape = Species), size = 1, alpha = .8) +
+  geom_point(data= scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = Species, shape = Species), size = 5, alpha = .8) +
     color_panels +
     theme(legend.box.margin = margin(0, 0, 0, 0),
           legend.position = "top",
-          legend.text = element_text(face = "italic", size = 12),
-          legend.title = element_text(face = 'bold', size = 16),
+          legend.text = element_text(face = "italic", size = 18),
+          legend.title = element_text(face = 'bold', size = 22),
           legend.key = element_rect(fill = "white"))
 )
 
@@ -1609,20 +1618,19 @@ plot <- cowplot::plot_grid(
         fd.mpa.mem + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
         gd.mpa.mem + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
         align='vh', vjust=.5, scale = 1,
-        ncol = 2, labels = "AUTO", label_size = 24
-          )
+        ncol = 2)
 
 x.grob <- textGrob("Water Potential (MPa)", 
                    gp=gpar(fontface="bold", 
                            col="black", 
-                           fontsize=20)
+                           fontsize=24)
                    )
 
 #add to plot
 scatterplot.mem <- gridExtra::grid.arrange(arrangeGrob(plot, bottom = x.grob)) 
 scatterplot.mem
 
-plot_legend.mem <- cowplot::plot_grid (legend, scatterplot.mem, ncol = 1, rel_heights = c(1, 12))
+plot_legend.mem <- cowplot::plot_grid (legend, scatterplot.mem, ncol = 1, rel_heights = c(1,12))
 plot_legend.mem
 
 ggsave(here("figures", "species.scatterplot.MEM.jpg"),

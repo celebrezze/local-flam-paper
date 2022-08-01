@@ -128,24 +128,24 @@ Plot:
 ```{r}
 ggplot(PCAvalues, aes(x = PC1, y = PC2)) +
   ylim(-4, 3) +
-  geom_point(size = 1.75, alpha = .55, aes(shape = Species
+  geom_point(size = 1.75, alpha = .45, aes(shape = Species
                                        , color = Species)
                                        , data = PCAvalues) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   geom_segment(data = PCA_combustability, aes(x = 0, y = 0, 
                                               xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
-      size = .8, alpha = 0.9,
+      size = .9, alpha = 0.9,
      color = "#a56457") +
   geom_segment(data = PCA_consumability, aes(x = 0, y = 0,
                                              xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
-     size = .8, alpha = 0.9,
+     size = .9, alpha = 0.9,
      color = "#b08ba5") +
   geom_segment(data = PCA_ignitability, aes(x = 0, y = 0, 
                                              xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
-     size = .8, alpha = 0.9,
+     size = .9, alpha = 0.9,
      color = "#ffb178") +
   annotate("text", 
            x = (PCA_combustability$PC1 * 0.7), 
