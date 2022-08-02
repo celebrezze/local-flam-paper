@@ -1137,6 +1137,229 @@ mpa_lfm_mod
 tab_model(mpa_lfm_mod)
 ```
 
+# 2.1.1 Season Plot: LFM
+## REMEF
+```{r}
+#### PC1
+szn.lfm.pc1.mod <- lmer(PC1 ~ lfm.unscaled + site.test + Species + season + (1 | individual), data = seg.data.subset.alldates)
+
+r1_L <- remef(szn.lfm.pc1.mod, fix = 'site.test',  ran = "all")
+r1_L_df <- as.data.frame(r1_L)
+
+### PC2
+szn.lfm.pc1.mod <- lmer(PC2 ~ lfm.unscaled + site.test + Species + season + (1 | individual), data = seg.data.subset.alldates)
+
+r2_L <- remef(szn.lfm.pc1.mod, fix = 'site.test',  ran = "all")
+r2_L_df <- as.data.frame(r2_L)
+
+### Combining into df
+szn_lfm_ranis <- cbind(seg.data.subset.alldates, r1_L_df, r2_L_df)
+
+### Splitting by species
+szn_lfm_ranis.adfa <- szn_lfm_ranis %>% 
+  filter(spp == "ADFA")
+szn_lfm_ranis.ceme <- szn_lfm_ranis %>% 
+  filter(spp == "CEME")
+```
+
+## Model Selection
+```{r}
+m.adfa.remef <- lmer(r1_L ~ lfm.unscaled + site + season + (1 | individual), data = szn_lfm_ranis.adfa)
+
+m.ceme.remef <- lmer(r1_L ~ lfm.unscaled + site + season + (1 | individual), data = szn_lfm_ranis.ceme)
+
+m.adfa.remef2 <- lmer(r2_L ~ lfm.unscaled + site + season + (1 | individual), data = szn_lfm_ranis.adfa)
+
+m.ceme.remef2 <- lmer(r2_L ~ lfm.unscaled + site + season + (1 | individual), data = szn_lfm_ranis.ceme)
+
+tab_model(m.adfa.remef, m.ceme.remef, m.adfa.remef2, m.ceme.remef2,
+          show.reflvl = TRUE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE,
+          string.pred = "Coeffcient", 
+         title = "season plot model selection: LFM",
+         dv.labels = c('ADFA - PC1', 'CEME - PC1', 'ADFA - PC2', 'CEME - PC2'),
+  string.p = "P-Value", 
+  p.style = "stars")
+```
+
+## PC1
+```{r}
+#### ADFA
+pc1.vs.lfm.adfa <- szn_lfm_ranis  %>%
+  filter(spp == 'ADFA') %>% 
+  ggplot(aes(y = r1_L, 
+             x = lfm.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = -0.01, intercept = 1.121,
+              color = '#c1121f', cex = 1, alpha = .9,
+              show.legend = FALSE) +
+  geom_abline(slope = -0.01, intercept = 1.795,
+              color = '#669bbc', cex = 1, alpha = .9,
+              show.legend = FALSE) +
+  labs(x = "Live Fuel Moisture (%)", 
+       y = "Ignitability-Combustibility Proxy", 
+       fill = "Season",
+       color = "Season") +
+  scale_y_continuous(limits=c(-5,6.25), breaks=c(-5,-2.5,0,2.5,5)) +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 18),
+        axis.title.y = element_text(face = 'bold', size = 18),
+        axis.title.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = 10, y = 6, label = 'a', size = 12, face = 'bold') +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+pc1.vs.lfm.adfa
+
+#### CEME
+pc1.vs.lfm.ceme <- szn_lfm_ranis  %>%
+  filter(spp == 'CEME') %>% 
+  ggplot(aes(y = r1_L, 
+             x = lfm.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = -0.013, intercept = 0.817,
+              color = '#c1121f', cex = 1, alpha = .9,
+              show.legend = FALSE) +
+  geom_abline(slope = -0.013, intercept = 1.785,
+              color = '#669bbc', cex = 1, alpha = .9,
+              show.legend = FALSE) +
+  labs(x = "Live Fuel Moisture (%)", 
+       y = "Ignitability-Combustibility Proxy", 
+       fill = "Season",
+       color = "Season") +
+  scale_y_continuous(limits=c(-5,6.25), breaks=c(-5,-2.5,0,2.5,5)) +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 18),
+        axis.title = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = 10, y = 6, label = 'b', size = 12, face = 'bold') +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+pc1.vs.lfm.ceme
+```
+
+## PC2
+```{r}
+#### ADFA
+pc2.vs.lfm.adfa <- szn_lfm_ranis  %>%
+  filter(spp == "ADFA") %>% 
+  ggplot(aes(y = r2_L, 
+             x = lfm.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = 0.016, intercept = -1.466,
+              color = '#c1121f', cex = 1, alpha = 0.9,
+              show.legend = FALSE) +
+  geom_abline(slope = 0.016, intercept = -0.449,
+              color = '#669bbc', cex = 1, alpha = 0.9,
+              show.legend = FALSE) +
+  labs(x = "Live Fuel Moisture (%)", 
+       y = "Consumability Proxy", 
+       fill = "Season",
+       color = "Season") +
+  scale_y_continuous(limits=c(-5,5), breaks=c(-5,-2.5,0,2.5,5)) +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 18),
+        axis.title.y = element_text(face = 'bold', size = 18),
+        axis.title.x = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = 10, y = 4.9, label = 'c', size = 12, face = 'bold') +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+pc2.vs.lfm.adfa
+
+#### CEME
+pc2.vs.lfm.ceme <- szn_lfm_ranis  %>%
+  filter(spp == 'CEME') %>% 
+  ggplot(aes(y = r2_L, 
+             x = lfm.unscaled,
+             fill = season,
+             color = season,
+             group = season)) +
+  geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_abline(slope = 0.008, intercept = -1.184,
+              color = '#c1121f', cex = 1, alpha = 0.9,
+              show.legend = FALSE) +
+  geom_abline(slope = 0.008, intercept = -0.683,
+              color = '#669bbc', cex = 1, alpha = 0.9,
+              show.legend = FALSE) +
+  labs(x = "Live Fuel Moisture (%)", 
+       y = "Consumability Proxy", 
+       fill = "Season",
+       color = "Season") +
+  scale_y_continuous(limits=c(-5,5), breaks=c(-5,-2.5,0,2.5,5)) +
+  th +
+  facet_wrap(~spp,
+              labeller = labeller(spp = spp.labs),
+             scales = "free" ) +
+  guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
+  theme(legend.position = "none", 
+        legend.title = element_text(face = "bold"),
+        legend.key = element_rect(fill = 'white'),
+        strip.text = element_text(face = "italic", size = 18),
+        axis.title = element_blank()) +
+  guides(color = guide_legend(override.aes = list(size = 3))) +
+  annotate('text', x = 10, y = 4.85, label = 'd', size = 12, face = 'bold') +
+  scale_fill_manual(values=c("#c1121f","#669BBC"))
+pc2.vs.lfm.ceme
+```
+
+## Arranging Plots
+```{r}
+plot.sz.lfm <- cowplot::plot_grid(
+        pc1.vs.lfm.adfa + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        pc1.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
+        pc2.vs.lfm.adfa + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
+        pc2.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
+        align='vh', vjust=.5, scale = 1,
+        ncol = 2
+          )
+
+lfm.grob <- textGrob("Live Fuel Moisture (%)", 
+                   gp=gpar(fontface="bold", 
+                           col="black", 
+                           fontsize=24))
+
+#add to plot
+scatterplot.sz.lfm <- gridExtra::grid.arrange(arrangeGrob(plot.sz.lfm, bottom = lfm.grob)) 
+
+plot_legend.sz.lfm <- cowplot::plot_grid(scatterplot.sz.lfm, legend.sz, ncol = 2, rel_widths = c(5,1))
+plot_legend.sz.lfm
+
+ggsave(here("figures", "LFM.season.plot.suppfigure.jpg"),
+       plot = plot_legend.sz.lfm,
+       width = 17, height = 10, dpi = 300)
+```
+
 #------------------------------------
 # 3.0 Species Effects Plots
 
