@@ -1782,10 +1782,12 @@ d.aic <- c(" ", '0', '6.25', '11.99', '20.71', '23.31',
            " ", '0', '4.702', '48.208', '70.197', '73.666',
            " ", '0', '0.165', '1.459', '3.434', '3.960',
            " ", '0', '4.609', '12.175', '12.703', '14.500')
+deltaAIC <- c('\U0394 AIC')
+
 mem.table.df <- data.frame(dep.var, fix.fx, est1, d.aic, aic.values, bic.values, r2.values)
 mem.table.df %>%
   mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), aic.values = cell_spec(aic.values, 'html', color = 'black'), bic.values = cell_spec(bic.values, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
-  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','Change in AIC', 'AIC', 'BIC', expression('Marginal R2/Conditional R2'))) %>% 
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','\U0394 AIC', 'AIC', 'BIC', expression('Marginal R2/Conditional R2'))) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
   row_spec(c(1, 7, 13, 19), background = "#D3D3D3", bold = T, font_size = 16) %>% 
   row_spec(c(2, 8, 14, 15, 16, 20), bold = T) %>% 
@@ -1797,7 +1799,7 @@ Table 2:
 mem.table2.df <- data.frame(dep.var, fix.fx, est1, d.aic, r2.values)
 mem.table2.df %>%
   mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
-  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','Change in AIC', expression('Marginal R2/Conditional R2'))) %>% 
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','\U0394 AIC', expression('Marginal R2/Conditional R2'))) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
   row_spec(c(1, 7, 13, 19), background = "#D3D3D3", bold = T, font_size = 16) %>% 
   row_spec(c(2, 8, 14, 15, 16, 20), bold = T) %>% 
