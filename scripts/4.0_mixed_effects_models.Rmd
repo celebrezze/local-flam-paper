@@ -55,6 +55,7 @@ library(MetBrewer)
 #install.packages("memmented")
 #devtools::install_github("hohenstein/remef")
 library(remef)
+library(kableExtra)
 ```
 
 Set global options for color palettes and themes: 
@@ -253,7 +254,6 @@ performance::multicollinearity(m15)
 https://strengejacke.github.io/sjPlot/articles/tab_model_estimates.html 
 ##### Tables
 ```{r}
-#tab_model(top_model, m7, m10, m3, m6) 
 tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
           show.reflvl = TRUE, 
           digits = 3, 
@@ -435,6 +435,56 @@ annotate("text", x= -11, y= -3.5, label= "Less", size = 3) +
     panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
           panel.grid.major = element_blank(),  # Hide major gridlines
           panel.grid.minor = element_blank()) 
+```
+
+
+## 2.0.4 Main Models and Summary Table
+We have yet to come to a group consensus on what fixed effects to include in the mixed effects model -- will discuss soon, but for now, I focused on the models that had the lowest AIC values and those are the models with only species, site, and sampling date (in the format of year.month) as fixed effects along with predictors. The major fixed effect that is being left out is sample weight, although that is included in one of the models -- with dry weight and water potential.
+
+Models
+```{r}
+m1 <- lmer(PC1 ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(PC1 ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(PC1 ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(PC1 ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(PC1 ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','main.model.selection.html')) # saving .html into figures folder
+```
+
+
+kableExtra Table
+```{r}
+fix.fx <- c("Water Potential", "LFM", "Wet Weight", "Dry Weight", "Water Potential, Sample Weight & Dry Weight")
+est1 <- c('-0.140***', '-0.246**', '-0.364***','-0.215*', '-0.141***')
+aic.values <- c(1674.577, 1695.289, 1686.568, 1697.884, 1680.822)
+r2.values <- c('0.225/0.237', '0.185/0.217', '0.201/0.224', '0.180/0.206', '0.230/0.237')
+d.aic <- c(0, 20.71, 11.99, 23.31, 6.25)
+mem.table.df <- data.frame(fix.fx, est1, aic.values, r2.values, d.aic)
+
+mem.table.df %>%
+  kable(format = 'html', escape = F, col.names = c('Model Fixed Effects', 'Water Estimate', 'AIC', expression('Marginal R2/Conditional R2'), 'Change in AIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  save_kable(here('figures', 'mem_table_kable.html'))
 ```
 
 

@@ -1,0 +1,670 @@
+---
+title: "Comparing Linear MEM with Segmented Regressions"
+author: "Indra Boving & Joe Celebrezze"
+date: "7/20/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#lots of extra here, but oh well... 
+library(ggplot2)
+library(gapminder)
+library(data.table)
+library(purrr) #for visualizing all variables in one big plot
+library(naniar) #for dealing with NAs nicely 
+library(tidyverse)
+library(devtools)
+library(ggfortify)
+library(ggpubr)
+library(jtools)
+library(cowplot)
+library(lmerTest)
+library(ggeffects)  # install the package first if you haven't already, then load it
+library(GGally) #for corr plots
+require(kimisc) # has the nlist function to create a named list
+require(AICcmodavg) # has the aictab function
+library(psych)
+#devtools::install_github("strengejacke/strengejacke")
+library(strengejacke)
+library(sjPlot) # table functions
+library(sjmisc) # sample data
+library(lme4) # fitting models
+library(here)
+library(effects) #for plotting model effects
+library(sjstats) #use for r2 functions
+library(TMB)
+library(glmmTMB)
+library(lattice)
+library(equatiomatic)
+library("broom.mixed")
+library(ggbiplot)
+select = dplyr::select
+here = here::here
+library(MuMIn)
+library(modelsummary)
+#install_github("BlakeRMills/MetBrewer") 
+#library("BlakeRMills/MetBrewer")
+#library(memmented)
+filter = dplyr::filter
+mutate = dplyr::mutate
+library(nlme)
+library(MetBrewer)
+#install.packages("memmented")
+#devtools::install_github("hohenstein/remef")
+library(remef)
+library(kableExtra)
+```
+
+# 1. Data wrangling
+Reading in dataframe
+```{r}
+scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+```
+
+Species split
+```{r}
+mem.data.ceme <- scaled.mem.data.alldates.noNAs %>% 
+  filter(spp == "CEME")
+
+mem.data.adfa <- scaled.mem.data.alldates.noNAs %>% 
+  filter(spp == "ADFA")
+```
+
+# 2. PC1: Model Comparison
+
+## ADFA
+
+### Mixed Effects Models
+```{r}
+m1.pa <- lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m2.pa <- lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m3 <- lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m4 <- lme(PC1~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m5 <- lme(PC1~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.adfa)
+```
+
+Table
+```{r}
+tab_model(m1.pa, m2.pa, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','ADFA.PC1.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m1.pa<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1)
+#AIC: 997.4369
+
+s.m2<-lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m2.pa<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2)
+#AIC: 1015.843
+
+s.m3<-lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 1009.496
+
+s.m4<-lme(PC1~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 1013.969
+```
+
+## CEME
+
+### Mixed Effects Models
+```{r}
+m1.pc <- lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m2.pc <- lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m3 <- lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m4 <- lme(PC1~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m5 <- lme(PC1~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.ceme)
+```
+
+Table
+```{r}
+tab_model(m1.pc, m2.pc, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','CEME.PC1.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m1.pc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1)
+#AIC: 677.2741
+
+s.m2<-lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m2.pc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2)
+#AIC: 677.3073
+
+s.m3<-lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 677.6505
+
+s.m4<-lme(PC1~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 681.1898
+```
+
+# 3. TTI: Model Comparison
+## ADFA
+
+### Mixed Effects Models
+```{r}
+m1.ta <- lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m2.ta <- lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m3 <- lme(tti~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m4 <- lme(tti~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m5 <- lme(tti~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.adfa)
+```
+
+Table
+```{r}
+tab_model(m1.ta, m2.ta, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','ADFA.tti.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m1.ta<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1)
+#AIC: 1937.612
+
+s.m2<-lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m2.ta<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2)
+#AIC: 1967.475
+
+s.m3<-lme(tti~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 1961.825
+
+s.m4<-lme(tti~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 1980.427
+```
+
+## CEME
+
+### Mixed Effects Models
+```{r}
+m1.tc <- lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m2.tc <- lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m3 <- lme(tti~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m4 <- lme(tti~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m5 <- lme(tti~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.ceme)
+```
+
+Table
+```{r}
+tab_model(m1.tc, m2.tc, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','CEME.tti.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m1.tc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1)
+#AIC: 1381.347
+
+s.m2<-lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m2.tc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2)
+#AIC: 1392.99
+
+s.m3<-lme(tti~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 1389.266
+
+s.m4<-lme(tti~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 1406.177
+```
+
+# 4. FH: Model Comparison
+
+## ADFA
+
+### Mixed Effects Models
+```{r}
+m1.fha <- lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m2.fha <- lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m3 <- lme(fh~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m4 <- lme(fh~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m5 <- lme(fh~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.adfa)
+```
+
+Table
+```{r}
+tab_model(m1.fha, m2.fha, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','ADFA.fh.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m1.fha<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1)
+#AIC: 1479.476
+
+s.m2<-lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m2.fha<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2)
+#AIC: 1490.198
+
+s.m3<-lme(fh~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 1487.758
+
+s.m4<-lme(fh~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 1495.72
+```
+
+## CEME
+
+### Mixed Effects Models
+```{r}
+m1.fhc <- lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m2.fhc <- lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m3 <- lme(fh~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m4 <- lme(fh~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m5 <- lme(fh~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.ceme)
+```
+
+Table
+```{r}
+tab_model(m1.fhc, m2.fhc, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','CEME.fh.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m1.fhc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1)
+#AIC: 1028.431
+
+s.m2<-lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m2.fhc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2)
+#AIC: 1027.519
+
+s.m3<-lme(fh~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 1037.788
+
+# MODEL 4 DOES NOT WORK
+```
+
+# 5. GD: Model Comparison
+## ADFA
+
+### Mixed Effects Models
+```{r}
+m1.ga <- lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m2.ga <- lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m3 <- lme(gd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m4 <- lme(gd~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m5 <- lme(gd~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.adfa)
+```
+
+Table
+```{r}
+tab_model(m1.ga, m2.ga, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','ADFA.gd.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m1.ga<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1.ga)
+#AIC: 2407.953
+
+s.m2<-lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m2.ga<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2.ga)
+#AIC: 2405.708
+
+s.m3<-lme(gd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 2408.069
+
+s.m4<-lme(gd~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 2401.975
+```
+
+## CEME
+
+### Mixed Effects Models
+```{r}
+m1.gc <- lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m2.gc <- lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m3 <- lme(gd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m4 <- lme(gd~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m5 <- lme(gd~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.ceme)
+```
+
+Table
+```{r}
+tab_model(m1.gc, m2.gc, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','CEME.gd.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(gd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m1.gc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1.gc)
+#AIC: 1737.204
+
+s.m2<-lme(gd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m2.gc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2.gc)
+#AIC: 1737.134
+
+s.m3<-lme(gd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 1732.315
+
+s.m4<-lme(gd~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 1733.556
+```
+
+# 6. FD: Model Comparison
+## ADFA
+
+### Mixed Effects Models
+```{r}
+m1.fda <- lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m2.fda <- lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m3 <- lme(fd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m4 <- lme(fd~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+
+m5 <- lme(fd~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.adfa)
+```
+
+Table
+```{r}
+tab_model(m1.fda, m2.fda, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','ADFA.fd.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m1.fda<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1.fda)
+#AIC: 1513.617
+
+s.m2<-lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m2.fda<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2.fda)
+#AIC: 1514.792
+
+s.m3<-lme(fd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 1513.072
+
+s.m4<-lme(fd~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 1513.666
+```
+
+## CEME
+
+### Mixed Effects Models
+```{r}
+m1.fdc <- lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m2.fdc <- lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m3 <- lme(fd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m4 <- lme(fd~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+
+m5 <- lme(fd~ mpa + dw.flam.sample + sample.wt + year.month + site, random=~1|id, data=mem.data.ceme)
+```
+
+Table
+```{r}
+tab_model(m1.fdc, m2.fdc, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','CEME.fd.MEM.html')) # saving .html into figures folder
+```
+
+### Segmented Regressions
+```{r}
+s.m1<-lme(fd~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m1.fdc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
+summary.segmented(os.m1.fdc)
+#AIC: 1053.864
+
+s.m2<-lme(fd~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m2.fdc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
+summary.segmented(os.m2.fdc)
+#AIC: 1052.68
+
+s.m3<-lme(fd~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3)
+#AIC: 1054.502
+
+s.m4<-lme(fd~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
+os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4)
+#AIC: 1052.069
+```
+
+#-----------------------------------
+
+# Summary Table
+```{r}
+fix.fx <- c(rep(c("Water Potential", "Water Potential", "Live Fuel Moisture", "Live Fuel Moisture"), 10))
+
+aic.values <- AIC(m1.pa, os.m1.pa, m2.pa, os.m2.pa, m1.pc, os.m1.pc, m2.pc, os.m2.pc, m1.ta, os.m1.ta, m2.ta, os.m2.ta, m1.tc, os.m1.tc, m2.tc, os.m2.tc, m1.fha, os.m1.fha, m2.fha, os.m2.fha, m1.fhc, os.m1.fhc, m2.fhc, os.m2.fhc, m1.ga, os.m1.ga, m2.ga, os.m2.ga, m1.gc, os.m1.gc, m2.gc, os.m2.gc, m1.fda, os.m1.fda, m2.fda, os.m2.fda, m1.fdc, os.m1.fdc, m2.fdc, os.m2.fdc)$AIC
+
+diff.aic <- AIC(m1.pa, m2.pa, m1.pc, m2.pc, m1.ta, m2.ta, m1.tc, m2.tc, m1.fha, m2.fha, m1.fhc, m2.fhc, m1.ga, m2.ga, m1.gc, m2.gc, m1.fda, m2.fda, m1.fdc, m2.fdc)$AIC - AIC(os.m1.pa, os.m2.pa, os.m1.pc, os.m2.pc, os.m1.ta, os.m2.ta, os.m1.tc, os.m2.tc, os.m1.fha, os.m2.fha, os.m1.fhc, os.m2.fhc, os.m1.ga, os.m2.ga, os.m1.gc, os.m2.gc, os.m1.fda, os.m2.fda, os.m1.fdc, os.m2.fdc)$AIC 
+diff.aic
+
+d.aic <- c('7.3382544', " ", '0.1354309', " ", '-319.6370663', " ",  '6.2493515', " ", '13.5140596', " ",  '12.9497412', " ",  '3.1629817', " ",  '22.2718000', " ",  '9.2936522', " ",  '8.5088373', " ",  '16.8151998', " ",  '13.8684488', " ",  '7.6481625', " ",  '6.1603456', " ",  '8.6774760', " ",  '7.1176700', " ",  '3.5365891', " ",  '1.9709327', " ",  '3.8982039', " ",  '2.3846002', ' ')
+
+bic.values <- BIC(m1.pa, os.m1.pa, m2.pa, os.m2.pa, m1.pc, os.m1.pc, m2.pc, os.m2.pc, m1.ta, os.m1.ta, m2.ta, os.m2.ta, m1.tc, os.m1.tc, m2.tc, os.m2.tc, m1.fha, os.m1.fha, m2.fha, os.m2.fha, m1.fhc, os.m1.fhc, m2.fhc, os.m2.fhc, m1.ga, os.m1.ga, m2.ga, os.m2.ga, m1.gc, os.m1.gc, m2.gc, os.m2.gc, m1.fda, os.m1.fda, m2.fda, os.m2.fda, m1.fdc, os.m1.fdc, m2.fdc, os.m2.fdc)$BIC
+
+diff.bic <- BIC(m1.pa, m2.pa, m1.pc, m2.pc, m1.ta, m2.ta, m1.tc, m2.tc, m1.fha, m2.fha, m1.fhc, m2.fhc, m1.ga, m2.ga, m1.gc, m2.gc, m1.fda, m2.fda, m1.fdc, m2.fdc)$BIC - BIC(os.m1.pa, os.m2.pa, os.m1.pc, os.m2.pc, os.m1.ta, os.m2.ta, os.m1.tc, os.m2.tc, os.m1.fha, os.m2.fha, os.m1.fhc, os.m2.fhc, os.m1.ga, os.m2.ga, os.m1.gc, os.m2.gc, os.m1.fda, os.m2.fda, os.m1.fdc, os.m2.fdc)$BIC
+diff.bic
+
+d.bic <- c('0.31848815', " ", '-6.88433538', " ", '-329.08359545', " ", '-0.04764151', " ",  '6.49429335', " ", '5.92997495', " ", '-3.13401131', " ", '15.97480701', " ", '2.27388591', " ", '1.48907102', " ", '10.51820680', " ", '7.57145578', " ", '0.62839626', " ", '-0.85942067', " ",    '2.38048296', " ", '0.82067692', " ", '-3.48317716', " ", '-5.04883355', " ", '-2.39878913', " ",  '-3.91239284', " ")
+
+dep.var <- c("PC1", " ", " ", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " "," ", " ", " ", " ", "Flame Height (cm)", " ", " ", " "," ", " ", " ", " ", "Glow Duration (s)", " ", " ", " "," ", " ", " ", " ", "Flame Duration (s)", " ", " ", " "," ", " ", " ", " ")
+
+sp.lab <- c("ADFA", " ", " ", " ", "CEME", " ", " ", " ", "ADFA", " ", " ", " ", "CEME", " ", " ", " ", "ADFA", " ", " ", " ", "CEME", " ", " ", " ", "ADFA", " ", " ", " ", "CEME", " ", " ", " ", "ADFA", " ", " ", " ", "CEME", " ", " ", " ")
+
+an.lab <- c(rep(c("Linear MEM", "Segmented Regression"), 20))
+```
+
+```{r}
+mem.vs.seg.table.df <- data.frame(dep.var, sp.lab, an.lab, fix.fx, aic.values, d.aic, bic.values, d.bic)
+
+mem.vs.seg.table.df %>%
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Species', 'Analysis', 'Model Fixed Effects', 'AIC', 'Change in AIC', 'BIC', 'Change in BIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  row_spec(c(1, 9, 17, 25, 33), background = "#D3D3D3") %>% 
+  save_kable(here('figures', 'MEM_vs_SegReg_kable.html'))
+```
+

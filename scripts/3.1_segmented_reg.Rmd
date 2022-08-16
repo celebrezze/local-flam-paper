@@ -250,8 +250,6 @@ davies.test(out.lm, ~lfm, k = 50)
 
 segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
-summary(segmented.mod)
-
 
 confint <- confint(segmented.mod)
 confint
@@ -281,8 +279,6 @@ davies.test(out.lm, ~lfm, k = 50)
 
 segmented.mod <-segmented(out.lm, seg.Z = ~lfm) #1 breakpoint for x
 segmented.mod
-summary(segmented.mod)
-
 
 confint <- confint(segmented.mod)
 confint
