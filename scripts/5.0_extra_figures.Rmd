@@ -535,3 +535,77 @@ ggarrange(field.plot1, field.plot2, field.plot3, blank.plot, ncol = 2, nrow = 2,
 
 ggsave(here('figures', 'field.plots.jpg'), height = 8, width = 12)
 ```
+
+## Field Data vs. Predicted PC1
+Models:
+```{r}
+mod.lfm <- lmer(PC1 ~ lfm.unscaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+summary(mod.lfm)
+mod.mpa <-  lmer(PC1 ~ mpa.unscaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+summary(mod.mpa)
+```
+
+Setting up dataframe:
+```{r}
+predict.df <- field_data_local %>% 
+  filter(age == 'new') %>% 
+  select(lfm, midday, spp, pod, site) %>% 
+  mutate(site = case_when(
+    site == 2 ~ 0,
+    site == 1 ~ 1
+  )) %>% 
+  mutate(spp = case_when(
+    spp == "ADFA" ~ 0,
+    spp == "CEME" ~ 1
+  )) %>% 
+  mutate(Species = case_when(
+    spp == 0 ~ "A. fasciculatum",
+    spp == 1 ~ "C. megacarpus"
+  )) %>% 
+  mutate(midday = midday*-1)
+```
+
+Predicting:
+```{r}
+predict.df$predicted.pc1.lfm <- (-0.006428*predict.df$lfm)-(0.774987*predict.df$spp)+(0.437702*predict.df$site)+0.08065
+
+predict.df$predicted.pc1.mpa <- (-0.13754*predict.df$midday)-(0.83353*predict.df$spp)+(0.45206*predict.df$site)-1.03833
+```
+
+Plot:
+```{r}
+p1 <- ggplot(data = predict.df, aes(x = lfm, y = predicted.pc1.lfm, color = Species)) +
+  geom_point(size = 3) +
+  theme_bw() +
+  labs(x = "Live Fuel Moisture (%)", y = "Predicted PC1") +
+  theme(axis.title = element_text(face = 'bold', size = 18),
+        legend.title = element_text(face = 'bold', size = 18),
+        legend.text = element_text(face = 'italic', size = 16))
+
+p2 <- ggplot(data = predict.df, aes(x = midday, y = predicted.pc1.mpa, color = Species)) +
+  geom_point(size = 3) +
+  theme_bw() +
+  labs(x = "Midday Water Potential (MPa)", y = "Predicted PC1") +
+  theme(axis.title.x = element_text(face = 'bold', size = 18),
+        axis.title.y = element_blank(),
+        legend.title = element_text(face = 'bold', size = 18),
+        legend.text = element_text(face = 'italic', size = 16))
+
+ggarrange(p1, p2, common.legend = T, legend = c("right"))
+
+ggsave(here('figures', 'predicted.pc1.jpg'), height = 5.5, width = 12)
+```
+
+Average LFM, MPa Values
+```{r}
+field_data_local %>% 
+  filter(spp == "ADFA") %>% 
+  na.omit() %>% 
+  summary()
+
+field_data_local %>% 
+  filter(spp == "CEME") %>% 
+  na.omit() %>% 
+  summary()
+```
+
