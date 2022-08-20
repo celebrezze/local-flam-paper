@@ -944,16 +944,17 @@ No threshold able to be identified (segmented.default returns error)
 ```{r}
 jpeg(here('figures', 'seg.reg.rand.plot.v2.jpg'), width = 1200, height = 900, res = 100)
 par(mfrow = c(2,2))
+par(mar = c(4,5,3,2))
 par(font.lab = 2)
 
-rsegplot.lfm(os.mod.a, seg.ceme.subset, 'CEME', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+rsegplot.lfm(os.mod.a, seg.ceme.subset, 'CEME', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
 draw.circle(63.43661, -3.84, 2.4, col = 'black') # PC2 Threshold
 segments(x0 = 51.27564, x1 = 75.59758, y0 = -3.84, y1 = -3.84, col = 'black')
 text(x = 63.43661, y = -3.44, labels = c("Consumability"), cex = 1)
 arrows(x0 = 15, x1 = 15, y0 = -4, y1 = -2, length = 0.15, lwd = 2)
 text(x = 15, y = -1, labels = c("More \n Combustible \n & Ignitable"), cex = 1)
-mtext("a", font = 2, cex = 2, side = 3, line = 1, at = 0)
-mtext("C. megacarpus", font = 3, cex = 1.5, side = 3, line = 1, at = 160)
+mtext("a", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
+text(labels = "C. megacarpus", font = 4, cex = 1.75, x = 190, y = 4)
 
 #-----------------------------------------------------------------------
 confint <- confint.segmented(os.mod.b, 'lfm', .coef=fixef(os.mod.b))
@@ -961,7 +962,7 @@ lower.b <- confint[2]
 upper.b <- confint[3]
 
 plot(seg.ceme.subset[,'lfm'], seg.ceme.subset[, 'tti'], xlim = c(0, max.lfm), ylim = c(-20, 86+0.05*86),
-              xlab = 'Live Fuel Moisture (%)', ylab = 'Time to Ignition',
+              xlab = ' ', ylab = 'Time to Ignition',
               pch = 16, col = alpha(seg.ceme.subset[,'color'], 0.8),
               cex.lab = 1.3)
 polygon(x = c(lower.b, upper.b, upper.b, lower.b), y = c(86 + 0.2*86, 86 +0.2*86, -30, -30), col = alpha('gray', 0.3), lty = 2)
@@ -998,19 +999,19 @@ text(x = 53.485, y = 8.75, labels = c("GD"), cex = 1)
 draw.circle(59.153, 13.5, 2.4) # Time to first glow threshold
 segments(x0 = 43.6794, x1 = 74.626, y0 = 13.5, y1 = 13.5, col = 'black')
 text(x = 49.153, y = 17.5, labels = c("TTFG"), cex = 1)
-mtext("b", font = 2, cex = 2, side = 3, line = 1, at = 0)
-mtext("C. megacarpus", font = 3, cex = 1.5, side = 3, line = 1, at = 160)
+mtext("b", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
+text(labels = "C. megacarpus", font = 4, cex = 1.75, x = 190, y = 81)
 
 #-----------------------------------------------------------------------
 
-rsegplot.lfm(os.mod.c, seg.adfa.subset, 'ADFA', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
+rsegplot.lfm(os.mod.c, seg.adfa.subset, 'ADFA', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
 draw.circle(63.16255, -4.6, 1.25, col = 'black') # PC2 Threshold
 segments(x0 = 52.79064, x1 = 73.53446, y0 = -4.6, y1 = -4.6, col = 'black')
 text(x = 63.16255, y = -4.2, labels = c("Consumability"), cex = 1)
 arrows(x0 = 7, x1 = 7, y0 = -4.8, y1 = -2.8, length = 0.15, lwd = 2)
 text(x = 7, y = -1.8, labels = c("More \n Combustible \n & Ignitable"), cex = 1)
-mtext("c", font = 2, cex = 2, side = 3, line = 1, at = 0)
-mtext("A. fasciculatum", font = 3, cex = 1.5, side = 3, line = 1, at = 78)
+mtext("c", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
+text(labels = "A. fasciculatum", font = 4, cex = 1.75, x = 92, y = 3.8)
 
 #-----------------------------------------------------------------------
 
@@ -1019,7 +1020,7 @@ lower.d <- confint[2]
 upper.d <- confint[3]
 
 plot(seg.adfa.subset[,'lfm'], seg.adfa.subset[, 'tti'], xlim = c(0, max.lfm.a), ylim = c(-17, 75+0.05*75),
-              xlab = 'Live Fuel Moisture (%)', ylab = 'Time to Ignition',
+              xlab = ' ', ylab = 'Time to Ignition',
               pch = 16, col = alpha(seg.adfa.subset[,'color'], 0.8),
               cex.lab = 1.3)
 polygon(x = c(lower.d, upper.d, upper.d, lower.d), y = c(75 + 0.2*75, 75 +0.2*75, -22, -22), col = alpha('gray', 0.3), lty = 2)
@@ -1056,8 +1057,9 @@ text(x = 64.4129, y = 2, labels = c("GD"), cex = 1)
 draw.circle(78.5259, -11, 1.25, col = 'black') # Time to first glow threshold
 segments(x0 = 65.3508, x1 = 91.701, y0 = -11, y1 = -11, col = 'black')
 text(x = 78.5259, y = -6.5, labels = c("TTFG"), cex = 1)
-mtext("d", font = 2, cex = 2, side = 3, line = 1, at = 0)
-mtext("A. fasciculatum", font = 3, cex = 1.5, side = 3, line = 1, at = 78)
+mtext("d", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
+text(labels = "A. fasciculatum", font = 4, cex = 1.75, x = 92, y = 72)
+mtext("Live Fuel Moisture (%)", font = 2, side = 1, cex = 1.5, line = 2.7, at = -27)
 
 dev.off()
 ```

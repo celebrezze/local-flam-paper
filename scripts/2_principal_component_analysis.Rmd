@@ -393,6 +393,11 @@ adfa.pca.plot <- ggplot(PCAvalues.adfa, aes(x = PC1, y = PC2)) +
            y = (PCA_consumability$PC2 * 1.1), 
            label = PCA_consumability$Variables, size = 3.2,
            fontface = 'bold') + 
+   geom_segment(aes(x = -3.1, xend = -3.1, y = -3.3, yend = -1.275), arrow = arrow(length = unit(1/2, 'picas')), size = 0.35, alpha = 0.85) +
+  annotate('text', x = -3.25, y = -2.35, label = "More Consumable", angle = 90, size = 3.5) +
+  geom_segment(aes(x = -3.1, xend = -1.4, y = -3.3, yend = -3.3), arrow = arrow(length = unit(1/2, 'picas')), size = 0.35, alpha = 0.85) +
+  annotate('text', x = -2.25, y = -3.68, label = "Larger & Hotter Flames, \n Faster Ignition", size = 3.5) +
+  annotate('text', x = -2.25, y = 4, label = "A. fasciculatum", size = 5, fontface = 4) +
   theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
           panel.grid.major = element_blank(),  # Hide major gridlines
           panel.grid.minor = element_blank(),
@@ -400,11 +405,11 @@ adfa.pca.plot <- ggplot(PCAvalues.adfa, aes(x = PC1, y = PC2)) +
           legend.title = element_text(face = 'bold', size = 12),
           legend.text = element_text(face = 'italic', size = 10),
           axis.title = element_text(face = 'bold', size = 12), 
-          plot.title = element_text(face = 'italic')) +
+          plot.title = element_text(face = 'italic'),
+          aspect.ratio = 1/1) +
   geom_path(data = circle, color = "black",  size = 1/2, alpha = 1/3) +
   xlab(u.axis.labs[1]) + 
    ylab(u.axis.labs[2]) +
-  labs(title = 'Adenostoma fasciculatum')
   coord_equal()
   
 adfa.pca.plot
@@ -545,6 +550,11 @@ ceme.pca.plot <- ggplot(PCAvalues.ceme, aes(x = PC1, y = PC2)) +
            y = (PCA_consumability$PC2 * 1.05), 
            label = PCA_consumability$Variables, size = 3.2,
            fontface = 'bold') + 
+  geom_segment(aes(x = -3.1, xend = -3.1, y = -3.4, yend = -1.9), arrow = arrow(length = unit(1/2, 'picas')), size = 0.35, alpha = 0.85) +
+  annotate('text', x = -3.25, y = -2.65, label = "Less Consumable", angle = 90, size = 3.5) +
+  geom_segment(aes(x = -3.1, xend = -1.15, y = -3.4, yend = -3.4), arrow = arrow(length = unit(1/2, 'picas')), size = 0.35, alpha = 0.85) +
+  annotate('text', x = -2.2, y = -3.68, label = "Larger & Hotter Flames, \n Faster Ignition", size = 3.5) +
+  annotate('text', x = -2.2, y = 2, label = "C. megacarpus", size = 5, fontface = 4) +
   theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
           panel.grid.major = element_blank(),  # Hide major gridlines
           panel.grid.minor = element_blank(),
@@ -552,11 +562,11 @@ ceme.pca.plot <- ggplot(PCAvalues.ceme, aes(x = PC1, y = PC2)) +
           legend.title = element_text(face = 'bold', size = 12),
           legend.text = element_text(face = 'italic', size = 10),
           axis.title = element_text(face = 'bold', size = 12), 
-          plot.title = element_text(face = 'italic')) +
+          plot.title = element_text(face = 'italic'),
+          aspect.ratio = 1/1) +
   geom_path(data = circle, color = "black",  size = 1/2, alpha = 1/3) +
   xlab(u.axis.labs[1]) + 
    ylab(u.axis.labs[2]) +
-  labs(title = 'Ceanothus megacarpus')
   coord_equal()
   
 ceme.pca.plot
