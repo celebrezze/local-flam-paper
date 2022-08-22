@@ -284,184 +284,309 @@ border: 0;
 </head>
 <body>
 <table class="table table-hover table-bordered table-condensed" style="margin-left: auto; margin-right: auto;">
-<caption>Live Fuel Moisture</caption>
  <thead>
   <tr>
    <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Dependent Variable </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Species </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Significant? </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Threshold </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Bootstrapped Threshold </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Water Potential (MPa) </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Season Effect (Wet Season) </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Marginal R2/Conditional R2 </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> AIC </th>
   </tr>
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PC1</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.00731)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">98.274</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">97.36</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;font-weight: bold;border-right:1px solid;"> A. fasciculatum </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;">  </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;">  </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PC2</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">63.142</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">81.17</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> PC1 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> -0.137*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> 0.745** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.148/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 958.902 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">TTI</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">78.541</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">87.15</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> PC1 (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> -0.120*** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.114/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 965.785 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">Prop Ignite (5%)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.001)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">43.254</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">NA</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> PC2 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.106*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> 0.657** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.157/0.325 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 816.463 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">GTI</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.044)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">98.274</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">104.78</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> PC2 (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> 0.116*** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.103/0.324 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 823.223 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">FH</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">78.872</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">87.3</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Time to Ignition </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 1.409*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -2.965* </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.218/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 1867.151 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">Max Temp.</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">98.274</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">98.98</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Time to Ignition (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> 1.343*** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.206/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 1871.710 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">FD</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">46.394</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">93.11</span> </td>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Flame Duration </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> -0.179 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;"> -1.186 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.040/0.152 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1455.147 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">GD</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">65.864</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">86.79</span> </td>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Flame Duration (w/o Season) </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> -0.200* </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.026/0.163 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1457.050 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PFG</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.0103)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">65.509</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">63.75</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Glow Duration </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> -0.563 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -20.217*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.203/0.252 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 2316.733 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">TTFG</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">78.622</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">70.94</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Glow Duration (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> -0.902 </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.109/0.227 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 2343.919 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style=" font-weight: bold;    color: black !important;">Summary</span> </td>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">TLP = 74.33 +/- 7.37</span> </td>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">9/11 Significant</span> </td>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">Avg: 78.08 +/- 11.56</span> </td>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">Avg: 87.13</span> </td>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Flame Height </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> -0.401*** </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;"> 1.066 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.087/0.111 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1421.347 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PC1</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">132.543</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">118.07</span> </td>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Flame Height (w/o Season) </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> -0.380*** </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.077/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1423.050 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PC2</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.008)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">63.437</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">108.73</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Post-Flame Glow </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> -1.122* </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -17.079 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.188/0.258 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 2234.747 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">TTI</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">119.281</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">110.85</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Post-Flame Glow (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> -1.388** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.089/0.241 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 2260.563 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">Prop Ignite (5%)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">91.053</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">93.51</span> </td>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Time to First Glow </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.650*** </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;"> -1.183 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.068/0.229 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1718.131 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">GTI</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.0009)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">120.89</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">126.48</span> </td>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Time to First Glow (w/o Season) </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.628*** </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.065/0.226 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1719.311 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">FH</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">57.0196</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">75.36</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Max. Temp. </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> -2.705*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> 5.312 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.051/0.189 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 2486.575 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">Max Temp.</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">55.385</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">63.23</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Max. Temp. (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> -2.603** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.048/0.182 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 2490.768 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">FD</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">48.83</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">137.93</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Glow to Ignition </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.748*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -1.849 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.114/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 1858.383 </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">GD</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">64.737</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">153.45</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Glow to Ignition (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> 0.706*** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.108/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 1860.574 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PFG</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.0426)</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">68.003</span> </td>
-   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">137.56</span> </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;font-weight: bold;border-right:1px solid;"> C. megacarpus </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;">  </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;">  </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;font-style: italic;background-color: #D3D3D3 !important;">  </td>
   </tr>
   <tr>
-   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">TTFG</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">59.153</span> </td>
-   <td style="text-align:left;"> <span style="     color: black !important;">79.17</span> </td>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> PC1 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> -0.147*** </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;"> 0.459 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.137/0.240 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 651.740 </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style=" font-weight: bold;    color: black !important;">Summary</span> </td>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">TLP = 88.96 +/- 2.53</span> </td>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">7/11 Significant</span> </td>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">Avg: 93.18 +/- 21.38</span> </td>
-   <td style="text-align:left;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">Avg: 109.49</span> </td>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> PC1 (w/o Season) </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> -0.154*** </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.122/0.233 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 651.828 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> PC2 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.119*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> 0.754** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.129/0.156 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 616.458 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> PC2 (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> 0.107** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.081/0.140 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 623.140 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Time to Ignition </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 1.874*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -3.122 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.286/0.331 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 1322.428 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Time to Ignition (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> 1.926*** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.275/0.329 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 1326.328 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Flame Duration </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> -0.103 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;"> 0.832 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.034/0.129 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1010.240 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Flame Duration (w/o Season) </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> -0.117 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.028/0.129 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1010.726 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Glow Duration </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> -0.579 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -10.386* </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.044/0.122 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 1673.744 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Glow Duration (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> -0.413 </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.021/0.108 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 1680.916 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Flame Height </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> -0.253* </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> 1.362 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.070/0.160 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 996.900 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Flame Height (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> -0.275** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.050/0.145 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 999.577 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Post-Flame Glow </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> -1.761** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -10.382* </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.087/0.121 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 1649.589 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Post-Flame Glow (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> -1.595* </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.063/0.106 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 1657.314 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Time to First Glow </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.653*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -2.278 </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.153/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 1226.152 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Time to First Glow (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> 0.691*** </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.141/NA </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 1229.366 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;font-weight: bold;border-right:1px solid;"> Max. Temp. </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> -2.453** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> -55.454*** </td>
+   <td style="text-align:left;color: black !important;font-weight: bold;"> 0.396/0.455 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-weight: bold;"> 1729.520 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-weight: bold;border-right:1px solid;"> Max. Temp. (w/o Season) </td>
+   <td style="text-align:left;color: black !important;"> -1.512 </td>
+   <td style="text-align:left;color: black !important;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;"> 0.103/0.448 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;"> 1795.692 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Glow to Ignition </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 1.190*** </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;"> -0.299 </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.103/0.292 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1342.166 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;color: black !important;font-style: italic;font-weight: bold;border-right:1px solid;"> Glow to Ignition (w/o Season) </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 1.194*** </td>
+   <td style="text-align:left;color: black !important;font-style: italic;border-right:1px solid;">  </td>
+   <td style="text-align:left;color: black !important;font-style: italic;"> 0.104/0.288 </td>
+   <td style="text-align:left;color: black !important;background-color: #D3D3D3 !important;font-style: italic;"> 1343.449 </td>
   </tr>
 </tbody>
 </table>

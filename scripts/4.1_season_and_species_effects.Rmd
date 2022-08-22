@@ -356,6 +356,30 @@ tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m
   file = here('MEM.figures','season.effects.CEME.html'))
 ```
 
+### SUPP: Kable Table
+```{r}
+dep.var <- c('A. fasciculatum','PC1', 'PC1 (w/o Season)','PC2', 'PC2 (w/o Season)','Time to Ignition', 'Time to Ignition (w/o Season)','Flame Duration', 'Flame Duration (w/o Season)', 'Glow Duration', 'Glow Duration (w/o Season)','Flame Height', 'Flame Height (w/o Season)','Post-Flame Glow', 'Post-Flame Glow (w/o Season)','Time to First Glow', 'Time to First Glow (w/o Season)','Max. Temp.', 'Max. Temp. (w/o Season)','Glow to Ignition', 'Glow to Ignition (w/o Season)', 'C. megacarpus', 'PC1', 'PC1 (w/o Season)','PC2', 'PC2 (w/o Season)','Time to Ignition', 'Time to Ignition (w/o Season)','Flame Duration', 'Flame Duration (w/o Season)', 'Glow Duration', 'Glow Duration (w/o Season)','Flame Height', 'Flame Height (w/o Season)','Post-Flame Glow', 'Post-Flame Glow (w/o Season)','Time to First Glow', 'Time to First Glow (w/o Season)','Max. Temp.', 'Max. Temp. (w/o Season)','Glow to Ignition', 'Glow to Ignition (w/o Season)')
+col1 <- c(' ', '-0.137***', '-0.120***', '0.106***', '0.116***', '1.409***', '1.343***', '-0.179', '-0.200*', '-0.563', '-0.902', '-0.401***', '-0.380***', '-1.122*', '-1.388**', '0.650***', '0.628***', '-2.705***', '-2.603**', '0.748***', '0.706***', ' ', '-0.147***',	'-0.154***',	'0.119***',	'0.107**',	'1.874***',	'1.926***',	'-0.103',	'-0.117',	'-0.579',	'-0.413',	'-0.253*',	'-0.275**',	'-1.761**',	'-1.595*',	'0.653***',	'0.691***',	'-2.453**',	'-1.512',	'1.190***',	'1.194***')
+col2 <- c(' ', '0.745**', ' ', '0.657**', ' ', '-2.965*', ' ', '-1.186', ' ', '-20.217***', ' ', '1.066', ' ', '-17.079', ' ', '-1.183', ' ', '5.312', ' ', '-1.849', ' ', ' ', '0.459', ' ', '0.754**', ' ', '-3.122', ' ',	'0.832', ' ',	'-10.386*', ' ', '1.362', ' ', '-10.382*', ' ',	'-2.278', ' ',	'-55.454***', ' ',	'-0.299', ' ')
+col3 <- c(' ', '0.148/NA', '0.114/NA', '0.157/0.325', '0.103/0.324', '0.218/NA', '0.206/NA', '0.040/0.152','0.026/0.163', '0.203/0.252', '0.109/0.227', '0.087/0.111', '0.077/NA', '0.188/0.258', '0.089/0.241', '0.068/0.229', '0.065/0.226', '0.051/0.189', '0.048/0.182', '0.114/NA', '0.108/NA', ' ', '0.137/0.240',	'0.122/0.233',	'0.129/0.156',	'0.081/0.140',	'0.286/0.331',	'0.275/0.329',	'0.034/0.129',	'0.028/0.129',	'0.044/0.122',	'0.021/0.108',	'0.070/0.160',	'0.050/0.145',	'0.087/0.121',	'0.063/0.106',	'0.153/NA',	'0.141/NA',	'0.396/0.455',	'0.103/0.448',	'0.103/0.292',	'0.104/0.288')
+col4<- c(' ', '958.902',	'965.785',	'816.463',	'823.223',	'1867.151',	'1871.710',	'1455.147',	'1457.050',	'2316.733',	'2343.919',	'1421.347',	'1423.050',	'2234.747',	'2260.563',	'1718.131',	'1719.311',	'2486.575',	'2490.768',	'1858.383',	'1860.574', ' ', '651.740',	'651.828',	'616.458',	'623.140',	'1322.428',	'1326.328',	'1010.240',	'1010.726',	'1673.744',	'1680.916',	'996.900',	'999.577',	'1649.589',	'1657.314',	'1226.152',	'1229.366',	'1729.520',	'1795.692',	'1342.166',	'1343.449')
+
+szn.diff.kable.df <- data.frame(dep.var, col1, col2, col3, col4)
+```
+
+```{r}
+szn.diff.kable.df %>%
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Water Potential (MPa)', 'Season Effect (Wet Season)', 'Marginal R2/Conditional R2', 'AIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, stripe_color = "black") %>% 
+  row_spec(c(1:42), color = "black") %>%
+  column_spec(c(5), background = "#D3D3D3") %>% 
+  row_spec(c(2, 4, 6, 10, 14, 18, 20, 25, 27, 31, 33, 35, 37, 39), bold = T) %>% 
+  row_spec(c(8:9, 12:13, 16:17, 23:24, 29:30, 41:42), italic = T) %>% 
+  row_spec(c(1, 22), background = "#D3D3D3", bold = T, italic = T) %>% 
+  column_spec(c(1), bold = T, border_right = T) %>% 
+  column_spec(c(3), border_right = T) %>% 
+  save_kable(here('MEM.figures', 'MEM_SeasonDiff_kable.html'))
+```
 
 ### PC1
 ```{r}
@@ -1853,7 +1877,7 @@ pc1.vs.lfm.ceme <- szn_lfm_ranis  %>%
 pc1.vs.lfm.ceme
 ```
 
-### Site Effect
+### Avg Site Effect
 ```{r}
 #### ADFA
 pc1.vs.lfm.adfa.site <- szn_lfm_ranis  %>%
@@ -1864,17 +1888,11 @@ pc1.vs.lfm.adfa.site <- szn_lfm_ranis  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = -0.01, intercept = 1.121,
+  geom_abline(slope = -0.01, intercept = 1.265,
               color = '#c1121f', cex = 1, alpha = .9,
               show.legend = FALSE) +
-  geom_abline(slope = -0.01, intercept = 1.795,
+  geom_abline(slope = -0.01, intercept = 1.8945,
               color = '#669bbc', cex = 1, alpha = .9,
-              show.legend = FALSE) +
-  geom_abline(slope = -0.01, intercept = 1.409,
-              color = '#c1121f', cex = 1, alpha = .4,
-              show.legend = FALSE) +
-  geom_abline(slope = -0.01, intercept = 1.994,
-              color = '#669bbc', cex = 1, alpha = .4,
               show.legend = FALSE) +
   geom_segment(aes(x = 15, xend = 15, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
   annotate('text', x = 15, y = -2.25, label = 'More \n Combustible \n & Ignitable', fontface = 2) +
@@ -1908,17 +1926,11 @@ pc1.vs.lfm.ceme.site <- szn_lfm_ranis  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = -0.013, intercept = 0.817,
+  geom_abline(slope = -0.013, intercept = 0.6835,
               color = '#c1121f', cex = 1, alpha = .9,
               show.legend = FALSE) +
-  geom_abline(slope = -0.013, intercept = 1.785,
+  geom_abline(slope = -0.013, intercept = 1.6515,
               color = '#669bbc', cex = 1, alpha = .9,
-              show.legend = FALSE) +
-  geom_abline(slope = -0.013, intercept = 0.55,
-              color = '#c1121f', cex = 1, alpha = .4,
-              show.legend = FALSE) +
-  geom_abline(slope = -0.013, intercept = 1.518,
-              color = '#669bbc', cex = 1, alpha = .4,
               show.legend = FALSE) +
   geom_segment(aes(x = 22, xend = 22, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
   annotate('text', x = 22, y = -2.25, label = 'More \n Combustible \n & Ignitable', fontface = 2) +
@@ -2020,7 +2032,7 @@ pc2.vs.lfm.ceme <- szn_lfm_ranis  %>%
 pc2.vs.lfm.ceme
 ```
 
-### Site Effect
+### Avg Site Effect
 ```{r}
 #### ADFA
 pc2.vs.lfm.adfa.site <- szn_lfm_ranis  %>%
@@ -2031,17 +2043,11 @@ pc2.vs.lfm.adfa.site <- szn_lfm_ranis  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = 0.016, intercept = -1.466,
+  geom_abline(slope = 0.016, intercept = -1.5195,
               color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.016, intercept = -0.449,
+  geom_abline(slope = 0.016, intercept = -0.5275,
               color = '#669bbc', cex = 1, alpha = 0.9,
-              show.legend = FALSE) +
-  geom_abline(slope = 0.016, intercept = -1.573,
-              color = '#c1121f', cex = 1, alpha = 0.4,
-              show.legend = FALSE) +
-  geom_abline(slope = 0.016, intercept = -0.606,
-              color = '#669bbc', cex = 1, alpha = 0.4,
               show.legend = FALSE) +
   geom_segment(aes(x = 18, xend = 18, y = -5, yend = -3.3), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
   annotate('text', x = 18, y = -2.6, label = 'Less \n Consumable', fontface = 2) +
@@ -2073,17 +2079,11 @@ pc2.vs.lfm.ceme.site <- szn_lfm_ranis  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = 0.008, intercept = -1.184,
+  geom_abline(slope = 0.008, intercept = -1.118,
               color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.008, intercept = -0.683,
+  geom_abline(slope = 0.008, intercept = -0.617,
               color = '#669bbc', cex = 1, alpha = 0.9,
-              show.legend = FALSE) +
-  geom_abline(slope = 0.008, intercept = -1.052,
-              color = '#c1121f', cex = 1, alpha = 0.4,
-              show.legend = FALSE) +
-  geom_abline(slope = 0.008, intercept = -0.551,
-              color = '#669bbc', cex = 1, alpha = 0.4,
               show.legend = FALSE) +
   geom_segment(aes(x = 25, xend = 25, y = -5, yend = -3.3), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
   annotate('text', x = 25, y = -2.6, label = 'Less \n Consumable', fontface = 2) +
@@ -2133,7 +2133,7 @@ ggsave(here("figures", "LFM.season.plot.suppfigure.jpg"),
        width = 17, height = 10, dpi = 300)
 ```
 
-### Site Effect
+### Avg Site Effect
 ```{r}
 plot.sz.lfm.site <- cowplot::plot_grid(
         pc1.vs.lfm.adfa.site + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")), 
@@ -2147,12 +2147,12 @@ plot.sz.lfm.site <- cowplot::plot_grid(
 #add to plot
 scatterplot.sz.lfm.site <- gridExtra::grid.arrange(arrangeGrob(plot.sz.lfm.site, bottom = lfm.grob)) 
 
-plot_legend.sz.lfm.site <- cowplot::plot_grid(scatterplot.sz.lfm.site, legend.sz, ncol = 2, rel_widths = c(5,1))
+plot_legend.sz.lfm.site <- cowplot::plot_grid(legend.sz, scatterplot.sz.lfm.site, ncol = 1, rel_heights = c(1, 15))
 plot_legend.sz.lfm.site
 
 ggsave(here("figures", "LFM.season.plot.suppfigure.site.effect.jpg"),
        plot = plot_legend.sz.lfm.site,
-       width = 17, height = 10, dpi = 300)
+       width = 14, height = 10, dpi = 300)
 ```
 
 #------------------------------------
@@ -2231,6 +2231,56 @@ tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m
          title = "species plot: species improve all models?",
   string.p = "P-Value", 
   p.style = "stars")
+```
+
+## SUPP: Kable Table 
+Setting up dataframe (WIDE)
+```{r}
+var.col <- c("Water Potential (MPa)", "Species Effect (C. megacarpus)", "Marginal R2/Conditional R2", "AIC")
+col1 <- c("-0.113**", "-0.804***", "0.114/0.172", "849.497")
+col2 <- c("-0.112**", " ", "0.058/0.189", "857.869")
+col3 <- c("0.157***", "-0.345", "0.121/0.212", "756.095")
+col4 <- c("0.157***", " ", "0.122/0.211", "752.613")
+col5 <- c("1.423**", "7.476***", "0.241/0.264", "1658.810")
+col6 <- c("1.410***", " ", "0.148/0.286", "1681.628")
+col7 <- c("-0.143", "-2.111**", "0.061/0.182", "1284.354")
+col8 <- c("-0.141", " ", "0.010/0.179", "1293.501")
+col9 <- c("-1.214", "6.423", "0.039/0.091", "2072.416")
+col10 <- c("-1.211", " ", "0.027/0.099", "2077.573")
+col11 <- c("-0.270**", "-0.381", "0.042/0.045", "1248.303")
+col12 <- c("-0.270**", " ", "0.040/0.042", "1247.451")
+col13 <- c("-2.103***", "4.745", "0.076/0.099", "2014.228")
+col14 <- c("-2.101***", " ", "0.068/0.109", "2018.409")
+col15 <- c("0.493**", "3.938***", "0.085/NA", "1538.844")
+col16 <- c("0.489**", " ", "0.032/0.060", "1551.087")
+col17 <- c("-4.816***", "15.508**", "0.152/0.229", "2219.471")
+col18 <- c("-4.826***", " ", "0.121/0.217", "2330.096")
+col19 <- c("0.932***", "3.489*", "0.107/0.172", "1661.901")
+col20 <- c("0.930***", " ", "0.084/0.179", "1667.644")
+spp.diff.kable.df <- data.frame(dep.var, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15, col16, col17, col18, col19, col20)
+```
+
+Setting up dataframe (LONG)
+```{r}
+dep.var <- c('PC1', 'PC1 (w/o Species)','PC2', 'PC2 (w/o Species)','Time to Ignition', 'Time to Ignition (w/o Species)','Flame Duration', 'Flame Duration (w/o Species)', 'Glow Duration', 'Glow Duration (w/o Species)','Flame Height', 'Flame Height (w/o Species)','Post-Flame Glow', 'Post-Flame Glow (w/o Species)','Time to First Glow', 'Time to First Glow (w/o Species)','Max. Temp.', 'Max. Temp. (w/o Species)','Glow to Ignition', 'Glow to Ignition (w/o Species)')
+col1 <- c("-0.113**","-0.112**","0.157***","0.157***","1.423**","1.410***","-0.143","-0.141","-1.214","-1.211",'-0.270**','-0.270**','-2.103***','-2.101***','0.493**','0.489**','-4.816***','-4.826***','0.932***','0.930***')
+col2 <- c('-0.804***',' ','-0.345',' ','7.476***',' ','-2.111**',' ','6.423',' ','-0.381',' ','4.745',' ','3.938***',' ','15.508**',' ','3.489*',' ')
+col3 <- c('0.114/0.172','0.058/0.189','0.121/0.212','0.122/0.211','0.241/0.264','0.148/0.286','0.061/0.182','0.010/0.179','0.039/0.091','0.027/0.099','0.042/0.045','0.040/0.042','0.076/0.099','0.068/0.109','0.085/NA','0.032/0.060','0.152/0.229','0.121/0.217','0.107/0.172','0.084/0.179')
+col4 <- c('849.497','857.869','756.095','752.613','1658.810','1681.628','1284.354','1293.501','2072.416','2077.573','1248.303','1247.451','2014.228','2018.409','1538.844','1551.087','2219.471','2330.096','1661.901','1667.644')
+spp.diff.kable.df.long <- data.frame(dep.var, col1, col2, col3, col4)
+```
+
+```{r}
+spp.diff.kable.df.long %>%
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Water Potential (MPa)', 'Species Effect (C. Megacarpus)', 'Marginal R2/Conditional R2', 'AIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, stripe_color = "black") %>% 
+  row_spec(c(1:20), color = "black") %>%
+  column_spec(c(5), background = "#D3D3D3") %>% 
+  row_spec(c(1,4,5,7,9,13,15,17,19), bold = T) %>% 
+  row_spec(c(11:12), italic = T) %>% 
+  column_spec(c(1), bold = T, border_right = T) %>% 
+  column_spec(c(3), border_right = T) %>% 
+  save_kable(here('MEM.figures', 'MEM_SpeciesDiff_kable.html'))
 ```
 
 # 3.0.3 Statistical Tests
@@ -3081,10 +3131,10 @@ tab_model(m.tti, m.tti.nospp, m.fd, m.fd.nospp, m.gd, m.gd.nospp, m.pc1, m.pc1.n
 ```{r}
 tti.lfm.mem <- ggplot(data= tti_groups_ranis, aes(lfm.unscaled, r1_1, color = Species, shape = Species), xlim = c(0, 170)) + 
   geom_point(size = 1.2, alpha = .6) + 
- geom_abline(slope = 0.183, intercept = 20.634, color = "#9D0208", cex = 1) +
-  geom_abline(slope = 0.183, intercept = 26.591, color = "#F48C06", cex = 1) +
-  annotate('point', x = 65.67, y = 32.65161, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = 59.55, y = 37.48865, color = "#F48C06", size = 5, alpha = 0.9) +
+ geom_abline(slope = 0.183, intercept = 19.39, color = "#9D0208", cex = 1) +
+  geom_abline(slope = 0.183, intercept = 25.347, color = "#F48C06", cex = 1) +
+  annotate('point', x = 65.67, y = 31.40761, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = 59.55, y = 36.24465, color = "#F48C06", size = 5, alpha = 0.9) +
   annotate('text', x = 75, y = 12, label = 'Species Difference: *** p < 0.001', size = 4.5) +
   annotate('text', x = 37, y = 82, label = 'b', size = 12) +
   labs(x="Live Fuel Moisture (%)", y="Time to Ignition (s)")  +
@@ -3100,10 +3150,10 @@ tti.lfm.mem
 ```{r}
 fd.lfm.mem <- ggplot(data= fd_remef_year_df, aes(lfm.unscaled, fd_remef_year, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -0.015, intercept = 9.519, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -0.015, intercept = 7.531, color = "#F48C06", cex = 1) +
-  annotate('point', x = 65.67, y = 8.53395, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = 59.55, y = 6.63775, color = "#F48C06", size = 5, alpha = 0.9) +
+  geom_abline(slope = -0.015, intercept = 9.635, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -0.015, intercept = 7.647, color = "#F48C06", cex = 1) +
+  annotate('point', x = 65.67, y = 8.64995, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = 59.55, y = 6.75375, color = "#F48C06", size = 5, alpha = 0.9) +
   labs(x="Live Fuel Moisture (%)", y="Flame Duration (s)")  +
   annotate('text', x = 75, y = 1.15, label = 'Species Difference: *** p < 0.001', size = 4.5) +
   annotate('text', x = 37, y = 21.7, label = 'c', size = 12) +
@@ -3118,10 +3168,10 @@ fd.lfm.mem
 ```{r}
 gd.lfm.mem <- ggplot(data= gd_remef_year_df, aes(lfm.unscaled, gd_remef_year, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -0.157, intercept = 131.030, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -0.157, intercept = 138.761, color = "#F48C06", cex = 1) +
-  annotate('point', x = 65.67, y = 120.7198, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = 59.55, y = 129.4117, color = "#F48C06", size = 5, alpha = 0.9) +
+  geom_abline(slope = -0.157, intercept = 128.1845, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -0.157, intercept = 135.9155, color = "#F48C06", cex = 1) +
+  annotate('point', x = 65.67, y = 117.8743, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = 59.55, y = 126.5662, color = "#F48C06", size = 5, alpha = 0.9) +
   labs(x="Live Fuel Moisture (%)", y="Glow Duration (s)")  +
   scale_y_continuous(limits = c(50,235), breaks = c(50, 100, 150, 200)) +
   annotate('text', x = 70, y = 55, label = 'Species Difference: * p < 0.05', size = 4.5) +
@@ -3137,10 +3187,10 @@ gd.lfm.mem
 ```{r}
 pc1.lfm.mem <- ggplot(data= pc1_remef_year_df, aes(lfm.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -0.014, intercept = 1.561, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -0.014, intercept = 0.876, color = "#F48C06", cex = 1) +
-  annotate('point', x = 65.67, y = 0.64162, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = 59.55, y = 0.0423, color = "#F48C06", size = 5, alpha = 0.9) +
+  geom_abline(slope = -0.014, intercept = 1.677, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -0.014, intercept = 0.992, color = "#F48C06", cex = 1) +
+  annotate('point', x = 65.67, y = 0.75762, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = 59.55, y = 0.1583, color = "#F48C06", size = 5, alpha = 0.9) +
   labs(x="Live Fuel Moisture (%)", y="Ignitability-Combustibility Proxy") +
   annotate('text', x = 110, y = -4.68, label = 'Species Difference: ** p < 0.01', size = 4.5) +
   geom_segment(aes(x = 45, xend = 45, y = -5, yend = -4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
