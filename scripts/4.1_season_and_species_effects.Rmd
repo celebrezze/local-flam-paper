@@ -13,6 +13,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 #lots of extra here, but oh well... 
 library(ggplot2)
+library(kableExtra)
 library(gapminder)
 library(data.table)
 library(purrr) #for visualizing all variables in one big plot
@@ -1186,6 +1187,7 @@ mpa.vs.lfm.adfa.avgsite <- mpa_rel_df %>%
              group = season)) +
   ylim(c(-0.6, 0.5)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
+  geom_smooth(se = F, method = 'lm', linetype = 2) +
   geom_abline(slope = 0.033, intercept = -0.0575,
               color = '#c1121f', cex = 1, alpha = 0.7,
               show.legend = FALSE) +
