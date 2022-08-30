@@ -305,40 +305,6 @@ summary.segmented(os.mod.a)
 rsegplot.lfm(os.mod.a, seg.ceme.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
 ```
 
-#### Split by Sampling Date
-For some odd reason, the plots split by sampling date for CEME weren't working perfectly, so I added the second portion of the segmented regression
-```{r}
-o.mod<-lme(PC1~lfm + site, random=~1|id, data=seg.ceme.s20.subset)
-os.mod.a1<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod.a1)
-
-m2.1 <- slope(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[2]]
-b2.1 <- intercept(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[2]]
-p.1 <- summary.segmented(os.mod.a1)$psi[2]
-m.1 <- slope(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[1]]
-b.1 <- intercept(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[1]]
-
-rsegplot.lfm(os.mod.a1, seg.ceme.s20.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.1, x1 = max.lfm.c, y0 = m2.1*((b.1 - b2.1)/(m2.1 - m.1))+b2.1 , y1 = m2.1*max.lfm.c + b2.1, lwd = 4, col = "#9D0208")
-```
-
-```{r}
-o.mod<-lme(PC1~lfm, random=~1|id, data=seg.ceme.d19.subset)
-os.mod.a2<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod.a2)
-
-m2.2 <- slope(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[2]]
-b2.2 <- intercept(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[2]]
-p.2 <- summary.segmented(os.mod.a2)$psi[2]
-m.2 <- slope(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[1]]
-b.2 <- intercept(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[1]]
-
-rsegplot.lfm(os.mod.a2, seg.ceme.d19.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.2, x1 = max.lfm.c, y0 = m2.2*((b.2 - b2.2)/(m2.2 - m.2))+b2.2 , y1 = m2.2*max.lfm.c + b2.2, lwd = 4, col = "#9D0208")
-```
-
 ### PC2
 ```{r}
 o.mod<-lme(PC2~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
@@ -363,39 +329,6 @@ davies.test(u.mod.b)
 summary.segmented(u.mod.b)
 
 rsegplot.lfm(os.mod.b, seg.ceme.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-```
-
-#### Split by Sampling Date
-```{r}
-o.mod<-lme(tti~lfm + site, random=~1|id, data=seg.ceme.s20.subset)
-os.mod.b1<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod.b1)
-
-m2.3 <- slope(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[2]]
-b2.3 <- intercept(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[2]]
-p.3 <- summary.segmented(os.mod.b1)$psi[2]
-m.3 <- slope(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[1]]
-b.3 <- intercept(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[1]]
-
-rsegplot.lfm(os.mod.b1, seg.ceme.s20.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.3, x1 = max.lfm.c, y0 = m2.3*((b.3 - b2.3)/(m2.3 - m.3))+b2.3 , y1 = m2.3*max.lfm.c + b2.3, lwd = 4, col = "#9D0208")
-```
-
-```{r}
-o.mod<-lme(tti~lfm, random=~1|id, data=seg.ceme.d19.subset)
-os.mod.b2<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod.b2)
-
-m2.4 <- slope(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[2]]
-b2.4 <- intercept(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[2]]
-p.4 <- summary.segmented(os.mod.b2)$psi[2]
-m.4 <- slope(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[1]]
-b.4 <- intercept(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[1]]
-
-rsegplot.lfm(os.mod.b2, seg.ceme.d19.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.4, x1 = max.lfm.c, y0 = m2.4*((b.4 - b2.4)/(m2.4 - m.4))+b2.4 , y1 = m2.4*max.lfm.c + b2.4, lwd = 4, col = "#9D0208")
 ```
 
 ### Prop. Ignite (5%)
@@ -427,25 +360,6 @@ os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.mod)
 
 rsegplot.lfm(os.mod, seg.ceme.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-```
-
-#### Split by Sampling Date
-```{r}
-o.mod<-lme(fh~lfm + site, random=~1|id, data=seg.ceme.s20.subset)
-os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod)
-
-rsegplot.lfm(os.mod, seg.ceme.s20.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-```
-
-```{r}
-o.mod<-lme(fh~lfm, random=~1|id, data=seg.ceme.d19.subset)
-os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod)
-
-rsegplot.lfm(os.mod, seg.ceme.d19.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
 ```
 
 ### Max. Temp.
@@ -580,25 +494,24 @@ summary.segmented(os.mod)
 rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
 ```
 
-#### Split by Sampling Date
+Split by Sampling Date
 
-```{r}
+
 o.mod<-lme(fh~mpa + site, random=~1|id, data=seg.ceme.s20.subset)
 os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
-#summarizing results (note the '.coef' argument)
+summarizing results (note the '.coef' argument) -- hash this out if need code
 summary.segmented(os.mod)
 
 rsegplot.mpa(os.mod, seg.ceme.s20.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
-```
 
-```{r}
+
+
 o.mod<-lme(fh~mpa, random=~1|id, data=seg.ceme.d19.subset)
 os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
-#summarizing results (note the '.coef' argument)
+summarizing results (note the '.coef' argument) -- hash this out if you need code
 summary.segmented(os.mod)
 
 rsegplot.mpa(os.mod, seg.ceme.d19.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
-```
 
 ### Max. Temp.
 ```{r}
@@ -665,26 +578,6 @@ summary.segmented(os.mod.c)
 rsegplot.lfm(os.mod.c, seg.adfa.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
 ```
 
-#### Split by Sampling Date
-```{r}
-o.mod<-lme(PC1~ lfm + site, random=~1|id, data=seg.adfa.s20.subset)
-os.mod.c1<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod.c1)
-
-rsegplot.lfm(os.mod.c1, seg.adfa.s20.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-```
-
-```{r}
-o.mod<-lme(PC1~ lfm, random=~1|id, data=seg.adfa.d16.subset)
-os.mod.c2<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod.c2)
-
-rsegplot.lfm(os.mod.c1, seg.adfa.s20.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-rsegplot.lfm(os.mod.c2, seg.adfa.d16.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-```
-
 ### PC2
 ```{r}
 o.mod<-lme(PC2~lfm + year.month + site, random=~1|id, data=seg.adfa.subset)
@@ -704,25 +597,6 @@ os.mod.d<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.mod.d)
 
 rsegplot.lfm(os.mod.d, seg.adfa.subset, 'ADFA', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-```
-
-#### Split by Sampling Date
-```{r}
-o.mod<-lme(tti~lfm + site, random=~1|id, data=seg.adfa.s20.subset)
-os.mod.d1<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod.d1)
-
-rsegplot.lfm(os.mod.d1, seg.adfa.s20.subset, 'ADFA', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-```
-
-```{r}
-o.mod<-lme(tti~lfm, random=~1|id, data=seg.adfa.d16.subset)
-os.mod.d2<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod.d2)
-
-rsegplot.lfm(os.mod.d2, seg.adfa.d16.subset, 'ADFA', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
 ```
 
 ### Prop. Ignite (5%)
@@ -754,25 +628,6 @@ os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
 summary.segmented(os.mod)
 
 rsegplot.lfm(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-```
-
-#### Split by Sampling Date
-```{r}
-o.mod<-lme(fh~lfm + site, random=~1|id, data=seg.adfa.s20.subset)
-os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod)
-
-rsegplot.lfm(os.mod, seg.adfa.s20.subset, 'ADFA', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-```
-
-```{r}
-o.mod<-lme(fh~lfm, random=~1|id, data=seg.adfa.d16.subset)
-os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
-#summarizing results (note the '.coef' argument)
-summary.segmented(os.mod)
-
-rsegplot.lfm(os.mod, seg.adfa.d16.subset, 'ADFA', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
 ```
 
 ### Max. Temp.
@@ -841,24 +696,24 @@ summary.segmented(os.mod.c1)
 rsegplot.mpa(os.mod.c1, seg.adfa.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
 ```
 
-#### Split by Sampling Date
-```{r}
+Split by Sampling Date
+
 o.mod<-lme(PC1~mpa + site, random=~1|id, data=seg.adfa.s20.subset)
 os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
-#summarizing results (note the '.coef' argument)
+summarizing results (note the '.coef' argument) -- hash this out if you need code
 summary.segmented(os.mod)
 
 rsegplot.mpa(os.mod, seg.adfa.s20.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
-```
 
-```{r}
+
+
 o.mod<-lme(PC1~mpa, random=~1|id, data=seg.adfa.d16.subset)
 os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
-#summarizing results (note the '.coef' argument)
+summarizing results (note the '.coef' argument) -- hash this out if you need code
 summary.segmented(os.mod)
 
 rsegplot.mpa(os.mod, seg.adfa.d16.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
-```
+
 
 ### PC2
 ```{r}
@@ -1065,7 +920,154 @@ dev.off()
 ```
 
 # ---------------------------------
-# Splitting by Sampling Date
+# Splitting by Sampling Date (LFM)
+## CEME
+### PC1
+For some odd reason, the plots split by sampling date for CEME weren't working perfectly, so I added the second portion of the segmented regression
+```{r}
+o.mod<-lme(PC1~lfm + site, random=~1|id, data=seg.ceme.s20.subset)
+os.mod.a1<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod.a1)
+
+m2.1 <- slope(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[2]]
+b2.1 <- intercept(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[2]]
+p.1 <- summary.segmented(os.mod.a1)$psi[2]
+m.1 <- slope(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[1]]
+b.1 <- intercept(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[1]]
+
+rsegplot.lfm(os.mod.a1, seg.ceme.s20.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+segments(x0 = p.1, x1 = max.lfm.c, y0 = m2.1*((b.1 - b2.1)/(m2.1 - m.1))+b2.1 , y1 = m2.1*max.lfm.c + b2.1, lwd = 4, col = "#9D0208")
+```
+
+```{r}
+o.mod<-lme(PC1~lfm, random=~1|id, data=seg.ceme.d19.subset)
+os.mod.a2<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod.a2)
+
+m2.2 <- slope(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[2]]
+b2.2 <- intercept(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[2]]
+p.2 <- summary.segmented(os.mod.a2)$psi[2]
+m.2 <- slope(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[1]]
+b.2 <- intercept(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[1]]
+
+rsegplot.lfm(os.mod.a2, seg.ceme.d19.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+segments(x0 = p.2, x1 = max.lfm.c, y0 = m2.2*((b.2 - b2.2)/(m2.2 - m.2))+b2.2 , y1 = m2.2*max.lfm.c + b2.2, lwd = 4, col = "#9D0208")
+```
+
+### Time to Ignition
+```{r}
+o.mod<-lme(tti~lfm + site, random=~1|id, data=seg.ceme.s20.subset)
+os.mod.b1<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod.b1)
+
+m2.3 <- slope(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[2]]
+b2.3 <- intercept(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[2]]
+p.3 <- summary.segmented(os.mod.b1)$psi[2]
+m.3 <- slope(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[1]]
+b.3 <- intercept(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[1]]
+
+rsegplot.lfm(os.mod.b1, seg.ceme.s20.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+segments(x0 = p.3, x1 = max.lfm.c, y0 = m2.3*((b.3 - b2.3)/(m2.3 - m.3))+b2.3 , y1 = m2.3*max.lfm.c + b2.3, lwd = 4, col = "#9D0208")
+```
+
+```{r}
+o.mod<-lme(tti~lfm, random=~1|id, data=seg.ceme.d19.subset)
+os.mod.b2<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod.b2)
+
+m2.4 <- slope(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[2]]
+b2.4 <- intercept(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[2]]
+p.4 <- summary.segmented(os.mod.b2)$psi[2]
+m.4 <- slope(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[1]]
+b.4 <- intercept(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[1]]
+
+rsegplot.lfm(os.mod.b2, seg.ceme.d19.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+segments(x0 = p.4, x1 = max.lfm.c, y0 = m2.4*((b.4 - b2.4)/(m2.4 - m.4))+b2.4 , y1 = m2.4*max.lfm.c + b2.4, lwd = 4, col = "#9D0208")
+```
+
+### Flame Height
+```{r}
+o.mod<-lme(fh~lfm + site, random=~1|id, data=seg.ceme.s20.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.s20.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+```{r}
+o.mod<-lme(fh~lfm, random=~1|id, data=seg.ceme.d19.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.ceme.d19.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
+```
+
+## ADFA
+### PC1
+```{r}
+o.mod<-lme(PC1~ lfm + site, random=~1|id, data=seg.adfa.s20.subset)
+os.mod.c1<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod.c1)
+
+rsegplot.lfm(os.mod.c1, seg.adfa.s20.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
+```
+
+```{r}
+o.mod<-lme(PC1~ lfm, random=~1|id, data=seg.adfa.d16.subset)
+os.mod.c2<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod.c2)
+
+rsegplot.lfm(os.mod.c1, seg.adfa.s20.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
+rsegplot.lfm(os.mod.c2, seg.adfa.d16.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
+```
+
+### Time to Ignition
+```{r}
+o.mod<-lme(tti~lfm + site, random=~1|id, data=seg.adfa.s20.subset)
+os.mod.d1<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod.d1)
+
+rsegplot.lfm(os.mod.d1, seg.adfa.s20.subset, 'ADFA', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
+```
+
+```{r}
+o.mod<-lme(tti~lfm, random=~1|id, data=seg.adfa.d16.subset)
+os.mod.d2<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod.d2)
+
+rsegplot.lfm(os.mod.d2, seg.adfa.d16.subset, 'ADFA', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
+```
+
+### Flame Height
+```{r}
+o.mod<-lme(fh~lfm + site, random=~1|id, data=seg.adfa.s20.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.s20.subset, 'ADFA', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
+```
+
+```{r}
+o.mod<-lme(fh~lfm, random=~1|id, data=seg.adfa.d16.subset)
+os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+rsegplot.lfm(os.mod, seg.adfa.d16.subset, 'ADFA', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
+```
+
+# Supp Figure
 ```{r}
 jpeg(here('figures', 'seg.reg.rand.sDATES.jpg'), width = 1500, height = 1950, res = 150)
 par(mfrow = c(4,3))

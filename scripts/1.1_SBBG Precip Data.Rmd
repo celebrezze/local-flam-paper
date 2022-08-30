@@ -20,6 +20,7 @@ library(tidyverse)
 library(ggpubr)
 library(here)
 here=here::here
+select = dplyr::select
 filter = dplyr::filter #correct filter problem (gets confused with stats::filter)
 ```
 
@@ -90,7 +91,7 @@ Dec2016
 
 precip.filtered_2mo <- rbind(Dec2016, Dec2019, Jan2018, Dec2019, Sept2020, Jan2020) %>%
   select(water.year, year.month, day, daily.rain, rainfall.2mo, timing)
-precip.filtered
+precip.filtered_2mo
 
 write.csv(precip.filtered_2mo, here("processed-data", "precip.clean.csv"))
 ```
@@ -141,8 +142,6 @@ Dec2016
 precip.filtered <- rbind(Dec2016, Dec2019, Jan2018, Jan2020, Sept2020) %>%
   select(water.year, year.month, day, daily.rain, rainfall.4mo)
 precip.filtered
-
-summarise(precip.filtered)
 
 write.csv(precip.filtered, here("processed-data", "precip.clean.csv"))
 ```
