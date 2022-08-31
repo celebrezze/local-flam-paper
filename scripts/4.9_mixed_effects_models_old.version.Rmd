@@ -1,0 +1,678 @@
+---
+title: "Mixed Effects Models"
+author: "Indra Boving & Joe Celebrezze"
+date: "6/21/2022"
+output: html_document
+---
+
+# Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#lots of extra here, but oh well... 
+library(ggplot2)
+library(gapminder)
+library(data.table)
+library(purrr) #for visualizing all variables in one big plot
+library(naniar) #for dealing with NAs nicely 
+library(tidyverse)
+library(devtools)
+library(ggfortify)
+library(ggpubr)
+library(jtools)
+library(cowplot)
+library(lmerTest)
+library(ggeffects)  # install the package first if you haven't already, then load it
+library(GGally) #for corr plots
+require(kimisc) # has the nlist function to create a named list
+require(AICcmodavg) # has the aictab function
+library(psych)
+#devtools::install_github("strengejacke/strengejacke")
+library(strengejacke)
+library(sjPlot) # table functions
+library(sjmisc) # sample data
+library(lme4) # fitting models
+library(here)
+library(effects) #for plotting model effects
+library(sjstats) #use for r2 functions
+library(TMB)
+library(glmmTMB)
+library(lattice)
+library(equatiomatic)
+library("broom.mixed")
+library(ggbiplot)
+select = dplyr::select
+here = here::here
+library(MuMIn)
+library(modelsummary)
+#install_github("BlakeRMills/MetBrewer") 
+#library("BlakeRMills/MetBrewer")
+#library(memmented)
+filter = dplyr::filter
+mutate = dplyr::mutate
+library(nlme)
+library(MetBrewer)
+#install.packages("memmented")
+#devtools::install_github("hohenstein/remef")
+library(remef)
+library(kableExtra)
+```
+
+Set global options for color palettes and themes: 
+
+```{r}
+th <- theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
+          panel.grid.major = element_blank(),  # Hide major gridlines
+          panel.grid.minor = element_blank())
+
+th.spp.wrap <- theme(legend.position = "bottom", 
+        strip.text = element_text(face = "italic", size = 12) +
+  scale_color_manual(values=met.brewer("Morgenstern", 7)))
+
+Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db8872", "#a56457"), c(7, 5, 4, 6, 3, 2, 1), colorblind=TRUE)
+```
+
+#------------------------------------
+# 1. Data wrangling
+Reading in dataframe
+```{r}
+scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+```
+
+Seasonal mins and maxs from 2016 - 2020:
+
+https://www.sbbg.org/about/onsite-weather-station-live-fuel-moisture 
+
+```{r}
+adfa_min <- 55
+adfa_max <- 110
+
+ceme_min <- 55
+ceme_max <- 140
+```
+
+### All dates datasets
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+mem.adfa.subset <- scaled.mem.data.alldates.noNAs  %>% 
+  filter(spp == "ADFA") %>% 
+  filter(ignition == "1")
+
+mem.CEME.subset <- scaled.mem.data.alldates.noNAs  %>% 
+  filter(spp == "CEME")%>% 
+  filter(ignition == "1")
+
+mem.adfa.subset.allignitions <- scaled.mem.data.alldates.noNAs  %>% 
+  filter(spp == "ADFA")
+
+mem.CEME.subset.allignitions <- scaled.mem.data.alldates.noNAs %>% 
+  filter(spp == "CEME")
+
+mem.adfa.subset.limited <- mem.adfa.subset %>% 
+  filter(lfm.unscaled < adfa_max, lfm.unscaled > adfa_min)
+
+mem.CEME.subset <- scaled.mem.data.alldates.noNAs %>% 
+  filter(spp == "CEME")
+
+mem.CEME.subset.limited <- mem.CEME.subset %>% 
+  filter(lfm.unscaled < ceme_max, lfm.unscaled > ceme_min)
+```
+
+#------------------------------------
+# 2.0 Predicting PC1 (part 1)
+
+## 2.0.1 Figures of models
+
+```{r}
+mpa_mod_fig.mpa <- lmer(PC1 ~ mpa.unscaled + Species + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+summary(mpa_mod_fig.mpa)
+
+#remove fixed effect of Species:
+#     see what names are associated: 
+term2coef(mpa_mod_fig.mpa, "Species")
+
+r1_1 <- remef(mpa_mod_fig.mpa , fix = c("SpeciesC. megacarpus"))
+summary(r1_1)
+head(r1_1)
+
+# remove fixed effect of 'Days' and the intercept
+#r1_2 <- remef(fm1, fix = "Days", keep.intercept = FALSE)
+```
+
+```{r}
+
+(pp <- plot_model(mpa_mod_fig.mpa,type="pred",
+       terms=c("mpa.unscaled","year.month"),pred.type="re"))
+
+(pp <- plot_model(mpa_mod_fig.mpa,type="pred",
+       terms=c("mpa.unscaled","Species"),pred.type="re"))
+```
+
+#### Check assumptions
+
+```{r}
+plot(mpa_mod_fig.mpa)
+#qqnorm(mpa_mod_fig.mpa, ~ranef(., level=2))
+#https://stats.stackexchange.com/questions/77891/checking-assumptions-lmer-lme-mixed-models-in-r for above code - getting an error right now though
+```
+## 2.0.2 Tables of models
+
+"The variance inflation factor is a measure to analyze the magnitude of multicollinearity of model terms. A VIF less than 5 indicates a low correlation of that predictor with other predictors. A value between 5 and 10 indicates a moderate correlation, while VIF values larger than 10 are a sign for high, not tolerable correlation of model predictors.
+
+The Increased SE column in the output indicates how much larger the standard error is due to the correlation with other predictors." (https://easystats.github.io/blog/posts/performance_check_collinearity/)
+
+##### Models, multicolinearity check
+```{r}
+mpa_mod_fig.mpa <- lmer(PC1 ~ mpa.unscaled + spp + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(mpa_mod_fig.mpa)
+```
+
+```{r}
+max_model <- lmer(PC1 ~ spp + dw.flam.sample + ww.flam.sample + mpa + lfm.NAs.imputed + excess_water.scaled + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(max_model)
+```
+
+```{r}
+max_model_nolfm <- lmer(PC1 ~ spp + dw.flam.sample + ww.flam.sample + mpa + excess_water.scaled + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(max_model_nolfm)
+```
+
+```{r}
+max_model_nompa <- lmer(PC1 ~ spp + dw.flam.sample + ww.flam.sample + lfm.NAs.imputed + excess_water.scaled + site + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(max_model_nompa)
+```
+
+```{r}
+m3 <- lmer(PC1 ~ spp + ww.flam.sample + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m3)
+```
+
+```{r}
+m6 <- lmer(PC1 ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m6)
+```
+
+```{r}
+m6.5 <- lmer(PC1 ~ dw.flam.sample + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m6.5)
+```
+
+```{r}
+m7 <- lmer(PC1 ~ mpa + lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m7)
+```
+
+```{r}
+m10 <- lmer(PC1 ~ lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m10)
+```
+
+```{r}
+m11 <- lmer(PC1 ~ mpa*spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m11)
+```
+
+```{r}
+m12 <- lmer(PC1 ~ excess_water.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m12)
+```
+
+```{r}
+m12.5 <- lmer(PC1 ~ excess_water.scaled + mpa + lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m12.5) ##High correlation! Don't use
+```
+
+```{r}
+m13 <- lmer(PC1 ~ excess_water.scaled + lfm.NAs.imputed + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m13) ##High correlation! Don't use
+```
+
+```{r}
+m14 <- lmer(PC1 ~ excess_water.scaled + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m14)
+```
+
+```{r}
+m15 <- lmer(PC1 ~ excess_water.scaled * spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+performance::multicollinearity(m15)
+```
+
+https://strengejacke.github.io/sjPlot/articles/tab_model_estimates.html 
+##### Tables
+```{r}
+tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
+          show.reflvl = TRUE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c('Intercept', 
+                          'Water Potential (scaled)', 
+                          'Species Effect (C. megacarpus)',
+                          'Water Potential x Species Effect
+                          (interaction)',
+                          'LFM (%)',
+                          'Water Weight (g)', 
+                          'Dry Weight (g)',
+                          'Site Effect (Site 1)',
+                          'Excess Water (scaled)',
+                          'Excess Water x Species Effect
+                          (interaction)'),
+         dv.labels = c("mpa_spp", 
+                       "m11", 
+                       "m7", 
+                       "m7",
+                       "m10",
+                       "m3", 
+                       "m6", 
+                       "m6.5", 
+                       "m12",
+                       "m15"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('figures','MEM.table.no.collinearity.html')) # saving .html into figures folder
+```
+
+```{r}
+#tab_model(top_model, m7, m10, m3, m6) 
+tab_model(max_model, m7, mpa_mod_fig.mpa, max_model_nolfm, max_model_nompa, m12.5, m13,
+          show.reflvl = TRUE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c('Intercept', 
+                          'Species Effect (C. megacarpus)',
+                          'Dry Weight (g)',
+                          'Water Weight (g)',
+                          'Water Potential (scaled)',
+                          'LFM (%)',
+                          'Excess Water (scaled)',
+                          'Site Effect (Site 1)',
+                          'Water Potential (MPa, unscaled)'),
+         dv.labels = c("max_model", 
+                       "m7**", 
+                       "mpa_spp**", 
+                       "max_model_nolfm", 
+                      "max_model_nompa", 
+                      "m12.5", 
+                      "m13"),
+         string.pred = "Coeffcient", 
+         title = "models WITH collinearity (except **)",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('figures','MEM.table.with.collinearity.html'))
+```
+
+The intra-class correlation coefficient (ICC) is a related statistic that quantifies the proportion of variance explained by a grouping (random) factor in multilevel/hierarchical data.
+
+##### kableExtra Table
+First, making dataframe with fixed effects, water estimate, species estimate, AIC, marginal and conditional R2 values, and deltaAIC (for barebones models with only one water-related fixed effect:
+```{r}
+fix.fx <- c("Species & Water Potential", "Species & LFM", "Species & Dry Weight", "Species & Wet Weight")
+est1 <- c('-0.121***', '-0.084', '0.072','-0.061')
+est2 <- c('-1.112***', '-1.035***', '-0.072***', '-0.061***')
+aic.values <- c(1682.036, 1703.207, 1703.476, 1703.673)
+r2.values <- c('0.189/0.196', '0.145/0.161', '0.145/0.163', '0.144/0.161')
+d.aic <- c(0, 21.171, 21.44, 21.637)
+mem.table.df <- data.frame(fix.fx, est1, est2, aic.values, r2.values, d.aic)
+```
+there was probably a more elegant way to do that (just like PCA table), but since there aren't too many numbers to enter in by hand, I thought it would be quicker to just go ahead and do so.
+
+Now, using kableExtra package to visualize how each component is weighted by each flam. metric
+```{r}
+mem.table.df %>%
+  kable(format = 'html', escape = F, col.names = c('Model Fixed Effects', 'Water Estimate', 'Species Estimate', 'AIC', expression('Marginal R2/Conditional R2'), 'Change in AIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T)
+```
+
+
+## 2.0.3 Other figures
+### Predicted vs. Observed PC1
+```{r}
+predicted_pc1_df <- data.frame(predicted_pc1 = predict(mpa_mod_fig.mpa), observed_pc1 = scaled.mem.data.alldates.noNAs$PC1)
+
+ggplot(data = predicted_pc1_df, aes(x = predicted_pc1, y = observed_pc1)) +
+  geom_point(color = "lightblue", size = .7) +
+  geom_abline() +
+  labs(title = "Predicted vs. Observed PC1", subtitle = "All dates, mpa model",
+       x = "Predicted PC1", y = "Observed PC1") +
+  theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
+          panel.grid.major = element_blank(),  # Hide major gridlines
+          panel.grid.minor = element_blank()) +
+  ylim(-3, 3) +
+  xlim(-3, 3) +
+  coord_equal()
+```
+
+```{r}
+effects_mpa_fig.mpa <- effects::effect(term= "mpa.unscaled", 
+                                   mod= mpa_mod_fig.mpa, 
+                                   se = TRUE, 
+                                   confidence.level=.95
+                                   )
+# Save the effects values as a df:
+x_mpa_fig.mpa <- as.data.frame(effects_mpa_fig.mpa)
+```
+
+### MPa vs. PC1 Visualization
+
+**Figure X.** Model estimate of flammability (principle component 1) from water potential. 
+##### Species separation
+```{r, message=FALSE, results='hide',fig.height= 4, fig.length = 8}
+# Separating by Species
+p <- ggplot() + 
+  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, PC1, color = Species), size = 1) + 
+  geom_line(data=x_mpa_fig.mpa, aes(x=mpa.unscaled, y=fit), color="#db8872") +
+  geom_ribbon(data= x_mpa_fig.mpa, aes(x=mpa.unscaled, ymin=lower, ymax=upper), alpha= 0.3, fill="#db8872") +
+  labs(x="Water Potential (-Mpa)", y="Principle Component 1") +
+  scale_color_manual(values = c("#b08ba5", "#ffb178"))
+  th 
+
+p +
+  annotate("segment",x = -11, xend = -11, y = -3, yend = 3,
+           colour = "#db8872", size = 1, arrow = arrow(ends = "last", angle = 25, type = "closed", length = unit(.2,"cm"))) +
+  annotate("text", x= -11, y= 4, label= "More", size = 3) +
+  annotate("text", x= -11, y= 3.5, label= "Flammable", size = 3)+
+annotate("text", x= -11, y= -3.5, label= "Less", size = 3) +
+  annotate("text", x= -11, y= -4, label= "Flammable", size = 3)  +
+  scale_x_continuous(limits = c(-11.5, 0), breaks= c(-10, -8, -6, -4, -2, 0)) + 
+  theme(
+    legend.position = c(.99, .99),
+    legend.justification = c("right", "top"),
+    legend.box.just = "right",
+    legend.margin = margin(4,4,4,4), 
+    panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
+          panel.grid.major = element_blank(),  # Hide major gridlines
+          panel.grid.minor = element_blank()
+    ) 
+
+ggsave(here("figures", "extra-figures", "PC1.vs.mpa.jpg"))
+```
+
+##### Water status separation
+```{r, message=FALSE, results='hide',fig.height= 4, fig.length = 8}
+# Separating by Species
+p <- ggplot() + 
+  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, PC1, color = hydration), size = .5) + 
+  geom_line(data=x_mpa_fig.mpa, aes(x=mpa.unscaled, y=fit), color="#db8872") +
+  geom_ribbon(data= x_mpa_fig.mpa, aes(x=mpa.unscaled, ymin=lower, ymax=upper), alpha= 0.3, fill="#db8872") +
+  labs(x="Water Potential (-Mpa)",
+       y="Principle Component 1", 
+       color = "Timing")+
+  scale_color_manual(values=met.brewer("Morgenstern", 7)) +
+  th 
+p +
+  annotate("segment", x = -11, xend = -11, y = -3, yend = 3,
+           colour = "#db8872", size = .7, arrow = arrow(ends = "last", angle = 25, type = "closed", length = unit(.2,"cm"))) +
+  annotate("text", x= -11, y= 4, label= "More", size = 3) +
+  annotate("text", x= -11, y= 3.5, label= "Flammable", size = 3)+
+annotate("text", x= -11, y= -3.5, label= "Less", size = 3) +
+  annotate("text", x= -11, y= -4, label= "Flammable", size = 3)  +
+  scale_x_continuous(limits = c(-11.5, 0), breaks= c(-10, -8, -6, -4, -2, 0)) + 
+  theme(
+    legend.position = c(.99, .99),
+    legend.justification = c("right", "top"),
+    legend.box.just = "right",
+    legend.margin = margin(4,4,4,4), 
+    panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
+          panel.grid.major = element_blank(),  # Hide major gridlines
+          panel.grid.minor = element_blank()) 
+```
+
+
+## 2.0.4 Main Models and Summary Table
+We have yet to come to a group consensus on what fixed effects to include in the mixed effects model -- will discuss soon, but for now, I focused on the models that had the lowest AIC values and those are the models with only species, site, and sampling date (in the format of year.month) as fixed effects along with predictors. The major fixed effect that is being left out is sample weight, although that is included in one of the models -- with dry weight and water potential.
+
+Models
+```{r}
+m1 <- lmer(PC1 ~ mpa + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m2 <- lmer(PC1 ~ lfm + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(PC1 ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m4 <- lmer(PC1 ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m5 <- lmer(PC1 ~ mpa + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+```
+
+Table
+```{r}
+tab_model(m1, m2, m3, m4, m5,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('MEM.figures','main.model.selection.html')) # saving .html into figures folder
+```
+
+
+kableExtra Table
+```{r}
+fix.fx <- c("Water Potential", "LFM", "Wet Weight", "Dry Weight", "Water Potential, Sample Weight & Dry Weight")
+est1 <- c('-0.140***', '-0.246**', '-0.364***','-0.215*', '-0.141***')
+aic.values <- c(1674.577, 1695.289, 1686.568, 1697.884, 1680.822)
+r2.values <- c('0.225/0.237', '0.185/0.217', '0.201/0.224', '0.180/0.206', '0.230/0.237')
+d.aic <- c(0, 20.71, 11.99, 23.31, 6.25)
+mem.table.df <- data.frame(fix.fx, est1, aic.values, r2.values, d.aic)
+
+mem.table.df %>%
+  kable(format = 'html', escape = F, col.names = c('Model Fixed Effects', 'Water Estimate', 'AIC', expression('Marginal R2/Conditional R2'), 'Change in AIC')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  save_kable(here('figures', 'mem_table_kable.html'))
+```
+
+
+#------------------------------------
+# 2.1. Predicting raw metrics (part 2)
+
+### 2.1.1 Flame height
+```{r}
+mpa_mod_fig.mpa <- lmer(fh ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(fh ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+  
+m6 <- lmer(fh ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(fh ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m7
+
+m10 <- lmer(fh ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m11 <- lmer(fh ~ mpa*spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+#tab_model(top_model, m7, m10, m3, m6) 
+tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
+          show.reflvl = TRUE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c('Intercept', 
+                          'Water Potential (-Mpa)', 
+                          'C. megacarpus',
+                           'LFM (%)',
+                          'Water weight (g)', 
+                          'Dry weight (g)'), 
+         dv.labels = c("Model 1", 
+                       "Model 2", 
+                       "Model 3", 
+                       "Model 4", 
+                       "Model 5", 
+                       "Model 6"),
+         string.pred = "Coeffcient",
+  string.p = "P-Value", 
+  p.style = "stars")
+```
+
+### 2.1.2 Maximum temp.
+```{r}
+mpa_mod_fig.mpa <- lmer(temp.max ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(temp.max ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+  
+m6 <- lmer(temp.max ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(temp.max ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m7
+
+m10 <- lmer(temp.max ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m11 <- lmer(temp.max ~ spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+#tab_model(top_model, m7, m10, m3, m6) 
+tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
+          show.reflvl = TRUE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c('Intercept', 
+                          'Water Potential (-Mpa)', 
+                          'C. megacarpus',
+                           'LFM (%)',
+                          'Water weight (g)', 
+                          'Dry weight (g)'), 
+         dv.labels = c("Model 1", 
+                       "Model 2", 
+                       "Model 3", 
+                       "Model 4", 
+                       "Model 5", 
+                       "Model 6"),
+         string.pred = "Coeffcient",
+  string.p = "P-Value", 
+  p.style = "stars")
+```
+
+### 2.1.3 Flame duration 
+```{r}
+mpa_mod_fig.mpa <- lmer(fd ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(fd ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+  
+m6 <- lmer(fd ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(fd ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m7
+
+m10 <- lmer(fd ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m11 <- lmer(fd ~ mpa*spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+#tab_model(top_model, m7, m10, m3, m6) 
+tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
+          show.reflvl = TRUE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c('Intercept', 
+                          'Water Potential (-Mpa)', 
+                          'C. megacarpus',
+                           'LFM (%)',
+                          'Water weight (g)', 
+                          'Dry weight (g)'), 
+         dv.labels = c("Model 1", 
+                       "Model 2", 
+                       "Model 3", 
+                       "Model 4", 
+                       "Model 5", 
+                       "Model 6"),
+         string.pred = "Coeffcient",
+  string.p = "P-Value", 
+  p.style = "stars")
+```
+
+### 2.1.4 Time to ignition
+
+Plot
+```{r}
+mpa_mod_fig <- lmer(tti ~ mpa.unscaled + Species + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+effects_mpa_fig <- effects::effect(term= "mpa.unscaled", 
+                                   mod= mpa_mod_fig, 
+                                   se = TRUE, 
+                                   confidence.level=.95)
+# Save the effects values as a df:
+x_mpa_fig <- as.data.frame(effects_mpa_fig)
+
+# Separating by Species
+p <- ggplot() + 
+  geom_point(data= scaled.mem.data.alldates.noNAs, aes(mpa.unscaled, tti, color = Species), size = 1) + 
+  geom_line(data=x_mpa_fig, aes(x=mpa.unscaled, y=fit), 
+            color="#a56457") +
+  labs(x="Water Potential (-Mpa)", 
+       y="Time to Ignition (sec)") +
+  scale_color_manual(values=met.brewer("Morgenstern", 7)) +
+  th 
+
+
+p +
+  th +
+  scale_x_continuous(limits = c(-12, 0), breaks= c(-10, -8, -6, -4, -2, 0)) +
+  theme(legend.position = "bottom")
+```
+
+Table
+```{r}
+mpa_mod_fig.mpa <- lmer(tti ~ mpa + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m3 <- lmer(tti ~ spp + ww.flam.sample + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+  
+m6 <- lmer(tti ~ dw.flam.sample + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(tti ~ mpa + lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+m7
+
+m10 <- lmer(tti ~ lfm + spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m11 <- lmer(tti ~ mpa*spp + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+#tab_model(top_model, m7, m10, m3, m6) 
+tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, 
+          show.reflvl = TRUE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c('Intercept', 
+                          'Water Potential (-Mpa)', 
+                          'C. megacarpus',
+                           'LFM (%)',
+                          'Water weight (g)', 
+                          'Dry weight (g)'), 
+         dv.labels = c("Model 1", 
+                       "Model 2", 
+                       "Model 3", 
+                       "Model 4", 
+                       "Model 5", 
+                       "Model 6"),
+         string.pred = "Coeffcient",
+  string.p = "P-Value", 
+  p.style = "stars")
+```
+
