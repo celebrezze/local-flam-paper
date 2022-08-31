@@ -672,7 +672,7 @@ seg.reg.table.df %>%
   row_spec(c(1:7, 10:11, 13:18, 22), bold = T) %>% 
   row_spec(c(8, 9, 19:21, 23), bold = F) %>% 
   row_spec(c(12, 24), background = "#D3D3D3", bold = T) %>%
-  save_kable(here('figures', 'LFM.segreg.summary.html'))
+  save_kable(here('figures', 'supp-figures', 'LFM.segreg.summary.html'))
 ```
 
 # Summary Table: Water Potential
@@ -690,6 +690,6 @@ seg.reg.table2.df %>%
   row_spec(c(1:3, 5, 10, 16, 18), bold = T) %>% 
   row_spec(c(4, 6:9, 11, 13:15, 17, 19:23), bold = F) %>% 
   row_spec(c(12, 24), background = "#D3D3D3", bold = T) %>%
-  save_kable(here('figures', 'mpa.segreg.summary.html'))
+  save_kable(here('figures', 'supp-figures', 'mpa.segreg.summary.html'))
 ```
 
