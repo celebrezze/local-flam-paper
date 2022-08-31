@@ -797,7 +797,7 @@ No threshold able to be identified (segmented.default returns error)
 # Main Figure: Arranging Plots
 
 ```{r}
-jpeg(here('figures', 'seg.reg.rand.plot.v2.jpg'), width = 1200, height = 900, res = 100)
+jpeg(here('figures', 'main-figures', 'seg.reg.rand.plot.v2.jpg'), width = 1200, height = 900, res = 100)
 par(mfrow = c(2,2))
 par(mar = c(4,5,3,2))
 par(font.lab = 2)
@@ -1069,7 +1069,7 @@ rsegplot.lfm(os.mod, seg.adfa.d16.subset, 'ADFA', y.variable = 'fh',y.lab = "Fla
 
 # Supp Figure
 ```{r}
-jpeg(here('figures', 'seg.reg.rand.sDATES.jpg'), width = 1500, height = 1950, res = 150)
+jpeg(here('figures', 'supp-figures', 'seg.reg.rand.sDATES.jpg'), width = 1500, height = 1950, res = 150)
 par(mfrow = c(4,3))
 par(font.lab = 2)
 par(mar = c(5,4.75,3.5,1))

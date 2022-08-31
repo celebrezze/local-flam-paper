@@ -379,7 +379,7 @@ szn.diff.kable.df %>%
   row_spec(c(1, 22), background = "#D3D3D3", bold = T, italic = T) %>% 
   column_spec(c(1), bold = T, border_right = T) %>% 
   column_spec(c(3), border_right = T) %>% 
-  save_kable(here('MEM.figures', 'MEM_SeasonDiff_kable.html'))
+  save_kable(here('figures', 'supp-figures', 'MEM_SeasonDiff_kable.html'))
 ```
 
 ### PC1
@@ -1056,7 +1056,7 @@ season_plot.both <- cowplot::plot_grid(season_plot.pc1, season_plot.pc2, nrow = 
 
 season_plot.both
 
-ggsave(here("figures", "season_plot.jpg"),
+ggsave(here("figures", "extra-figures", "season_plot.jpg"),
        plot = season_plot.both, 
        width = 6, height = 8, dpi = 300)
 ```
@@ -1405,7 +1405,8 @@ plot_legend.sz <- cowplot::plot_grid(legend.sz, scatterplot.sz, ncol = 1, rel_he
 plot_legend.sz
 
 
-ggsave(here("figures", "season.plot.expanded.noREMEF.jpg"),
+ggsave(here("figures", "extra-figures",
+            "season.plot.expanded.noREMEF.jpg"),
        plot = plot_legend.sz,
        width = 17, height = 10, dpi = 300)
 ```
@@ -1426,12 +1427,12 @@ plot.sz.mem <- cowplot::plot_grid(
 scatterplot.sz.mem <- gridExtra::grid.arrange(arrangeGrob(plot.sz.mem, bottom = x.grob)) 
 scatterplot.sz.mem
 
-plot_legend.sz.mem <- cowplot::plot_grid(scatterplot.sz.mem, legend.sz, ncol = 2, rel_widths = c(5,1))
+plot_legend.sz.mem <- cowplot::plot_grid(scatterplot.sz.mem, legend.sz, ncol = 1, rel_heights = c(1,15))
 plot_legend.sz.mem
 
-ggsave(here("figures", "season.plot.MEM.REMEF.jpg"),
-       plot = plot_legend.sz.mem,
-       width = 12, height = 18, dpi = 300)
+#ggsave(here("figures", "season.plot.MEM.REMEF.jpg"),
+       #plot = plot_legend.sz.mem,
+       #width = 10, height = 18, dpi = 300)
 ```
 
 #### With Site Effects
@@ -1450,12 +1451,12 @@ plot.sz.mem.site <- cowplot::plot_grid(
 scatterplot.sz.mem.site <- gridExtra::grid.arrange(arrangeGrob(plot.sz.mem.site, bottom = x.grob)) 
 scatterplot.sz.mem.site
 
-plot_legend.sz.mem.site <- cowplot::plot_grid(scatterplot.sz.mem.site, legend.sz, ncol = 2, rel_widths = c(5,1))
+plot_legend.sz.mem.site <- cowplot::plot_grid(scatterplot.sz.mem.site, legend.sz, ncol = 1, rel_heights = c(1,15))
 plot_legend.sz.mem.site
 
-ggsave(here("figures", "season.plot.MEM.REMEF.site.effects.jpg"),
+ggsave(here("figures", "extra-figures", "season.plot.MEM.REMEF.site.effects.jpg"),
        plot = plot_legend.sz.mem.site,
-       width = 12, height = 18, dpi = 300)
+        width = 10, height = 18, dpi = 300)
 ```
 
 ### MAIN FIGURE: Avg Site Effects
@@ -1477,7 +1478,7 @@ scatterplot.sz.mem.avgsite
 plot_legend.sz.mem.avgsite <- cowplot::plot_grid(legend.sz, scatterplot.sz.mem.avgsite, ncol = 1, rel_heights = c(1,15))
 plot_legend.sz.mem.avgsite
 
-ggsave(here("figures", "season.plot.MEM.REMEF.avgsite.jpg"),
+ggsave(here("figures", "main-figures", "season.plot.MEM.REMEF.avgsite.jpg"),
        plot = plot_legend.sz.mem.avgsite,
        width = 10, height = 18, dpi = 300)
 ```
@@ -1604,7 +1605,7 @@ precip_plot <- seg.data.subset.alldates %>%
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 precip_plot
 
-ggsave(here("figures", "precip_plot.jpg"),
+ggsave(here("figures", "extra-figures", "precip_plot.jpg"),
        plot = precip_plot, 
        width = 6, height = 4, dpi = 300)
 ```
@@ -1642,7 +1643,7 @@ precip_plot <- seg.data.subset.alldates %>%
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 precip_plot
 
-ggsave(here("figures", "precip_plot.jpg"),
+ggsave(here("figures", "extra-figures", "precip_plot.jpg"),
        plot = precip_plot, 
        width = 6, height = 4, dpi = 300)
 ```
@@ -1679,9 +1680,9 @@ precip_plot.dw <- seg.data.subset.alldates %>%
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 precip_plot.dw
 
-ggsave(here("figures", "dw_plot.jpg"),
-       plot = precip_plot.dw, 
-       width = 6, height = 4, dpi = 300)
+#ggsave(here("figures", "dw_plot.jpg"),
+      # plot = precip_plot.dw, 
+      # width = 6, height = 4, dpi = 300)
 ```
 
 ## Timing and precip plot
@@ -1738,7 +1739,7 @@ ggplot(aes(y = lfm.unscaled,
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 timing_plot
 
-ggsave(here("figures", "timing_precip_plot.jpg"),
+ggsave(here("figures", "extra-figures", "timing_precip_plot.jpg"),
        plot = timing_plot, 
        width = 6, height = 4, dpi = 300)
 ```
@@ -2130,7 +2131,7 @@ scatterplot.sz.lfm <- gridExtra::grid.arrange(arrangeGrob(plot.sz.lfm, bottom = 
 plot_legend.sz.lfm <- cowplot::plot_grid(legend.sz, scatterplot.sz.lfm, ncol = 1, rel_heights = c(1,15))
 plot_legend.sz.lfm
 
-ggsave(here("figures", "LFM.season.plot.suppfigure.jpg"),
+ggsave(here("figures", "supp-figures", "LFM.season.plot.suppfigure.jpg"),
        plot = plot_legend.sz.lfm,
        width = 17, height = 10, dpi = 300)
 ```
@@ -2152,7 +2153,7 @@ scatterplot.sz.lfm.site <- gridExtra::grid.arrange(arrangeGrob(plot.sz.lfm.site,
 plot_legend.sz.lfm.site <- cowplot::plot_grid(legend.sz, scatterplot.sz.lfm.site, ncol = 1, rel_heights = c(1, 15))
 plot_legend.sz.lfm.site
 
-ggsave(here("figures", "LFM.season.plot.suppfigure.site.effect.jpg"),
+ggsave(here("figures", "extra-figures", "LFM.season.plot.suppfigure.site.effect.jpg"),
        plot = plot_legend.sz.lfm.site,
        width = 14, height = 10, dpi = 300)
 ```
@@ -2259,7 +2260,7 @@ col17 <- c("-4.816***", "15.508**", "0.152/0.229", "2219.471")
 col18 <- c("-4.826***", " ", "0.121/0.217", "2330.096")
 col19 <- c("0.932***", "3.489*", "0.107/0.172", "1661.901")
 col20 <- c("0.930***", " ", "0.084/0.179", "1667.644")
-spp.diff.kable.df <- data.frame(dep.var, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15, col16, col17, col18, col19, col20)
+spp.diff.kable.df <- data.frame(var.col, col1, col2, col3, col4, col5, col6, col7, col8, col9, col10, col11, col12, col13, col14, col15, col16, col17, col18, col19, col20)
 ```
 
 Setting up dataframe (LONG)
@@ -2282,7 +2283,7 @@ spp.diff.kable.df.long %>%
   row_spec(c(11:12), italic = T) %>% 
   column_spec(c(1), bold = T, border_right = T) %>% 
   column_spec(c(3), border_right = T) %>% 
-  save_kable(here('MEM.figures', 'MEM_SpeciesDiff_kable.html'))
+  save_kable(here('figures', 'supp-figures', 'MEM_SpeciesDiff_kable.html'))
 ```
 
 # 3.0.3 Statistical Tests
@@ -2465,7 +2466,7 @@ plot_legend <- cowplot::plot_grid (legend, scatterplot, ncol = 1, rel_heights = 
 plot_legend
 
 
-ggsave(here("figures", "species.plot.noREMEF.jpg"),
+ggsave(here("figures", "extra-figures", "species.plot.noREMEF.jpg"),
        plot = plot_legend, 
        width = 10, height = 10, dpi = 300)
 ```
@@ -2570,7 +2571,7 @@ scatterplot
 plot_legend <- cowplot::plot_grid(scatterplot, legend, rel_widths = c(4, 1))
 plot_legend
 
-ggsave(here("figures", "scatterplot_noremef.jpg"),
+ggsave(here("figures", "extra-figures", "scatterplot_noremef.jpg"),
        plot = plot_legend, 
        width = 6.5, height = 4.5, dpi = 300)
 ```
@@ -2872,7 +2873,7 @@ scatterplot.mem
 plot_legend.mem <- cowplot::plot_grid (legend, scatterplot.mem, ncol = 1, rel_heights = c(1,12))
 plot_legend.mem
 
-ggsave(here("figures", "species.scatterplot.MEM.jpg"),
+ggsave(here("figures", 'extra-figures', "species.scatterplot.MEM.jpg"),
        plot = plot_legend.mem, 
        width = 10, height = 10, dpi = 300)
 ```
@@ -2894,7 +2895,7 @@ scatterplot.mem.site
 plot_legend.mem.site <- cowplot::plot_grid (legend, scatterplot.mem.site, ncol = 1, rel_heights = c(1,12))
 plot_legend.mem.site
 
-ggsave(here("figures", "species.scatterplot.MEM.site.effects.jpg"),
+ggsave(here("figures", 'extra-figures', "species.scatterplot.MEM.site.effects.jpg"),
        plot = plot_legend.mem.site, 
        width = 10, height = 10, dpi = 300)
 ```
@@ -2916,7 +2917,7 @@ scatterplot.mem.avgsite
 plot_legend.mem.avgsite <- cowplot::plot_grid (legend, scatterplot.mem.avgsite, ncol = 1, rel_heights = c(1,12))
 plot_legend.mem.avgsite
 
-ggsave(here("figures", "species.scatterplot.MEM.avgsite.jpg"),
+ggsave(here("figures", 'main-figures', "Fig3.species.plot.jpg"),
        plot = plot_legend.mem.avgsite, 
        width = 10, height = 10, dpi = 300)
 ```
@@ -3092,9 +3093,9 @@ plot_legend <- cowplot::plot_grid(legend, scatterplot, ncol = 1, rel_heights = c
 plot_legend
 
 
-ggsave(here("figures", "lfm_spp_fx_ranef.jpg"),
-       plot = plot_legend, 
-       width = 10, height = 10, dpi = 300)
+#ggsave(here("figures", "lfm_spp_fx_ranef.jpg"),
+       #plot = plot_legend, 
+       #width = 10, height = 10, dpi = 300)
 ```
 
 ## 3.1.1 LFM Species Effect: Plotting Linear MEM
@@ -3242,7 +3243,7 @@ plot_legend.mem <- cowplot::plot_grid(legend, scatterplot.mem, ncol = 1, rel_hei
 plot_legend.mem
 
 
-ggsave(here("figures", "LFM.species.plot.MEM.jpg"),
+ggsave(here("figures", 'supp-figures', "LFM.species.plot.MEM.jpg"),
        plot = plot_legend.mem, 
        width = 10, height = 10, dpi = 300)
 ```
@@ -3259,6 +3260,7 @@ ggplot(seg.data.subset.alldates, aes(y = lfm.unscaled, x = mpa)) +
   theme(strip.text = element_text(face = "italic")) +
   th
 
-ggsave(here('figures', 'lfm.vs.mpa.raw.values.jpg'), height = 10, width = 18)
+ggsave(here('figures', 'extra-figures',
+            'lfm.vs.mpa.raw.values.jpg'), height = 10, width = 18)
 ```
 

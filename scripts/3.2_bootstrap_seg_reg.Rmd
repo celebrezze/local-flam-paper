@@ -151,7 +151,10 @@ for(i in 1:10){
    }}
 ```
 
+If code is getting interrupted by this above chunk, just rerun the chunk -- usually by second time, it'll successfully run. Random seeds lead to no breakpoint being estimated and the for loop terrminating (see note below for work-around for some of the metrics that this happened most often with)
+
 Since the above for loop kept getting interrupted when thresholds were not discovered, I set up a new for loop to figure out which seeds are causing the interruptions and manually removing those seeds. For CEME, I did this for flame height, glow to ignition and flame duration
+
 
 Flame Height:
 ```{r}

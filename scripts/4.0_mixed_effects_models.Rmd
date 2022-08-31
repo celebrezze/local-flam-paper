@@ -339,8 +339,7 @@ Now, using kableExtra package to visualize how each component is weighted by eac
 ```{r}
 mem.table.df %>%
   kable(format = 'html', escape = F, col.names = c('Model Fixed Effects', 'Water Estimate', 'Species Estimate', 'AIC', expression('Marginal R2/Conditional R2'), 'Change in AIC')) %>% 
-  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  save_kable(here('figures', 'mem_table_kable.html'))
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T)
 ```
 
 
@@ -404,7 +403,7 @@ annotate("text", x= -11, y= -3.5, label= "Less", size = 3) +
           panel.grid.minor = element_blank()
     ) 
 
-ggsave(here("figures", "PC1.vs.mpa.jpg"))
+ggsave(here("figures", "extra-figures", "PC1.vs.mpa.jpg"))
 ```
 
 ##### Water status separation

@@ -180,7 +180,7 @@ ggplot(PCAvalues, aes(x = PC1, y = PC2)) +
    ylab(u.axis.labs[2]) +
   coord_equal()
 
-ggsave(here("figures", "pca.jpg"),
+ggsave(here("figures",'main-figures', "pca.jpg"),
        height = 7, width = 9)
 ```
 
@@ -251,7 +251,7 @@ pca.table.df %>%
   kable(format = 'html', escape = F, col.names = c(' ', 'Component 1', 'Component 2', 'Component 3')) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, font_size = 30) %>% 
   row_spec(c(9:10), background = '#D3D3D3') %>% 
-  save_kable(here('figures', 'pca_table.html'))
+  save_kable(here('figures', 'main-figures', 'pca_table.html'))
 ```
 
 
@@ -576,6 +576,6 @@ ceme.pca.plot
 ```{r}
 ggarrange(adfa.pca.plot,ceme.pca.plot)
 
-ggsave(here('figures','spp.pca.supp.jpg'), height = 6, width = 12)
+ggsave(here('figures','supp-figures','spp.pca.jpg'), height = 6, width = 12)
 ```
 

@@ -10,54 +10,26 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 # Setup
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
+```{r}
 #lots of extra here, but oh well... 
 library(ggplot2)
-library(gapminder)
-library(data.table)
 library(purrr) #for visualizing all variables in one big plot
 library(naniar) #for dealing with NAs nicely 
 library(tidyverse)
-library(devtools)
-library(ggfortify)
 library(ggpubr)
-library(jtools)
-library(cowplot)
+library(segmented)
 library(lmerTest)
 library(ggeffects)  # install the package first if you haven't already, then load it
-library(GGally) #for corr plots
-require(kimisc) # has the nlist function to create a named list
-require(AICcmodavg) # has the aictab function
 library(psych)
-#devtools::install_github("strengejacke/strengejacke")
-library(strengejacke)
 library(sjPlot) # table functions
-library(sjmisc) # sample data
 library(lme4) # fitting models
 library(here)
-library(effects) #for plotting model effects
 library(sjstats) #use for r2 functions
-library(TMB)
-library(glmmTMB)
-library(lattice)
-library(equatiomatic)
-library("broom.mixed")
-library(ggbiplot)
 select = dplyr::select
 here = here::here
-library(MuMIn)
-library(modelsummary)
-#install_github("BlakeRMills/MetBrewer") 
-#library("BlakeRMills/MetBrewer")
-#library(memmented)
 filter = dplyr::filter
 mutate = dplyr::mutate
 library(nlme)
-library(MetBrewer)
-#install.packages("memmented")
-#devtools::install_github("hohenstein/remef")
 library(remef)
 library(kableExtra)
 ```
@@ -115,22 +87,22 @@ tab_model(m1.pa, m2.pa, m3, m4, m5,
 ```{r}
 s.m1<-lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
 os.m1.pa<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+summary.segmented(os.m1.pa)
 #AIC: 997.4369
 
 s.m2<-lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
 os.m2.pa<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+summary.segmented(os.m2.pa)
 #AIC: 1015.843
 
 s.m3<-lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m3<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
-summary.segmented(os.m3)
+os.m3.pa<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+summary.segmented(os.m3.pa)
 #AIC: 1009.496
 
 s.m4<-lme(PC1~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m4<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
-summary.segmented(os.m4)
+os.m4.pa<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
+summary.segmented(os.m4.pa)
 #AIC: 1013.969
 ```
 
@@ -170,12 +142,12 @@ tab_model(m1.pc, m2.pc, m3, m4, m5,
 ```{r}
 s.m1<-lme(PC1~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
 os.m1.pc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+summary.segmented(os.m1.pc)
 #AIC: 677.2741
 
 s.m2<-lme(PC1~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
 os.m2.pc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+summary.segmented(os.m2.pc)
 #AIC: 677.3073
 
 s.m3<-lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
@@ -226,12 +198,12 @@ tab_model(m1.ta, m2.ta, m3, m4, m5,
 ```{r}
 s.m1<-lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
 os.m1.ta<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
-#AIC: 1937.612
+summary.segmented(os.m1.ta)
+#AIC: 1937.612t
 
 s.m2<-lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
 os.m2.ta<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+summary.segmented(os.m2.ta)
 #AIC: 1967.475
 
 s.m3<-lme(tti~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
@@ -281,12 +253,12 @@ tab_model(m1.tc, m2.tc, m3, m4, m5,
 ```{r}
 s.m1<-lme(tti~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
 os.m1.tc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+summary.segmented(os.m1.tc)
 #AIC: 1381.347
 
 s.m2<-lme(tti~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
 os.m2.tc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+summary.segmented(os.m2.tc)
 #AIC: 1392.99
 
 s.m3<-lme(tti~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
@@ -338,12 +310,12 @@ tab_model(m1.fha, m2.fha, m3, m4, m5,
 ```{r}
 s.m1<-lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.adfa)
 os.m1.fha<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+summary.segmented(os.m1.fha)
 #AIC: 1479.476
 
 s.m2<-lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.adfa)
 os.m2.fha<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+summary.segmented(os.m2.fha)
 #AIC: 1490.198
 
 s.m3<-lme(fh~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
@@ -393,12 +365,12 @@ tab_model(m1.fhc, m2.fhc, m3, m4, m5,
 ```{r}
 s.m1<-lme(fh~ mpa + year.month + site, random=~1|id, data=mem.data.ceme)
 os.m1.fhc<-segmented.default(s.m1, ~mpa, npsi=list(mpa=1))
-summary.segmented(os.m1)
+summary.segmented(os.m1.fhc)
 #AIC: 1028.431
 
 s.m2<-lme(fh~ lfm + year.month + site, random=~1|id, data=mem.data.ceme)
 os.m2.fhc<-segmented.default(s.m2, ~lfm, npsi=list(lfm=1))
-summary.segmented(os.m2)
+summary.segmented(os.m2.fhc)
 #AIC: 1027.519
 
 s.m3<-lme(fh~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.ceme)
