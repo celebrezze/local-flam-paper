@@ -283,7 +283,7 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','site.yearmonth.samplewt.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','site.yearmonth.samplewt.html')) # saving .html into figures folder
 ```
 
 ## Site, species, year.month
@@ -426,7 +426,7 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','site.yearmonth.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','site.yearmonth.html')) # saving .html into figures folder
 ```
 
 ## Site, species, year & month, sample.wt
@@ -553,7 +553,7 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','site.yearANDmonth.samplewt.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','site.yearANDmonth.samplewt.html')) # saving .html into figures folder
 ```
 
 ## Site, species, year & month
@@ -680,7 +680,7 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','site.yearANDmonth.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','site.yearANDmonth.html')) # saving .html into figures folder
 ```
 # ---------------------------------------
 # MAIN MODEL SELECTION
@@ -795,7 +795,7 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','modelselection.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','modelselection.html')) # saving .html into figures folder
 ```
 
 # KableExtra Table
@@ -871,7 +871,7 @@ tab_model(a.p1, a.p5, a.p3, a.p2, a.p4, c.p1, c.p3, c.p4, c.p5, c.p2,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','PC1.by.species.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','PC1.by.species.html')) # saving .html into figures folder
 ```
 
 ## Time to Ignition
@@ -913,7 +913,7 @@ tab_model(a.t5, a.t1, a.t3, a.t2, a.t4, c.t5, c.t1, c.t3, c.t4, c.t2,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','TTI.by.species.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','TTI.by.species.html')) # saving .html into figures folder
 ```
 
 ## Flame Duration
@@ -955,7 +955,7 @@ tab_model(a.f1, a.f4, a.f2, a.f3, a.f5, c.f4, c.f2, c.f1, c.f3, c.f5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','FD.by.species.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','FD.by.species.html')) # saving .html into figures folder
 ```
 
 ## Glow Duration
@@ -997,7 +997,7 @@ tab_model(a.g5, a.g4, a.g2, a.g3, a.g1, c.g5, c.g4, c.g1, c.g2, c.g3,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','GD.by.species.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','GD.by.species.html')) # saving .html into figures folder
 ```
 
 ## SUPP: Kable Table
@@ -1138,7 +1138,7 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','PC2.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','PC2.html')) # saving .html into figures folder
 ```
 # -----------------------------------
 # Visualizations
@@ -1278,7 +1278,7 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','site.yearmonth.samplewt')) # saving .html into figures folder
+  file = here('figures','MEM.figures','site.yearmonth.samplewt')) # saving .html into figures folder
 ```
 
 ```{r}
@@ -1458,7 +1458,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','mem.TTI.html')) # saving .html into figures folder
+  file = here('figures','MEM.figures','mem.TTI.html')) # saving .html into figures folder
 ```
 
 ## Flame Height
@@ -1489,7 +1489,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','mem.FH.html')) # saving .html into figures folder
+  file = here('figures','MEM.figures','mem.FH.html')) # saving .html into figures folder
 ```
 
 ## Glow Duration
@@ -1520,7 +1520,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','mem.GD.html')) # saving .html into figures folder
+  file = here('figures','MEM.figures','mem.GD.html')) # saving .html into figures folder
 ```
 
 ## Flame Duration
@@ -1551,7 +1551,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','mem.FD.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','mem.FD.html')) # saving .html into figures folder
 ```
 
 ## Max. Temp.
@@ -1582,7 +1582,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','mem.MAXTEMP.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','mem.MAXTEMP.html')) # saving .html into figures folder
 ```
 
 ## Post-Flame Glow
@@ -1613,7 +1613,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','mem.PFG.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','mem.PFG.html')) # saving .html into figures folder
 ```
 
 ## Time to First Glow
@@ -1644,7 +1644,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','mem.TTFG.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','mem.TTFG.html')) # saving .html into figures folder
 ```
 
 ## Glow to Ignition
@@ -1675,7 +1675,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','mem.GTI.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','mem.GTI.html')) # saving .html into figures folder
 ```
 
 # MAIN TABLE
@@ -1730,6 +1730,19 @@ mem.table.df %>%
   save_kable(here('figures', 'extra-figures', 'expanded_MEM_kable.html'))
 ```
 
+## Shortened Table (for presentation)
+```{r}
+dep.var.s <- c("Ignitability-Combustibility Proxy (PC1)", "Time to Ignition (s)", "Flame Duration (s)", " ", " ", "Glow Duration (s)", "Flame Height (cm)", " ")
+top.models <- c("Water Potential", "Dry Weight, Sample Weight & Water Potential", "Water Potential", "Dry Weight", "LFM", "Dry Weight, Sample Weight & Water Potential", "Water Potential", "Dry Weight, Sample Weight & Water Potential")
+significance <- c("p<0.001", "p<0.001", "p<0.01", "p<0.01", "p<0.05", "non-significant", "p<0.001", "p<0.01")
+shortened.table.df <- data.frame(dep.var.s, top.models, significance)
+
+shortened.table.df %>%
+  mutate(dep.var.s = cell_spec(dep.var.s, 'html', color = 'black', bold = T), top.models = cell_spec(top.models, 'html', color = 'black'), significance = cell_spec(significance, 'html', color = 'black')) %>% 
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Top Model(s)', 'Significance')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  save_kable(here('figures', 'extra-figures', 'shortened_MEM_kable.html'))
+```
 
 # ----------------------------------
 # Residuals of flam ~ sample.wt, flam ~ dry weight
@@ -1885,5 +1898,5 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','excess.dry.weight.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','excess.dry.weight.html')) # saving .html into figures folder
 ```
