@@ -1,0 +1,290 @@
+---
+title: "Mixed Effects Models: MPa, Pre- and Post-TLP"
+author: "Joe Celebrezze"
+date: "2023-01-10"
+output: html_document
+---
+
+The following script was written in response to a peer editor's comments. The summary tables at the bottom cross-referenced with the segmented regression results further support our conclusion that water potential has more of a linear response with flammability metrics or proxies than any sort of TLP-driven thresholding response.
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+#lots of extra here, but oh well... 
+library(ggplot2)
+library(gapminder)
+library(data.table)
+library(tidyverse)
+library(cowplot)
+library(lmerTest)
+library(psych)
+#devtools::install_github("strengejacke/strengejacke")
+library(strengejacke)
+library(sjPlot) # table functions
+library(sjmisc) # sample data
+library(here)
+select = dplyr::select
+here = here::here
+library(modelsummary)
+filter = dplyr::filter
+mutate = dplyr::mutate
+library(nlme)
+library(MetBrewer)
+library(remef)
+library(kableExtra)
+```
+
+Set global options for color palettes and themes: 
+
+```{r}
+th <- theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
+          panel.grid.major = element_blank(),  # Hide major gridlines
+          panel.grid.minor = element_blank())
+
+th.spp.wrap <- theme(legend.position = "bottom", 
+        strip.text = element_text(face = "italic", size = 12) +
+  scale_color_manual(values=met.brewer("Morgenstern", 7)))
+
+Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db8872", "#a56457"), c(7, 5, 4, 6, 3, 2, 1), colorblind=TRUE)
+```
+
+#------------------------------------
+# 1. Data wrangling
+Reading in dataframe
+```{r}
+scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+```
+
+Seasonal mins and maxs from 2016 - 2020:
+
+https://www.sbbg.org/about/onsite-weather-station-live-fuel-moisture 
+
+```{r}
+adfa_min <- 55
+adfa_max <- 110
+
+ceme_min <- 55
+ceme_max <- 140
+```
+
+### All dates datasets
+```{r, message=FALSE, warning=FALSE, include=FALSE}
+adfa.subset <- scaled.mem.data.alldates.noNAs  %>% 
+  filter(spp == "ADFA") %>% 
+  filter(ignition == "1")
+
+ceme.subset <- scaled.mem.data.alldates.noNAs  %>% 
+  filter(spp == "CEME") %>% 
+  filter(ignition == "1")
+
+adfa.subset.allignitions <- scaled.mem.data.alldates.noNAs  %>% 
+  filter(spp == "ADFA")
+
+ceme.subset.allignitions <- scaled.mem.data.alldates.noNAs %>% 
+  filter(spp == "CEME")
+```
+
+### PV Curve Data
+```{r}
+pv_summary_df_timing <- read_csv(here("processed-data", "pv_summary_df_timing.csv"))
+
+pv_local <- pv_summary_df_timing %>% 
+  filter(spp %in% c("ADFA", "CEME"))
+#ADFA
+##LFM
+mean_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(mean_lfm)) %>% 
+  pull()
+upr_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(upr_lfm)) %>% 
+  pull()
+lwr_lfm_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(lwr_lfm)) %>% 
+  pull()
+##MPa
+mean_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(mean_tlp)) %>% 
+  pull()
+upr_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(upr)) %>% 
+  pull()
+lwr_mpa_adfa <- pv_local %>% 
+  filter(spp == "ADFA") %>% 
+  summarise(mean(lwr)) %>% 
+  pull()
+# CEME
+##LFM
+mean_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(mean_lfm)) %>% 
+  pull()
+upr_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(upr_lfm)) %>% 
+  pull()
+lwr_lfm_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(lwr_lfm)) %>% 
+  pull()
+##MPa
+mean_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(mean_tlp)) %>% 
+  pull()
+upr_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(upr)) %>% 
+  pull()
+lwr_mpa_ceme <- pv_local %>% 
+  filter(spp == "CEME") %>% 
+  summarise(mean(lwr)) %>% 
+  pull()
+```
+
+### Splitting by TLP
+```{r}
+adfa.subset.pre <- adfa.subset %>% 
+  filter(mpa > mean_mpa_adfa)
+adfa.subset.post <- adfa.subset %>% 
+  filter(mpa < mean_mpa_adfa)
+
+ceme.subset.pre <- ceme.subset %>% 
+  filter(mpa > mean_mpa_ceme)
+ceme.subset.post <- ceme.subset %>% 
+  filter(mpa < mean_mpa_ceme)
+```
+
+# --------------------------------
+# 2. Mixed Effects Models
+### PC1
+```{r}
+# ADFA
+adfa.pc1.mem.pre <- lmer(PC1 ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.pre)
+adfa.pc1.mem.post <- lmer(PC1 ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.post)
+adfa.pc1.mem.all <- lmer(PC1 ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset)
+
+# CEME
+ceme.pc1.mem.pre <- lmer(PC1 ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.pre)
+ceme.pc1.mem.post <- lmer(PC1 ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.post)
+ceme.pc1.mem.all <- lmer(PC1 ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset)
+```
+
+### PC2
+```{r}
+# ADFA
+adfa.pc2.mem.pre <- lmer(PC2 ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.pre)
+adfa.pc2.mem.post <- lmer(PC2 ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.post)
+adfa.pc2.mem.all <- lmer(PC2 ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset)
+
+# CEME
+ceme.pc2.mem.pre <- lmer(PC2 ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.pre)
+ceme.pc2.mem.post <- lmer(PC2 ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.post)
+ceme.pc2.mem.all <- lmer(PC2 ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset)
+```
+
+### TTI
+```{r}
+# ADFA
+adfa.tti.mem.pre <- lmer(tti ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.pre)
+adfa.tti.mem.post <- lmer(tti ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.post)
+adfa.tti.mem.all <- lmer(tti ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset)
+
+# CEME
+ceme.tti.mem.pre <- lmer(tti ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.pre)
+ceme.tti.mem.post <- lmer(tti ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.post)
+ceme.tti.mem.all <- lmer(tti ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset)
+```
+
+### FH
+```{r}
+# ADFA
+adfa.fh.mem.pre <- lmer(fh ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.pre)
+adfa.fh.mem.post <- lmer(fh ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.post)
+adfa.fh.mem.all <- lmer(fh ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset)
+
+# CEME
+ceme.fh.mem.pre <- lmer(fh ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.pre)
+ceme.fh.mem.post <- lmer(fh ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.post)
+ceme.fh.mem.all <- lmer(fh ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset)
+```
+
+### FD
+```{r}
+# ADFA
+adfa.fd.mem.pre <- lmer(fd ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.pre)
+adfa.fd.mem.post <- lmer(fd ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.post)
+adfa.fd.mem.all <- lmer(fd ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset)
+
+# CEME
+ceme.fd.mem.pre <- lmer(fd ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.pre)
+ceme.fd.mem.post <- lmer(fd ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.post)
+ceme.fd.mem.all <- lmer(fd ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset)
+```
+
+### GD
+```{r}
+# ADFA
+adfa.gd.mem.pre <- lmer(gd ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.pre)
+adfa.gd.mem.post <- lmer(gd ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset.post)
+adfa.gd.mem.all <- lmer(gd ~ mpa.scaled + site + year.month + (1 | individual), data = adfa.subset)
+
+# CEME
+ceme.gd.mem.pre <- lmer(gd ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.pre)
+ceme.gd.mem.post <- lmer(gd ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset.post)
+ceme.gd.mem.all <- lmer(gd ~ mpa.scaled + site + year.month + (1 | individual), data = ceme.subset)
+```
+
+# -------------------------------
+# 3. Summary Tables
+## ADFA
+```{r}
+tab_model(adfa.pc1.mem.pre, adfa.pc1.mem.post, adfa.pc1.mem.all, adfa.pc2.mem.pre, adfa.pc2.mem.post, adfa.pc2.mem.all, adfa.tti.mem.pre, adfa.tti.mem.post, adfa.tti.mem.all, adfa.fh.mem.pre, adfa.fh.mem.post, adfa.fh.mem.all, adfa.fd.mem.pre, adfa.fd.mem.post, adfa.fd.mem.all, adfa.gd.mem.pre, adfa.gd.mem.post, adfa.gd.mem.all,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE,
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         string.pred = "Coeffcient", 
+         dv.labels = c("PC1 (pre-TLP)", "PC1 (post-TLP)", "PC1 (all)",
+                       "PC2 (pre-TLP)",  "PC2 (post-TLP)", "PC2 (all)",
+                       "TTI (pre-TLP)", "TTI (post-TLP)", "TTI (all)",
+                       "FH (pre-TLP)",  "FH (post-TLP)", "FH (all)",
+                       "FD (pre-TLP)", "FD (post-TLP)", "FD (all)",
+                       "GD (pre-TLP)",  "GD (post-TLP)", "GD (all)"),
+         title = "A. fasciculatum: MEM, Testing pre- and post-TLP",
+  string.p = "P-Value", 
+  p.style = "stars")
+```
+
+## CEME
+```{r}
+tab_model(ceme.pc1.mem.pre, ceme.pc1.mem.post, ceme.pc1.mem.all, ceme.pc2.mem.pre, ceme.pc2.mem.post, ceme.pc2.mem.all, ceme.tti.mem.pre, ceme.tti.mem.post, ceme.tti.mem.all, ceme.fh.mem.pre, ceme.fh.mem.post, ceme.fh.mem.all, ceme.fd.mem.pre, ceme.fd.mem.post, ceme.fd.mem.all, ceme.gd.mem.pre, ceme.gd.mem.post, ceme.gd.mem.all,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE,
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         string.pred = "Coeffcient",
+         dv.labels = c("PC1 (pre-TLP)", "PC1 (post-TLP)", "PC1 (all)",
+                       "PC2 (pre-TLP)",  "PC2 (post-TLP)", "PC2 (all)",
+                       "TTI (pre-TLP)", "TTI (post-TLP)", "TTI (all)",
+                       "FH (pre-TLP)",  "FH (post-TLP)", "FH (all)",
+                       "FD (pre-TLP)", "FD (post-TLP)", "FD (all)",
+                       "GD (pre-TLP)",  "GD (post-TLP)", "GD (all)"),
+         title = "C. megacarpus: MEM, Testing pre- and post-TLP",
+  string.p = "P-Value", 
+  p.style = "stars")
+```

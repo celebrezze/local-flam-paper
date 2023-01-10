@@ -419,7 +419,8 @@ rsegplot.lfm(os.mod, seg.ceme.subset, 'CEME', y.variable = 'ttfg',y.lab = "Time 
 ## Water Potential
 ```{r}
 seg.ceme.subset <- seg.ceme.subset %>% 
-  mutate(mpa.scaled = scale(mpa))
+  mutate(mpa.scaled = scale(mpa)) %>%  # Scaling mpa
+  mutate(mpa.inverse = -1/mpa)
 ```
 
 ### PC1 (scaled)
@@ -434,8 +435,8 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME',x.variable = 'mpa.scaled', y.variab
 
 ### PC1
 ```{r}
-o.mod<-lme(PC1~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod.a1<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(PC1~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod.a1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.a1)
 
@@ -444,8 +445,8 @@ rsegplot.mpa(os.mod.a1, seg.ceme.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1
 
 ### PC2
 ```{r}
-o.mod<-lme(PC2~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(PC2~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -454,9 +455,10 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'PC2',y.lab = "PC2", 
  
 Ignitability Metrics:
 ### Time to Ignition
+SIGNIFICANT, 0.222 (-4.504)
 ```{r}
-o.mod<-lme(tti~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod.b1<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(tti~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod.b1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.b1)
 
@@ -464,9 +466,10 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'tti',y.lab = "Time t
 ```
 
 ### Prop. Ignite (5%)
+SIGNIFICANT, 0.1207 (-8.285)
 ```{r}
-o.mod<-lme(prop.ignite.bins5_nodate~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(prop.ignite.bins5_nodate~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -475,8 +478,8 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'prop.ignite.bins5_no
 
 ### Glow to Ignition
 ```{r}
-o.mod<-lme(gti~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(gti~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -485,9 +488,10 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'gti',y.lab = "Glow t
 
 Combustibility Metrics:
 ### Flame Height
+SIGNIFICANT 0.1237 (-8.08)
 ```{r}
-o.mod<-lme(fh~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(fh~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -514,9 +518,10 @@ summary.segmented(os.mod)
 rsegplot.mpa(os.mod, seg.ceme.d19.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
 
 ### Max. Temp.
+SIGNIFICANT 0.1 (-10)
 ```{r}
-o.mod<-lme(temp.max~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(temp.max~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -526,8 +531,8 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'temp.max',y.lab = "M
 Sustainability Metrics:
 ### Flame Duration
 ```{r}
-o.mod<-lme(fd~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod.f1<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(fd~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod.f1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.f1)
 
@@ -537,8 +542,8 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'fd',y.lab = "Flame D
 Consumability Metrics:
 ### Glow Duration
 ```{r}
-o.mod<-lme(gd~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod.h1<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(gd~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod.h1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.h1)
 
@@ -547,8 +552,8 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'gd',y.lab = "Glow Du
 
 ### Post-Flame Glow
 ```{r}
-o.mod<-lme(pfg~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(pfg~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -556,9 +561,10 @@ rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'pfg',y.lab = "Post-F
 ```
 
 ### Time to First Glow
+SIGNIFICANT 0.179 (-5.5897)
 ```{r}
-o.mod<-lme(ttfg~mpa + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(ttfg~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -686,10 +692,16 @@ rsegplot.lfm(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'ttfg',y.lab = "Time 
 
 # ------
 ## Water Potential
-### PC1
 ```{r}
-o.mod<-lme(PC1~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod.c1<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+seg.adfa.subset <- seg.adfa.subset %>% 
+  mutate(mpa.inverse = -1/mpa)
+```
+
+### PC1
+SIGNIFICANT 0.4303 (-2.324)
+```{r}
+o.mod<-lme(PC1~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod.c1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.c1)
 
@@ -716,9 +728,10 @@ rsegplot.mpa(os.mod, seg.adfa.d16.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC
 
 
 ### PC2
+SIGNIFICANT 0.1738 (-5.75)
 ```{r}
-o.mod<-lme(PC2~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(PC2~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -727,9 +740,10 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'PC2',y.lab = "PC2", 
  
 Ignitability Metrics:
 ### Time to Ignition
+SIGNIFICANT 0.4175 (-2.395)
 ```{r}
-o.mod<-lme(tti~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod.d1<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(tti~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod.d1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.d1)
 
@@ -738,8 +752,8 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'tti',y.lab = "Time t
 
 ### Prop. Ignite (5%)
 ```{r}
-o.mod<-lme(prop.ignite.bins5_nodate~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(prop.ignite.bins5_nodate~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -747,9 +761,10 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'prop.ignite.bins5_no
 ```
 
 ### Glow to Ignition
+SIGNIFICANT 0.4322 (-2.314)
 ```{r}
-o.mod<-lme(gti~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(gti~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -760,20 +775,51 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'gti',y.lab = "Glow t
 
 Combustibility Metrics:
 ### Flame Height
+SIGNIFICANT 0.3885 (-2.574)
 No threshold able to be identified (segmented.default returns error)
+```{r}
+o.mod<-lme(fh~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'fh', y.lab = "Flame Height", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
 
 ### Max. Temp.
 No threshold able to be identified (segmented.default returns error)
+```{r}
+o.mod<-lme(temp.max~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'temp.max',y.lab = "Maxiumum Temp.", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
 
 Sustainability Metrics:
 ### Flame Duration
 No threshold able to be identified (segmented.default returns error)
+```{r}
+o.mod<-lme(fd~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'fd',y.lab = "Flame Duration", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
 
 Consumability Metrics:
 ### Glow Duration
 ```{r}
-o.mod<-lme(gd~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod.g1<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(gd~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod.g1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.g1)
 
@@ -782,8 +828,8 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'gd',y.lab = "Glow Du
 
 ### Post-Flame Glow
 ```{r}
-o.mod<-lme(pfg~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(pfg~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
@@ -792,6 +838,16 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'pfg',y.lab = "Post-F
 
 ### Time to First Glow
 No threshold able to be identified (segmented.default returns error)
+```{r}
+o.mod<-lme(ttfg~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
+#summarizing results (note the '.coef' argument)
+summary.segmented(os.mod)
+
+plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
+
+rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'ttfg',y.lab = "Time to First Glow", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+```
 
 # ---------------------------------
 # Main Figure: Arranging Plots

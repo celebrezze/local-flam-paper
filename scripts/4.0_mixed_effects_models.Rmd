@@ -842,7 +842,12 @@ c.p3 <- lmer(PC1 ~ ww.flam.sample + site + year.month + (1 | individual), data =
 
 c.p4 <- lmer(PC1 ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
 
-c.p5 <- lmer(PC1 ~ mpa.scaled + dw.flam.sample + sample.wt   + site + year.month + (1 | individual), data = mem.CEME.subset)
+c.p5 <- lmer(PC1 ~ mpa.scaled + dw.flam.sample + sample.wt  + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+c.p6 <- lmer(PC1 ~ mpa.scaled + ww.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.p7 <- lmer(PC1 ~ mpa.scaled + lfm + sample.wt + site + year.month + (1 | individual), data = mem.CEME.subset)
 ```
 
 ```{r}
@@ -855,18 +860,23 @@ a.p3 <- lmer(PC1 ~ ww.flam.sample + site + year.month + (1 | individual), data =
 a.p4 <- lmer(PC1 ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
 
 a.p5 <- lmer(PC1 ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+a.p6 <- lmer(PC1 ~ mpa.scaled + ww.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.p7 <- lmer(PC1 ~ mpa.scaled + lfm + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
 ```
 
 ### Table
 ```{r}
-tab_model(a.p1, a.p5, a.p3, a.p2, a.p4, c.p1, c.p3, c.p4, c.p5, c.p2,
+tab_model(a.p1, a.p5, a.p3, a.p2, a.p4, c.p1, c.p3, c.p4, c.p5, c.p2, a.p6, a.p7, c.p6, c.p7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE,
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1 (ADFA)", "Model 5 (ADFA)", "Model 3 (ADFA)", "Model 2 (ADFA)",  "Model 4 (ADFA)", "Model 1 (CEME)", "Model 3 (CEME)",  "Model 4 (CEME)", "Model 5 (CEME)",  "Model 2 (CEME)"),
+         dv.labels = c("Model 1 (ADFA)", "Model 5 (ADFA)", "Model 3 (ADFA)", "Model 2 (ADFA)",  "Model 4 (ADFA)", "Model 1 (CEME)", "Model 3 (CEME)",  "Model 4 (CEME)", "Model 5 (CEME)",  "Model 2 (CEME)", "Model 6 (ADFA)", "Model 7 (ADFA)", "Model 6 (CEME)", "Model 7 (CEME)"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -885,6 +895,11 @@ c.t3 <- lmer(tti ~ ww.flam.sample + site + year.month + (1 | individual), data =
 c.t4 <- lmer(tti ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
 
 c.t5 <- lmer(tti ~ mpa.scaled + dw.flam.sample + sample.wt   + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+c.t6 <- lmer(tti ~ mpa.scaled + ww.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.t7 <- lmer(tti ~ mpa.scaled + lfm + sample.wt + site + year.month + (1 | individual), data = mem.CEME.subset)
 ```
 
 ```{r}
@@ -897,18 +912,23 @@ a.t3 <- lmer(tti ~ ww.flam.sample + site + year.month + (1 | individual), data =
 a.t4 <- lmer(tti ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
 
 a.t5 <- lmer(tti ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+a.t6 <- lmer(tti ~ mpa.scaled + ww.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.t7 <- lmer(tti ~ mpa.scaled + lfm + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
 ```
 
 ### Table
 ```{r}
-tab_model(a.t5, a.t1, a.t3, a.t2, a.t4, c.t5, c.t1, c.t3, c.t4, c.t2,
+tab_model(a.t5, a.t1, a.t3, a.t2, a.t4, c.t5, c.t1, c.t3, c.t4, c.t2, a.t6, a.t7, c.t6, c.t7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 5 (ADFA)", "Model 1 (ADFA)", "Model 3 (ADFA)", "Model 2 (ADFA)",   "Model 4 (ADFA)", "Model 5 (CEME)", "Model 1 (CEME)", "Model 3 (CEME)",  "Model 4 (CEME)", "Model 2 (CEME)"),
+         dv.labels = c("Model 5 (ADFA)", "Model 1 (ADFA)", "Model 3 (ADFA)", "Model 2 (ADFA)",   "Model 4 (ADFA)", "Model 5 (CEME)", "Model 1 (CEME)", "Model 3 (CEME)",  "Model 4 (CEME)", "Model 2 (CEME)", "Model 6 (ADFA)", "Model 7 (ADFA)", "Model 6 (CEME)", "Model 7 (CEME)"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -927,6 +947,11 @@ c.f3 <- lmer(fd ~ ww.flam.sample + site + year.month + (1 | individual), data = 
 c.f4 <- lmer(fd ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
 
 c.f5 <- lmer(fd ~ mpa.scaled + dw.flam.sample + sample.wt   + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+c.f6 <- lmer(fd ~ mpa.scaled + ww.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.f7 <- lmer(fd ~ mpa.scaled + lfm + sample.wt + site + year.month + (1 | individual), data = mem.CEME.subset)
 ```
 
 ```{r}
@@ -939,18 +964,23 @@ a.f3 <- lmer(fd ~ ww.flam.sample + site + year.month + (1 | individual), data = 
 a.f4 <- lmer(fd ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
 
 a.f5 <- lmer(fd ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+a.f6 <- lmer(fd ~ mpa.scaled + ww.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.f7 <- lmer(fd ~ mpa.scaled + lfm + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
 ```
 
 ### Table
 ```{r}
-tab_model(a.f1, a.f4, a.f2, a.f3, a.f5, c.f4, c.f2, c.f1, c.f3, c.f5,
+tab_model(a.f1, a.f4, a.f2, a.f3, a.f5, c.f4, c.f2, c.f1, c.f3, c.f5, a.f6, a.f7, c.f6, c.f7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1 (ADFA)",  "Model 4 (ADFA)", "Model 2 (ADFA)", "Model 3 (ADFA)", "Model 5 (ADFA)",  "Model 4 (CEME)", "Model 2 (CEME)", "Model 1 (CEME)", "Model 3 (CEME)", "Model 5 (CEME)"),
+         dv.labels = c("Model 1 (ADFA)",  "Model 4 (ADFA)", "Model 2 (ADFA)", "Model 3 (ADFA)", "Model 5 (ADFA)",  "Model 4 (CEME)", "Model 2 (CEME)", "Model 1 (CEME)", "Model 3 (CEME)", "Model 5 (CEME)", "Model 6 (ADFA)", "Model 7 (ADFA)", "Model 6 (CEME)", "Model 7 (CEME)"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -968,7 +998,12 @@ c.g3 <- lmer(gd ~ ww.flam.sample + site + year.month + (1 | individual), data = 
 
 c.g4 <- lmer(gd ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
 
-c.g5 <- lmer(gd ~ mpa.scaled + dw.flam.sample + sample.wt   + site + year.month + (1 | individual), data = mem.CEME.subset)
+c.g5 <- lmer(gd ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+c.g6 <- lmer(gd ~ mpa.scaled + ww.flam.sample + site + year.month + (1 | individual), data = mem.CEME.subset)
+
+c.g7 <- lmer(gd ~ mpa.scaled + lfm + sample.wt + site + year.month + (1 | individual), data = mem.CEME.subset)
 ```
 
 ```{r}
@@ -981,18 +1016,23 @@ a.g3 <- lmer(gd ~ ww.flam.sample + site + year.month + (1 | individual), data = 
 a.g4 <- lmer(gd ~ dw.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
 
 a.g5 <- lmer(gd ~ mpa.scaled + dw.flam.sample + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+a.g6 <- lmer(gd ~ mpa.scaled + ww.flam.sample + site + year.month + (1 | individual), data = mem.adfa.subset)
+
+a.g7 <- lmer(gd ~ mpa.scaled + lfm + sample.wt + site + year.month + (1 | individual), data = mem.adfa.subset)
 ```
 
 ### Table
 ```{r}
-tab_model(a.g5, a.g4, a.g2, a.g3, a.g1, c.g5, c.g4, c.g1, c.g2, c.g3,
+tab_model(a.g5, a.g4, a.g2, a.g3, a.g1, c.g5, c.g4, c.g1, c.g2, c.g3, a.g6, a.g7, c.g6, c.g7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 5 (ADFA)", "Model 4 (ADFA)", "Model 2 (ADFA)",  "Model 3 (ADFA)", "Model 1 (ADFA)", "Model 5 (CEME)", "Model 4 (CEME)", "Model 1 (CEME)",  "Model 2 (CEME)", "Model 3 (CEME)"),
+         dv.labels = c("Model 5 (ADFA)", "Model 4 (ADFA)", "Model 2 (ADFA)",  "Model 3 (ADFA)", "Model 1 (ADFA)", "Model 5 (CEME)", "Model 4 (CEME)", "Model 1 (CEME)",  "Model 2 (CEME)", "Model 3 (CEME)", "Model 6 (ADFA)", "Model 7 (ADFA)", "Model 6 (CEME)", "Model 7 (CEME)"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1442,18 +1482,23 @@ m3 <- lmer(tti ~ ww.flam.sample + spp + site + year.month + (1 | individual), da
 m4 <- lmer(tti ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m5 <- lmer(tti ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+m6 <- lmer(tti ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(tti ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1, m2, m3, m4, m5, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1473,18 +1518,23 @@ m3 <- lmer(fh ~ ww.flam.sample + spp + site + year.month + (1 | individual), dat
 m4 <- lmer(fh ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m5 <- lmer(fh ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+m6 <- lmer(fh ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(fh ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1, m2, m3, m4, m5, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1504,18 +1554,23 @@ m3 <- lmer(gd ~ ww.flam.sample + spp + site + year.month + (1 | individual), dat
 m4 <- lmer(gd ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m5 <- lmer(gd ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+m6 <- lmer(gd ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(gd ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1, m2, m3, m4, m5, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1535,18 +1590,23 @@ m3 <- lmer(fd ~ ww.flam.sample + spp + site + year.month + (1 | individual), dat
 m4 <- lmer(fd ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m5 <- lmer(fd ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+m6 <- lmer(fd ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(fd ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1, m2, m3, m4, m5, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1566,18 +1626,23 @@ m3 <- lmer(temp.max ~ ww.flam.sample + spp + site + year.month + (1 | individual
 m4 <- lmer(temp.max ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m5 <- lmer(temp.max ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+m6 <- lmer(temp.max ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(temp.max ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1, m2, m3, m4, m5, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1597,18 +1662,23 @@ m3 <- lmer(pfg ~ ww.flam.sample + spp + site + year.month + (1 | individual), da
 m4 <- lmer(pfg ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m5 <- lmer(pfg ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+m6 <- lmer(pfg ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(pfg ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1, m2, m3, m4, m5, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1628,18 +1698,23 @@ m3 <- lmer(ttfg ~ ww.flam.sample + spp + site + year.month + (1 | individual), d
 m4 <- lmer(ttfg ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m5 <- lmer(ttfg ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+m6 <- lmer(ttfg ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(ttfg ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1, m2, m3, m4, m5, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1659,18 +1734,23 @@ m3 <- lmer(gti ~ ww.flam.sample + spp + site + year.month + (1 | individual), da
 m4 <- lmer(gti ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 
 m5 <- lmer(gti ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+# Adding in MPa + WW and MPa + LFM despite their moderate collinearity to see how they affect model selection
+m6 <- lmer(gti ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
+
+m7 <- lmer(gti ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = scaled.mem.data.alldates.noNAs)
 ```
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5,
+tab_model(m1, m2, m3, m4, m5, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE,
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5"),
+         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
