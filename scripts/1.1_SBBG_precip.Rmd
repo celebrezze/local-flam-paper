@@ -1,6 +1,6 @@
 ---
 title: "Precipitation Data"
-author: "Indra Boving & JC"
+author: "Indra Boving & Joe Celebrezze"
 date: "2/26/2021"
 output: html_document
 ---
@@ -25,8 +25,6 @@ filter = dplyr::filter #correct filter problem (gets confused with stats::filter
 ```
 
 Monthly data from SBBG's website: 
-
-# NOTE: I am confused about the code below...
 
 #2 months prior: 
 
