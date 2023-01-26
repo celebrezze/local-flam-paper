@@ -827,7 +827,7 @@ main.mem.table.df %>%
   row_spec(c(18:19), bold = T) %>%
   row_spec(c(1:19), color = "black") %>% 
   column_spec(c(1), bold = T, border_right = T) %>% 
-  save_kable(here('figures', 'MEM.figures', 'Main_MEM_Selection_kable.html'))
+  save_kable(here('figures', 'supp-figures', 'Main_MEM_Selection_kable.html'))
 ```
 
 # -------------------------------

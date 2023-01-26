@@ -80,7 +80,7 @@ tab_model(m1.pa, m2.pa, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','ADFA.PC1.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','ADFA.PC1.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -135,7 +135,7 @@ tab_model(m1.pc, m2.pc, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','CEME.PC1.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','CEME.PC1.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -191,7 +191,7 @@ tab_model(m1.ta, m2.ta, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','ADFA.tti.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','ADFA.tti.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -246,7 +246,7 @@ tab_model(m1.tc, m2.tc, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','CEME.tti.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','CEME.tti.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -303,7 +303,7 @@ tab_model(m1.fha, m2.fha, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','ADFA.fh.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','ADFA.fh.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -358,7 +358,7 @@ tab_model(m1.fhc, m2.fhc, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','CEME.fh.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','CEME.fh.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -411,7 +411,7 @@ tab_model(m1.ga, m2.ga, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','ADFA.gd.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','ADFA.gd.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -466,7 +466,7 @@ tab_model(m1.gc, m2.gc, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','CEME.gd.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','CEME.gd.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -522,7 +522,7 @@ tab_model(m1.fda, m2.fda, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','ADFA.fd.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','ADFA.fd.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -577,7 +577,7 @@ tab_model(m1.fdc, m2.fdc, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','CEME.fd.MEM.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','CEME.fd.MEM.html')) # saving .html into figures folder
 ```
 
 ### Segmented Regressions
@@ -614,14 +614,14 @@ aic.values <- AIC(m1.pa, os.m1.pa, m2.pa, os.m2.pa, m1.pc, os.m1.pc, m2.pc, os.m
 diff.aic <- AIC(m1.pa, m2.pa, m1.pc, m2.pc, m1.ta, m2.ta, m1.tc, m2.tc, m1.fha, m2.fha, m1.fhc, m2.fhc, m1.ga, m2.ga, m1.gc, m2.gc, m1.fda, m2.fda, m1.fdc, m2.fdc)$AIC - AIC(os.m1.pa, os.m2.pa, os.m1.pc, os.m2.pc, os.m1.ta, os.m2.ta, os.m1.tc, os.m2.tc, os.m1.fha, os.m2.fha, os.m1.fhc, os.m2.fhc, os.m1.ga, os.m2.ga, os.m1.gc, os.m2.gc, os.m1.fda, os.m2.fda, os.m1.fdc, os.m2.fdc)$AIC 
 diff.aic
 
-d.aic <- c('7.3382544', " ", '0.1354309', " ", '-319.6370663', " ",  '6.2493515', " ", '13.5140596', " ",  '12.9497412', " ",  '3.1629817', " ",  '22.2718000', " ",  '9.2936522', " ",  '8.5088373', " ",  '16.8151998', " ",  '13.8684488', " ",  '7.6481625', " ",  '6.1603456', " ",  '8.6774760', " ",  '7.1176700', " ",  '3.5365891', " ",  '1.9709327', " ",  '3.8982039', " ",  '2.3846002', ' ')
+d.aic <- c('7.3382544', " ", '0.1354309', " ", '0.5257', " ",  '6.2493515', " ", '13.5140596', " ",  '12.9497412', " ",  '3.1629817', " ",  '22.2718000', " ",  '9.2936522', " ",  '8.5088373', " ",  '16.8151998', " ",  '13.8684488', " ",  '7.6481625', " ",  '6.1603456', " ",  '8.6774760', " ",  '7.1176700', " ",  '3.5365891', " ",  '1.9709327', " ",  '3.8982039', " ",  '2.3846002', ' ')
 
 bic.values <- BIC(m1.pa, os.m1.pa, m2.pa, os.m2.pa, m1.pc, os.m1.pc, m2.pc, os.m2.pc, m1.ta, os.m1.ta, m2.ta, os.m2.ta, m1.tc, os.m1.tc, m2.tc, os.m2.tc, m1.fha, os.m1.fha, m2.fha, os.m2.fha, m1.fhc, os.m1.fhc, m2.fhc, os.m2.fhc, m1.ga, os.m1.ga, m2.ga, os.m2.ga, m1.gc, os.m1.gc, m2.gc, os.m2.gc, m1.fda, os.m1.fda, m2.fda, os.m2.fda, m1.fdc, os.m1.fdc, m2.fdc, os.m2.fdc)$BIC
 
 diff.bic <- BIC(m1.pa, m2.pa, m1.pc, m2.pc, m1.ta, m2.ta, m1.tc, m2.tc, m1.fha, m2.fha, m1.fhc, m2.fhc, m1.ga, m2.ga, m1.gc, m2.gc, m1.fda, m2.fda, m1.fdc, m2.fdc)$BIC - BIC(os.m1.pa, os.m2.pa, os.m1.pc, os.m2.pc, os.m1.ta, os.m2.ta, os.m1.tc, os.m2.tc, os.m1.fha, os.m2.fha, os.m1.fhc, os.m2.fhc, os.m1.ga, os.m2.ga, os.m1.gc, os.m2.gc, os.m1.fda, os.m2.fda, os.m1.fdc, os.m2.fdc)$BIC
 diff.bic
 
-d.bic <- c('0.31848815', " ", '-6.88433538', " ", '-329.08359545', " ", '-0.04764151', " ",  '6.49429335', " ", '5.92997495', " ", '-3.13401131', " ", '15.97480701', " ", '2.27388591', " ", '1.48907102', " ", '10.51820680', " ", '7.57145578', " ", '0.62839626', " ", '-0.85942067', " ",    '2.38048296', " ", '0.82067692', " ", '-3.48317716', " ", '-5.04883355', " ", '-2.39878913', " ",  '-3.91239284', " ")
+d.bic <- c('0.31848815', " ", '-6.88433538', " ", '-5.7712', " ", '-0.04764151', " ",  '6.49429335', " ", '5.92997495', " ", '-3.13401131', " ", '15.97480701', " ", '2.27388591', " ", '1.48907102', " ", '10.51820680', " ", '7.57145578', " ", '0.62839626', " ", '-0.85942067', " ",    '2.38048296', " ", '0.82067692', " ", '-3.48317716', " ", '-5.04883355', " ", '-2.39878913', " ",  '-3.91239284', " ")
 
 dep.var <- c("PC1", " ", " ", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " "," ", " ", " ", " ", "Flame Height (cm)", " ", " ", " "," ", " ", " ", " ", "Glow Duration (s)", " ", " ", " "," ", " ", " ", " ", "Flame Duration (s)", " ", " ", " "," ", " ", " ", " ")
 
@@ -637,6 +637,6 @@ mem.vs.seg.table.df %>%
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Species', 'Analysis', 'Model Fixed Effects', 'AIC', 'Change in AIC', 'BIC', 'Change in BIC')) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
   row_spec(c(1, 9, 17, 25, 33), background = "#D3D3D3") %>% 
-  save_kable(here('figures', 'MEM_vs_SegReg_kable.html'))
+  save_kable(here('figures', 'extra-figures', 'MEM_vs_SegReg_kable.html'))
 ```
 

@@ -102,6 +102,8 @@ For loop
 It is a bit clunky, but seems to do the trick. Could not figure out how to iterate dependent variables in the linear models.
 
 Note: I did not include flame duration, glow-to-ignition or flame height below, as those variables were interrupting the for loop when they did not return a threshold
+
+Note: this chunk of code sometimes fails when a threshold is not found for one of the iterations, but eventually it runs. This issue was fixed for flam. metrics that consistently caused the for loop to fail as stated below
 ```{r}
 for(i in 1:10){
    for(j in 1:nrow(ceme.thresholds)){
@@ -310,6 +312,7 @@ adfa.thresholds <- data.frame(psi.PC1, psi.PC2, psi.tti, psi.fh, psi.fd, psi.gd,
 For loop
 It is a bit clunky, but seems to do the trick. Could not figure out how to iterate dependent variables in the linear models.
 
+Note: like above, this for loop often gets interrupted when a threshold is not found. After a few times, it should run okay
 ```{r}
 for(i in 1:10){
    for(j in 1:nrow(adfa.thresholds)){

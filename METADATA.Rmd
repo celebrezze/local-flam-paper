@@ -1,0 +1,115 @@
+---
+title: "Metadata"
+author: "Joe Celebrezze and Indra Boviing"
+date: "2023-01-25"
+output:
+   html_document:
+    toc: true
+    toc_depth: 4
+    theme: united
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(here)
+here = here::here
+library(tidyverse)
+```
+
+# Introduction
+
+This .Rmd file covers the necessary metadata for the datasets that we used in the analyses for the paper, *Live fuel moisture and shoot water potential exhibit contrasting relationships with leaf-level flammability thresholds during laboratory flammability tests*.
+
+It does so by describing each column of each dataset included in this GitHub. For more information on the organization of the GitHub or which scripts are responsible for which analyses, see the README file included on the GitHub. Many variables/columns are repeated on multiple datasets, and in these cases we do not describe them again, as this would be redundant; however, we try to make it clear where repeated columns exist and why.
+
+This metadata was last updated on:
+**January 25, 2023** by **Joe Celebrezze**
+
+--------------------------
+
+# Raw Data
+
+## flam.local.alldates.csv
+```{r, include = F}
+flam.local.alldates <- read_csv(here("raw-data", "flam.local.alldates.csv"))
+head(flam.local.alldates)
+```
+
+This dataframe contains n=795 observations of flammability tests on 'local species' (i.e., species sampled from the chaparral at the foothills of the Santa Ynez mountains in Santa Barbara county) and accompanying data on water status and content along the benchtop drydown.
+
+*sample*: the identification number for the individual. Due to the uneven sampling regime over the duration of this experiment, the identification number differs slightly for different years (which **NOTE** I HOPE **NOTE** we fixed during data wrangling). For more recent sampling, the identification number carries information about both the site and the individual in the format (site.individual or site.pod, see *pod* below); however in certain years, only site 1 was sampled from and in these cases the identification number only carries information about the individual in either of the following formats: for individual 3, *sample* = 3.0 or *sample* = 3.
+
+*round*: this describes the order in which the samples were burned over the course of a laboratory drydown (i.e., round = 1 means the first sample of that particular individual that we burned)
+
+*spp*: an abbreviation for the species tested (CEME = *Ceanothus megacarpus* and ADFA = *Adenostoma fasciculatum*)
+
+*model*: an identifier of the method used (EPI = epiradiator and HP = hot plate; for this study, we solely used epiradiator)
+
+*mpa*: water potential (-MPa), reported here as a positive number but changed to negative values in the data wrangling step
+
+*lfm*: live fuel moisture (LFM, %), as measured using the following equation, taken on a subsample directly before testing flammability
+\start{equation}
+LFM = 100 \times \frac{fresh weight - dry weight}{dry weight}
+\end{equation}
+
+*lfm.notes*: any notes taken on the live fuel moisture sample
+
+*fh*: the maximum flame height (cm) observed during combustion
+
+*ttfg*: time to first glow (seconds); time elapsed between loading the sample into the flammability chamber and the beginning of the glow time
+
+*gti*: glow to ignition (seconds); time elapsed between beginning of glow time and the time which ignition occurred
+
+*tti*: time to ignition (seconds); time elapsed between loading the sample into the flammability chamber and the time which ignition occurred
+
+*fd*: flame duration (seconds); duration of the combustion from ignition to extinction of the flame
+
+*gd*: glow duration (seconds); time elapsed between beginning and end of glow time
+
+*pfg*: post-flame glow (seconds); time elapsed between extinction of flame (end of comubstion) and end of glow time
+
+*ignition*: binary identifier describing whether or not the sample ignited (1 = ignited, 0 = not ignited)
+
+*start.temp*: starting temperature (degrees Celsius) as measured by the thermocouple located 1 cm above the sample 
+
+*temp.max*: maximum temperature (degrees Celsius) as measured by the thermocouple located 1 cm above the sample
+
+*ignition.temp*: temperature (degrees Celsius) at the point of ignition as measured by the thermocouple located 1cm above the sample 
+
+*prop.new*: estimated proportion of new growth in the sample as observed directly prior to loaading the sample in the flammability chamber
+
+*sample.wt*: weight (g) of the sample loaded into the flammability chamber
+
+*glow*: binary identifier describing whether or not the sample glowed (1 = glowed, 0 = did not glow)
+
+*year*: identifier of year when we ran flammability tests in format YYYY
+
+*month*: identifier of month, written out with a capital letter to start, when we ran flammability tests
+
+*dry.wt*: the weight (g) after oven-drying for 24hr at 100C from the subsample used to measure live fuel moisture
+
+*fresh.wt*: the weight (g) of the subsample used to measure live fuel moisture prior to oven-drying
+
+*water.wt*: the difference between the *fresh_wt* and the *dry_wt* representing the weight of water (g) in the LFM subsample
+
+*site*: a character identifier describing the site that we gathered the samples from (either St. Marys = chapparal Site 1 = 34.4613, -119.6934 or Painted Caves = chapparal Site 2 = 34.4931, -119.7910)
+
+## local_field_data.csv
+```{r, include = F}
+local_field_data <- read_csv(here("raw-data", "local_field_data.csv"))
+head(local_field_data)
+```
+
+This dataframe contains field data on 36 samples (2 species, 12 individuals, split *A. fasciculatum* into old and new growth, see *age*) on 9/18/20. This field data includes live fuel moisture measurements, predawn and midday water potential measurements and information regarding each species' turgor loss point (based on pressure-volume curves)
+
+*bottle.number*: identifier for the label on the nalgene bottles which we placed live fuel moisture samples in during collection; each bottle had slightly different weights that we measured prior to collecting samples, thus the bottle.number was important information to include
+
+*spp*: see above
+
+*age*: New = growth from the last year, Old = growth from over a year ago; only *A. fasiculatum* was able to be confidently split by *age*
+
+*pod*: the individual plant we sampled from; we labelled this as *pod* since we sampled *A. fasciculatum* and *C. megacarpus* individuals that were close together (i.e., from pod 1, both speccies were relatively close to each other, but they could be distant from the individuals we sampled from from pod 3)
+
+*site*: see above
+

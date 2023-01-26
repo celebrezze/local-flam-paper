@@ -286,7 +286,7 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('figures','MEM.table.no.collinearity.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures', 'MEM.table.no.collinearity.html')) # saving .html into figures folder
 ```
 
 ```{r}
@@ -317,7 +317,7 @@ tab_model(max_model, m7, mpa_mod_fig.mpa, max_model_nolfm, max_model_nompa, m12.
          title = "models WITH collinearity (except **)",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('figures','MEM.table.with.collinearity.html'))
+  file = here('figures','MEM.figures', 'MEM.table.with.collinearity.html'))
 ```
 
 The intra-class correlation coefficient (ICC) is a related statistic that quantifies the proportion of variance explained by a grouping (random) factor in multilevel/hierarchical data.
@@ -333,7 +333,7 @@ r2.values <- c('0.189/0.196', '0.145/0.161', '0.145/0.163', '0.144/0.161')
 d.aic <- c(0, 21.171, 21.44, 21.637)
 mem.table.df <- data.frame(fix.fx, est1, est2, aic.values, r2.values, d.aic)
 ```
-there was probably a more elegant way to do that (just like PCA table), but since there aren't too many numbers to enter in by hand, I thought it would be quicker to just go ahead and do so.
+there was probably a more elegant way to do that (just like PCA table), but since t aren't too many numbers to enter in by hand, I thought it would be quicker to just go ahead and do so.
 
 Now, using kableExtra package to visualize how each component is weighted by each flam. metric
 ```{r}
@@ -467,7 +467,7 @@ tab_model(m1, m2, m3, m4, m5,
          title = "models with no collinearity",
   string.p = "P-Value", 
   p.style = "stars",
-  file = here('MEM.figures','main.model.selection.html')) # saving .html into figures folder
+  file = here('figures', 'MEM.figures','main.model.selection.html')) # saving .html into figures folder
 ```
 
 
@@ -483,7 +483,7 @@ mem.table.df <- data.frame(fix.fx, est1, aic.values, r2.values, d.aic)
 mem.table.df %>%
   kable(format = 'html', escape = F, col.names = c('Model Fixed Effects', 'Water Estimate', 'AIC', expression('Marginal R2/Conditional R2'), 'Change in AIC')) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  save_kable(here('figures', 'mem_table_kable.html'))
+  save_kable(here('figures', 'MEM.figures', 'mem_table_kable.html'))
 ```
 
 

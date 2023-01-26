@@ -262,7 +262,7 @@ gd
 cowplot::plot_grid(tti, fh, gd, 
           ncol = 1)
 
-ggsave(here('figures', 'lfm.vs.flam.metrics.jpg'))
+ggsave(here('figures', 'extra-figures', 'lfm.vs.flam.metrics.jpg'))
 ```
 #------------------------------------
 # 3. More data wrangling 
@@ -487,7 +487,7 @@ field_data_local %>%
   labs(x = "Species", y = "LFM (%)", fill = "Species") +
   th
 
-ggsave(here('figures', 'lfm.field.data.jpg'), height = 7, width = 9)
+ggsave(here('figures', 'extra-figures', 'lfm.field.data.jpg'), height = 7, width = 9)
 ```
 
 Comparing field measurements of water status/content
@@ -533,7 +533,7 @@ blank.plot <- field_data_local %>%
 
 ggarrange(field.plot1, field.plot2, field.plot3, blank.plot, ncol = 2, nrow = 2, common.legend = TRUE)
 
-ggsave(here('figures', 'field.plots.jpg'), height = 8, width = 12)
+ggsave(here('figures', 'extra-figures', 'field.plots.jpg'), height = 8, width = 12)
 ```
 
 ## Field Data vs. Predicted PC1
@@ -593,7 +593,7 @@ p2 <- ggplot(data = predict.df, aes(x = midday, y = predicted.pc1.mpa, color = S
 
 ggarrange(p1, p2, common.legend = T, legend = c("right"))
 
-ggsave(here('figures', 'predicted.pc1.jpg'), height = 5.5, width = 12)
+ggsave(here('figures', 'extra-figures', 'predicted.pc1.jpg'), height = 5.5, width = 12)
 ```
 
 Average LFM, MPa Values
@@ -627,5 +627,5 @@ pv.data.table.df %>%
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, stripe_color = "black") %>% 
   column_spec(c(1), italic = T, border_right = T) %>%
   row_spec(c(1:2), color = 'black') %>% 
-  save_kable(here('figures', 'PVcurve.table.html'))
+  save_kable(here('figures', 'extra-figures', 'PVcurve.table.html'))
 ```
