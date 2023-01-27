@@ -15,8 +15,10 @@ library(gapminder)
 library(tidyverse)
 library(lme4)
 library(here)
+install_version('segmented', '1.5.0') # Because of how finnicky the function we wrote for visualization and difficulties of including random effects in segmented regressions (segmented.lme is in early stages and is currently incompatible with slope()), this specific version should be used
 library(segmented)
 library(nlme)
+install_version('nlme', '3.1.157') # same comment as above
 citation('nlme')
 library(lubridate)
 library(plotrix)

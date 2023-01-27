@@ -16,48 +16,15 @@ library(here)
 #remove.packages('segmented')
 library(remotes)
 install_version('segmented', '1.5.0') # Because of how finnicky the function we wrote for visualization and difficulties of including random effects in segmented regressions (segmented.lme is in early stages and is currently incompatible with slope()), this specific version should be used
-#library(segmented)
+library(segmented)
 library(nlme)
-install_version('nlme', '3.1.157')
+install_version('nlme', '3.1.157') # same comment as above
 citation('nlme')
 library(lubridate)
 library(plotrix)
 library(kableExtra)
 filter = dplyr::filter 
 here = here::here
-```
-
-```{r}
-o.mod.a<-lme(PC1~lfm + year.month + site, random=~1|id, data=seg.ceme.subset)
-os.mod.a<-segmented.lme(o.mod.a, ~lfm, npsi=list(lfm=1), )
-#summarizing results (note the '.coef' argument)
-#slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
-summary.segmented(os.mod.a)
-
-class(os.mod.a)
-#rsegplot.lfm(os.mod.a, seg.ceme.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-```
-
-```{r}
-data(Cefamandole)
-Cefamandole$lTime <-log(Cefamandole$Time)
-Cefamandole$lconc <-log(Cefamandole$conc)
-
-o<-lme(lconc ~ lTime, random=~1|Subject, data=Cefamandole)
-
-os<-segmented.lme(o, ~lTime, random=list(Subject=pdDiag(~1+lTime+U)), 
-  control=seg.control(n.boot=0, display=TRUE))
-class(os)
-slope(os)
-```
-
-
-```{r}
-out.lm<-lm(PC1 ~ lfm + site + year.month, data = seg.ceme.subset)
-segmented.mod <-segmented.default(out.lm, ~lfm, npsi=list(lfm=1))#1 breakpoint for x
-segmented.mod <-segmented(out.lm, seg.Z = ~lfm, npsi=list(lfm=1))
-class(segmented.mod)
-slope(segmented.mod)
 ```
 
 # Reading in Dataframe
@@ -323,14 +290,12 @@ seg.ceme.subset <- seg.ceme.subset %>%
 ```
 
 ### PC1 (Scaled LFM)
-
+```{r}
 o.mod<-lme(PC1~lfm.scaled + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod<-segmented.default(o.mod, ~lfm.scaled, npsi=list(lfm.scaled=1))
 summary.segmented(os.mod)
-
 rsegplot.lfm(os.mod, seg.ceme.subset, 'CEME', x.variable = "lfm.scaled", y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme, max.x = 3)
-
-
+```
 
 
 ### PC1
@@ -817,28 +782,28 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'fh', y.lab = "Flame 
 ### Max. Temp.
 No threshold able to be identified (segmented.default returns error)
 ```{r}
-o.mod<-lme(temp.max~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#o.mod<-lme(temp.max~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+#os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
 #summarizing results (note the '.coef' argument)
-summary.segmented(os.mod)
+#summary.segmented(os.mod)
 
-plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
+#plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
 
-rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'temp.max',y.lab = "Maxiumum Temp.", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+#rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'temp.max',y.lab = "Maxiumum Temp.", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
 ```
 
 Sustainability Metrics:
 ### Flame Duration
 No threshold able to be identified (segmented.default returns error)
 ```{r}
-o.mod<-lme(fd~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+#o.mod<-lme(fd~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+#os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
 #summarizing results (note the '.coef' argument)
-summary.segmented(os.mod)
+#summary.segmented(os.mod)
 
-plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
+#plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
 
-rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'fd',y.lab = "Flame Duration", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+#rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'fd',y.lab = "Flame Duration", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
 ```
 
 Consumability Metrics:

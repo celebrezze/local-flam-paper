@@ -215,6 +215,7 @@ data <- data %>%
   unite(model.spp.gr.sample, c("year", "month", "model", "spp", "gr", "sample"), remove = FALSE) %>% #create column with group for each indvidual sample (this is a unique ID)
   mutate(individual = model.spp.gr.sample) %>% 
   #group for month and year
+  select(-model.spp.gr.sample) %>% 
   mutate(precip.2month = year.month) %>%
  mutate(precip.2mo = recode(precip.2month, "2020_September" = 0.01, "2018_January" = 0.09, "2019_December" = 3.69, "2020_January" = 5.82, "2016_December" = 3.49)) %>%
   mutate(season = year.month) %>%
@@ -241,7 +242,7 @@ data.5bins <- data %>%
   ungroup() %>% #ungroup so r doesnt get confused
   unite(model.spp.bins5lfm_gr, c("year", "month", "model", "spp", "bins5lfm_gr"), remove = FALSE) %>% #create column for each group as above, which will be associated with the n of each group based on the above add_tally step. 
   unite(model.spp.bins5lfm_gr.sample, c("year", "month", "model", "spp", "bins5lfm_gr", "sample"), remove = FALSE) %>% #create column with group for each indvidual sample (this is a unique ID)
-  mutate(individual.bins5lfm_gr = model.spp.bins5lfm_gr.sample) %>% 
+  rename(individual.bins5lfm_gr = model.spp.bins5lfm_gr.sample) %>% 
   group_by(individual.bins5lfm_gr)#group by year, model, spp, group column
  
 setDT(data.5bins)[,total_bins5lfm_gr:=sum(ignition),by=model.spp.bins5lfm_gr][] #add column called "total" with the total number of ignitions per group ("sum" works because we have 0s and 1s)
@@ -264,7 +265,7 @@ data.5bins_nodate <- data.5bins %>%
   ungroup() %>% #ungroup so r doesnt get confused
   unite(model.spp.bins5lfm_gr_nodate, c("model", "spp", "bins5lfm_gr"), remove = FALSE) %>% #create column for each group as above, which will be associated with the n of each group based on the above add_tally step. 
   unite(model.spp.bins5lfm_gr.sample_nodate, c("model", "spp", "bins5lfm_gr", "sample"), remove = FALSE) %>% #create column with group for each indvidual sample (this is a unique ID)
-  mutate(individual.bins5lfm_gr_nodate = model.spp.bins5lfm_gr.sample_nodate) %>% 
+  rename(individual.bins5lfm_gr_nodate = model.spp.bins5lfm_gr.sample_nodate) %>% 
   group_by(individual.bins5lfm_gr_nodate)#group by year, model, spp, group column
  
 setDT(data.5bins_nodate)[,total_bins5lfm_gr_nodate:=sum(ignition),by=model.spp.bins5lfm_gr_nodate][] #add column called "total" with the total number of ignitions per group ("sum" works because we have 0s and 1s)
@@ -286,7 +287,7 @@ data.10bins_nodate <- data.5bins_nodate %>%
   ungroup() %>% #ungroup so r doesnt get confused
   unite(model.spp.bins10lfm_gr_nodate, c("model", "spp", "bins10lfm_gr"), remove = FALSE) %>% #create column for each group as above, which will be associated with the n of each group based on the above add_tally step. 
   unite(model.spp.bins10lfm_gr.sample_nodate, c("model", "spp", "bins10lfm_gr", "sample"), remove = FALSE) %>% #create column with group for each indvidual sample (this is a unique ID)
-  mutate(individual.bins10lfm_gr_nodate = model.spp.bins10lfm_gr.sample_nodate) %>% 
+  rename(individual.bins10lfm_gr_nodate = model.spp.bins10lfm_gr.sample_nodate) %>% 
   group_by(individual.bins10lfm_gr_nodate)#group by year, model, spp, group column
  
 setDT(data.10bins_nodate)[,total_bins10lfm_gr_nodate:=sum(ignition),by=model.spp.bins10lfm_gr_nodate][] #add column called "total" with the total number of ignitions per group ("sum" works because we have 0s and 1s)
@@ -319,11 +320,11 @@ data <- data %>%
 #then create bins for LFM, in case we want to compare via bins
   mutate(hydration = cut(lfm, breaks = c(0, 60, 90, 400), labels = c("dry", "moderate", "hydrated"), ordered_result = TRUE)) %>% 
   ungroup() %>%
-  group_by(bins5lfm= cut(lfm, breaks= seq(0, 400, by = 5), ordered_result = TRUE)) %>% #create 10 LFM segments, indicate these in new column called "bins5lfm"
+  group_by(bins5lfm_gr= cut(lfm, breaks= seq(0, 400, by = 5), ordered_result = TRUE)) %>% #create 10 LFM segments, indicate these in new column called "bins5lfm_gr"
   ungroup() %>% #ungroup - this will stop issues in the future (we can always regroup again)
-  group_by(bins10lfm= cut(lfm, breaks= seq(0, 400, by = 10), ordered_result = TRUE)) %>% #create 10 LFM segments, indicate these in new column called "bins10lfm"
+  group_by(bins10lfm_gr= cut(lfm, breaks= seq(0, 400, by = 10), ordered_result = TRUE)) %>% #create 10 LFM segments, indicate these in new column called "bins10lfm_gr"
   ungroup() %>% #ungroup - this will stop issues in the future (we can always regroup again)
-  group_by(bins20lfm = cut(lfm, breaks= seq(0, 400, by = 20), ordered_result = TRUE)) %>% #create 20 LFM segments, indicate these in new column called "bins20lfm"
+  group_by(bins20lfm_gr = cut(lfm, breaks= seq(0, 400, by = 20), ordered_result = TRUE)) %>% #create 20 LFM segments, indicate these in new column called "bins20lfm_gr"
   ungroup() 
 ```
 
@@ -812,5 +813,6 @@ scaled.mem.data.alldates <- scaled.mem.data.alldates %>%
 scaled.mem.data.alldates.noNAs <- scaled.mem.data.alldates %>% 
   drop_na(mpa, lfm, PC1)
 
-write.csv(scaled.mem.data.alldates.noNAs, here('processed-data', 'mem.data.subset.alldates'))
+write.csv(scaled.mem.data.alldates.noNAs, here('processed-data', 'mem.data.subset.alldates.csv'))
+
 ```

@@ -1,6 +1,6 @@
 ---
 title: "Metadata"
-author: "Joe Celebrezze and Indra Boviing"
+author: "Joe Celebrezze and Indra Boving"
 date: "2023-01-25"
 output:
    html_document:
@@ -212,7 +212,7 @@ head(local_flam_data_all)
 *individual*: an identifier for the individual which includes the date (YYYY_month), model (EPI = epiradiator), species (CEME = *Ceanothus megacarpus* and ADFA = *Adenostoma fasciculatum*), 10% bin of LFM (see *gr*), and a identification number for the individual
 
 *model.spp.gr.sample*: duplicate column of *individual*
-REMOVE?
+REMOVE? Done
 
 note: there are other columns towards the left of this dataset not described here, as they can be more adequately explained after explaining some other columns, so they are pushed to the bottom of this list. Sorry for any confusion this may cause.
 
@@ -260,12 +260,12 @@ temp.change = temp.max - start.temp
 *hydration*: an identifier denoting the hydration status of the sample based on LFM, split into "dry" (0-60% LFM), "moderate" (60-90% LFM), and "hydrated" (>90% LFM)
 
 *bins5lfm*: duplicate column of *bins5lfm_gr*
-REMOVE?
+REMOVE? Done
 
 *bins10lfm*: duplicate column of *gr* and *bins10lfm_gr*
-REMOVE?
+REMOVE? Done
 
-*bins20lfm*: represents the 20% bin of LFM that the sample fell into
+*bins20lfm_gr*: represents the 20% bin of LFM that the sample fell into
 
 *gdw.gfw*: grams of dry weight per grams of fresh weight (from LFM subsample); used in calculation of *dw.flam.sample* (see below)
 
@@ -288,7 +288,6 @@ sample.wt - dw.flam.sample
 \end{equation}
 
 *...outs*: the eight columns that all end with '.outs' are metrics described above but where certain datapoints are removed after being identified as outliers using the function outlierKD2 which was sourced from http://goo.gl/UUyEzD
-REMOVE?
 
 *flam.index*: derived from Essaghi et. al. 2017, using maximum *tti* and maximum *fh*, an index of flammability as a scale of least (1) to most (20) flammable. The following equation was used: 
 \begin{equation}
@@ -303,13 +302,13 @@ where max(tti), min(tti), and max(fh) were determined prior to calculating and w
 Returning to columns earlier in the dataset that I mentioned in the note above
 
 *model.spp.bins5lfm_gr.sample*: duplicate column of *individual.bins5lfm_gr*
-REMOVE?
+REMOVE? Done
 
 *model.spp.bins5lfm_gr.sample_nodate*: duplicate column of *individual.bins5lfm_gr_nodate*
-REMOVE?
+REMOVE? Done
 
 *model.spp.bins10lfm_gr.sample_nodate*: duplicate column of *individual.bins10lfm_gr_nodate*
-REMOVE?
+REMOVE? Done
 
 *year.month.spp*: column with *year.month* and *spp* with an underscore separating the two
 
@@ -317,26 +316,15 @@ REMOVE?
 Is this duplicate? REMOVE?
 
 *model.spp.bins5lfm_gr*: an identifier which includes *year.month*, *model*, *spp*, and *bins5lfm_gr* separated by underscores
-Is this duplicate? REMOVE?
 
 *model.spp.bins5lfm_gr_nodate*: *model.spp.bins5lfm_gr* but without any information regarding *year* or *month*
-Is this duplicate? REMOVE?
 
 ## mem.data.local.epi.csv
+Removed for now
 ```{r, include = F}
-mem.data.local.epi <- read_csv(here("processed-data", "mem.data.local.epi.csv"))
-head(mem.data.local.epi)
+#mem.data.local.epi <- read_csv(here("processed-data", "mem.data.local.epi.csv"))
+#head(mem.data.local.epi)
 ```
-
-This dataset was wrangled in the *2_PCA.Rmd* script, as the principal components were added to the dataset to be analyzed in the linear mixed effects models. Almost all of the columns have been described above and will not be described below. The following columns were not described anywhere above or require further clarification:
-
-*PC1*, *PC2*, *PC3*, *PC4*: principal component values from the principal component analysis run on *2_PCA.Rmd*
-
-*LFM*: live fuel moisture (%) as described in *lfm* above
-
-*gww.gdw.saturated*:
-
-*gdw.gww.saturated*:
 
 ## mem.data.local.epi.2020.csv
 ```{r, include = F}
@@ -345,9 +333,54 @@ This dataset was wrangled in the *2_PCA.Rmd* script, as the principal components
 ```
 REMOVED FOR NOW. SEE IF NEEDED AT END
 
+
+
 ## mem.data.local.epi.alldates.csv
 ```{r, include = F}
 mem.data.local.epi.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"))
 head(mem.data.local.epi.alldates)
 ```
-Where is this?
+
+This dataset was wrangled in the *2_PCA.Rmd* script, as the principal components were added to the dataset to be analyzed in the linear mixed effects models. Almost all of the columns have been described above and will not be described below. The following columns were not described anywhere above or require further clarification:
+
+*PC1*, *PC2*, *PC3*, *PC4*, *PC5*, *PC6*, *PC7*, *PC8*: principal component values from the principal component analysis run on *2_PCA.Rmd*
+
+*LFM*: live fuel moisture (%) as described in *lfm* above
+
+## mem.data.subset.alldates.csv
+```{r}
+mem.data.subset.alldates <- read_csv(here("processed-data", "mem.data.subset.alldates.csv"))
+head(mem.data.subset.alldates)
+```
+
+This dataset was created at the bottom of *1.0_data_wrangling.Rmd* as a wrangled version of *mem.data.local.epi.alldates.csv* and includes only the most important columns and also removes any samples with a weight outside of the range of 0.4-0.6g, thus it is a 43x447 dataframe rather than a 85x555 dataframe
+
+*Species*: a species identifier using the first letter of the genus and the specific epiphet (e.g., A. fasciculatum)
+
+*id*: see *individual* above
+
+*timing*: see *timing* in precip.clean.csv above
+
+*mpa.scaled*: scaled water potential using scale() function
+
+*excess.water.unscaled*: excess water was determined using the following equation:
+\start{equation}
+excess water = wet weight - dry weight
+\end{equation}
+where wet weight = *ww.flam.sample* and dry weight = *dw.flam.sample*  
+
+*excess.water.scaled*: scaled *excess.water.unscaled* using the scale() function
+
+*lfm*: in this case, this represents the scaled live fuel moisture using scale() function
+
+*...unscaled*: any columns with this suffix represent the unscaled variable that precedes the suffix, which have all been described above
+
+## seg.reg.data.local.csv
+```{r}
+seg.reg.data.local <- read_csv(here("processed-data", "seg.reg.data.local.csv"))
+head(seg.reg.data.local)
+```
+
+This dataframe was created at the bottom of *1.0_data_wrangling.Rmd* as a wrangled version of *mem.data.local.epi.alldates.csv* and includes only the most important columns for the segmented regression analyses; like *mem.data.subset.alldates.csv*, it removes outliers of sample weights (outside range of 0.4-0.6g)
+
+*lfm*: in this case, the column is equivalent to *lfm.NAs.imputed*, as any NA values would have thrown off the segmented regression analysis
