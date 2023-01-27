@@ -24,7 +24,7 @@ This .Rmd file covers the necessary metadata for the datasets that we used in th
 It does so by describing each column of each dataset included in this GitHub. For more information on the organization of the GitHub or which scripts are responsible for which analyses, see the README file included on the GitHub. Many variables/columns are repeated on multiple datasets, and in these cases we do not describe them again, as this would be redundant; however, we try to make it clear where repeated columns exist and why.
 
 This metadata was last updated on:
-**January 25, 2023** by **Joe Celebrezze**
+**January 26, 2023** by **Joe Celebrezze**
 
 --------------------------
 
@@ -113,3 +113,241 @@ This dataframe contains field data on 36 samples (2 species, 12 individuals, spl
 
 *site*: see above
 
+*lfm*: see above; for the field measurements, we took larger samples from healthy, sun-exposed leaves around solar noon, taking special care to avoid reproductive structures
+
+*date*: date of collection in the following format M/DD/YY; in this case, all samples were collected on 9/18/2020
+
+*predawn1* and *predawn2*: for each individual, we took two predawn water potential measurements, reported as a positive value of MPa (although, technically all values should be negative); note that we did not separate old and new growth for water potential measurements
+
+*midday1* and *midday2*: like *predawnX* columns, we took two midday water potential measurements, around solar noon (concurrent with LFM sampling), again reported as positive values of MPa
+
+*predawn* and *midday*: the average values of the *predawn1* and *predawn2* and *midday1* and *midday2* values (respectively)
+
+*type*: functional group, split into shrubs and trees; however, for this dataset, both species are shrubs, so this column is not particularly useful in this case
+
+*LFMtlp*: from pressure-volume curves (see *processed-data* > *pv_summary_df_timing.csv* for more information), this represents the live fuel moisture measurement at the turgor loss point
+
+*Mpatlp*: from pressure-volume curves, this represents the water potential at the turgor loss point
+
+## Precip_SBBG.csv
+```{r, include = F}
+Precip_SBBG <- read_csv(here("raw-data", "Precip_SBBG.csv"))
+head(Precip_SBBG)
+```
+
+This dataset includes the daily precipitation values from a weather station near the Santa Barbara Botanic Gardens (*station id* = 321) from 1944-2020. This data was accessed at: https://www.countyofsb.org/2256/Historical-Rainfall-Reservoir-Informatio .
+
+*station id*: identifier for the weather station used to measure daily precip.; in our case, we filtered out station id 321 prior to loading this dataset, so this is the only station present
+
+*water year*: identifier of the year that precipitation data was gathered, based on the cycle of wet and dry seasons in Santa Barbara county rather than the traditionally used Gregorian calendar. This means that the start of the *water year* is around September or August, when thee dry season comes to a close rather than January  (e.g., October 2014 would be *water year* 2015 and *year* 2014).
+
+*year*: identifier of the year that the precipitation data was gathered based on the traditional Gregorian calendar
+
+*month*: identifier of the month that the precipitation data was gathered
+
+*day*: identifier of the date that the precipitation data was gathered
+
+*daily rain*: the amount of precipitation (inches) on the given date (based on *year* or *water year*, *month*, and *day*)
+
+# Processed Data
+
+In many cases, these are different iterations of wrangling *flam.local.alldates.csv* as done in *1.0_data_wrangling.Rmd* in which the columns will be repeated across different datasets and will only be described if they have not ben described before. However, the first two datasets that follow are not wrangled versions of *flam.local.alldates.csv* and, thus, will be described in more detail.
+
+## precip.clean.csv
+```{r}
+precip.clean <- read_csv(here("processed-data", "precip.clean.csv"))
+head(precip.clean)
+```
+
+This dataset is an alteration of *Precip_SBBG.csv* and it includes only the dates necessary to estimate the precipitation 2 months prior to sample collection dates.
+
+*...1*: identifier of the row, used in data wrangling
+
+*year*, *water.year*, and *day*: see above *year*, *water year*, and *day*
+
+*year.month*: an identifier of the year and month in the format YYYY_MM
+
+*daily.rain*: see above *daily rain*; daily precipitation in inches
+
+*rainfall.2mo*: a sum of the daily rain values for the two months prior to sampling (which is denoted by *timing* as seen below)
+
+*timing*: the month and year of sample collection in the following format Month_YYYY where 'Month' is formatted as a capitalized standard acronym of the sampling month (e.g. September 2020 = Sept_2020)
+
+## pv_summary_df_timing.csv
+```{r, include = F}
+pv_summary_df_timing <- read_csv(here("processed-data", "pv_summary_df_timing.csv"))
+head(pv_summary_df_timing)
+```
+
+This dataset contains necessary information from the pressure-volume curves that we conducted. From the methods section of the paper:
+
+For turgor loss point estimation, pressure-volume curves were created for each species (Tyree & Hammel 1972). For both species, healthy 20-40 cm branches were collected from 6 individuals. Samples were processed within 1 hour after sample collection or were stored in a refrigerator at 4 C between processing if not processed immediately (maximally 6 hours after collection). For processing, branches were cut underwater into smaller branchlets and were rehydrated in darkness for 2 hours, after which healthy non-necrotic small leafy shoots were excised from the branch using a razor blade. To avoid the effects of oversaturation, care was taken to remove leaves and stems that had been underwater during rehydration (Meinzer et al., 2014).
+
+Pressure-volume curves were created for 3-6 rehydrated leaves or shoots (1 per individual) using a Scholander pressure chamber. Consecutive water potential and weight measurements were taken on each leaf until three to five points of the linear section of the curve was reached as determined by maximizing the linear fit (R2). The LFM at the TLP (LFMTLP) was determined using the corresponding water content at the TLP in the pressure-volume curves. All pressure-volume curve parameters were determined using the protocols available on Prometheus wiki.
+
+This dataset contains data gathered from the pressure-volume curves conducted on eight species, although only *Adenostoma fasciculatum* (ADFA) and *Ceanothus megacarpus* (CEME) are of interest for this paper.
+
+*spp*: a species identifier following these abbreviations: ARPA = *Arctostaphylos patula*, ABCO = *Abies concolor*, CADE = *Calocedrus decurrens*, CECO = *Ceanothus cordulatus*, PIJE = *Pinus jeffreyii*, QUKE = *Quercus kelloggii*, and then *most importantly*: CEME = *Ceanothus megacarpus* and ADFA = *Adenostoma fasciculatum*
+
+*timing*: the season that the PV curves were completed
+
+*mean_tlp*: the average of the turgor loss point (TLP) across individuals tested (MPa)
+
+*lwr*: the lower bounds of the TLP (MPa) as identified by subtracting one standard deviation from the TLP
+
+*upr*: the upper bounds of the TLP (MPa) as identified by adding one standard deviation from the TLP
+
+*mean_lfm*: the average of the TLP across individuals tested expressed as live fuel moisture (%); note that we did not do this for spring PV curves
+
+*lwr_lfm*: the lower bounds of the TLP (LFM, %) as identified using by subtracting one standard deviation from the TLP (expressed as LFM)
+ 
+*upr_lfm*: the upper bounds of the TLP (LFM, %) as identified using by adding one standard deviation from the TLP (expressed as LFM)
+
+## local_flam_data_all.csv
+```{r, include = F}
+local_flam_data_all <- read_csv(here("processed-data", "local_flam_data_all.csv"))
+head(local_flam_data_all)
+```
+
+*individual*: an identifier for the individual which includes the date (YYYY_month), model (EPI = epiradiator), species (CEME = *Ceanothus megacarpus* and ADFA = *Adenostoma fasciculatum*), 10% bin of LFM (see *gr*), and a identification number for the individual
+
+*model.spp.gr.sample*: duplicate column of *individual*
+REMOVE?
+
+note: there are other columns towards the left of this dataset not described here, as they can be more adequately explained after explaining some other columns, so they are pushed to the bottom of this list. Sorry for any confusion this may cause.
+
+*sample*, *round*, *spp*, *model*, *mpa*, *lfm*, *lfm.notes*,: see *flam.local.alldates.csv* above
+
+All *flammability metrics* are described in *flam.local.alldates.csv* above (*fh*, *ttfg*, *gti*, *tti*, *fd*, *gd*, *pfg*, *ignition*, *start.temp*, *temp.max*, *ignition.temp*, and *glow*)
+
+*prop.new*, *sample.wt*, *year.month*, *year*, *month*, *dry.wt*, *fresh.wt*, *water.wt*, *site*: all described above in *flam.local.alldates.csv*
+
+*lfm.outliers.out*: a column reporting LFM values, with outliers replaced with NAs
+
+*lfm.NAs.imputed*: a column reporting LFM values, with NAs replaced by imputing the predicted LFM value at that water potential
+
+*temp.change*: the difference between the starting temperature and the maximum temperature as identified by this equation:
+\start{equation}
+temp.change = temp.max - start.temp
+\end{equation}
+
+*gr*: represents the 10% bin of LFM that the sample fell into (e.g., (90,100] = the sample's LFM was greater than 90% and less than or equal to 100%)
+
+*precip.2month*: month used when accessing precipitation data (essentially a duplicate column of year_month)
+
+*precip.2mo*: the precipitation (inches) recorded by a weather station at Santa Barbara Botanical Gardens for Santa Barbara county for the 2 months prior to flammability testing (see: https://www.countyofsb.org/2256/Historical-Rainfall-Reservoir-Informatio)
+
+*season*: an identifier of whether or not sampling efforts occurred after (season = Wet) the beginning of seasonal rains (typically in the late fall to spring) or before (season = Dry) seasonal rains (typically late spring or early summer to late fall)
+
+*prop.ignite*: denotes the proportion of samples that ignited per 10% bin of LFM (i.e., *gr*)
+
+*bins5lfm_gr*: represents the 5% bin of LFM that the sample fell into
+
+*individual.bins5lfm_gr*: an identifier of individual with *year*, *month*, *model*, *species*, and *bins5lfm_gr* preceding the individual id with an underscore between each of them
+
+*prop.ignite.bins5*: denotes the proportion of samples that ignited per 5% bin of LFM (i.e., *bins5lfm_gr*); specific to sampling date, so that proportion ignited is only calculated from one round of flammability tests
+
+*individual.bins5lfm_gr_nodate*: *individualbins5lfm_gr* without any information regarding *year* or *month*
+
+*prop.ignite.bins5_nodate*: denotes the proportion of samples that ignited per 5% bin of LFM (i.e., *bins5lfm_gr*); this column is not specific to sampling date, so it uses the LFM bins and calculates proportion ignited based on all rounds of flammability tests for that given LFM bin
+
+*bins10lfm_gr*: repeated column of *gr*
+
+*individual.bins10lfm_gr_nodate*: *individual.bins10lfm_gr* (see below) without any information regarding *year* or *month*
+
+*prop.ignite.bins10_nodate*: denotes the proportion of samples that ignited per 10% bin of LFM (i.e., *bins10lfm_gr* or *gr*); this column is not specific to sampling date, so it uses the LFM bins and calculates proportion ignited based on all rounds of flammability tests for that given LFM bin
+
+*hydration*: an identifier denoting the hydration status of the sample based on LFM, split into "dry" (0-60% LFM), "moderate" (60-90% LFM), and "hydrated" (>90% LFM)
+
+*bins5lfm*: duplicate column of *bins5lfm_gr*
+REMOVE?
+
+*bins10lfm*: duplicate column of *gr* and *bins10lfm_gr*
+REMOVE?
+
+*bins20lfm*: represents the 20% bin of LFM that the sample fell into
+
+*gdw.gfw*: grams of dry weight per grams of fresh weight (from LFM subsample); used in calculation of *dw.flam.sample* (see below)
+
+*gww.gdw*: grams of wet weight per grams of dry weight (from LFM subsample)
+
+*gdw.gww*: grams of dry weight per grams of wet weight (from LFM subsample)
+
+*dw.flam.sample*: an estimate of the dry weight in the sample loaded into the flammability chamber derived from the *sample.wt* and the metrics that were used to calculate live fuel moisture (of a subsample collected at the same time as the flammability sample) (*dry.wt* and *fresh.wt*); this was used extensively in analyses and was calculated using this equation
+\begin{equation}
+sample.wt \times \frac{dry.wt}{fresh.wt}
+\end{equation}
+or
+\begin{equation}
+sample.wt \times gdw.gfw
+\end{equation}
+
+*ww.flam.sample*: an estimated of the water weight in the sample loaded into the flammability chamber; this was used often in analyses and was calculated using this equation 
+\begin{equation}
+sample.wt - dw.flam.sample
+\end{equation}
+
+*...outs*: the eight columns that all end with '.outs' are metrics described above but where certain datapoints are removed after being identified as outliers using the function outlierKD2 which was sourced from http://goo.gl/UUyEzD
+REMOVE?
+
+*flam.index*: derived from Essaghi et. al. 2017, using maximum *tti* and maximum *fh*, an index of flammability as a scale of least (1) to most (20) flammable. The following equation was used: 
+\begin{equation}
+flam_index = x \times (\frac{max(tti) - tti}{min(tti) + tti})^{\frac{fh}{fh + max(fh)}^2}
+\end{equation}
+where max(tti), min(tti), and max(fh) were determined prior to calculating and where x is some arbitrary coefficient so that the maximum value off the flammability index (i.e., tti = 0, fh = max(fh)) is equal to 20
+
+*mean.wt*: the mean sample weight (g) per species
+
+*dry.norm...*: the seven columns -- *dry.norm.fh*, *dry.norm.gd*, *dry.norm.fd*, *dry.norm.pfg*, *dry.norm.ttfg*, *dry.norm.tti*, *dry.norm.gti* -- are the flammability metrics normalized by the dry weight of the flammability sample, as reported in *dw.flam.sample*; these were used in some exploratory analyses, but not very extensively
+
+Returning to columns earlier in the dataset that I mentioned in the note above
+
+*model.spp.bins5lfm_gr.sample*: duplicate column of *individual.bins5lfm_gr*
+REMOVE?
+
+*model.spp.bins5lfm_gr.sample_nodate*: duplicate column of *individual.bins5lfm_gr_nodate*
+REMOVE?
+
+*model.spp.bins10lfm_gr.sample_nodate*: duplicate column of *individual.bins10lfm_gr_nodate*
+REMOVE?
+
+*year.month.spp*: column with *year.month* and *spp* with an underscore separating the two
+
+*model.spp.gr*: an identifier which includes *year.month*, *model*, *spp*, and *gr* separated by underscores
+Is this duplicate? REMOVE?
+
+*model.spp.bins5lfm_gr*: an identifier which includes *year.month*, *model*, *spp*, and *bins5lfm_gr* separated by underscores
+Is this duplicate? REMOVE?
+
+*model.spp.bins5lfm_gr_nodate*: *model.spp.bins5lfm_gr* but without any information regarding *year* or *month*
+Is this duplicate? REMOVE?
+
+## mem.data.local.epi.csv
+```{r, include = F}
+mem.data.local.epi <- read_csv(here("processed-data", "mem.data.local.epi.csv"))
+head(mem.data.local.epi)
+```
+
+This dataset was wrangled in the *2_PCA.Rmd* script, as the principal components were added to the dataset to be analyzed in the linear mixed effects models. Almost all of the columns have been described above and will not be described below. The following columns were not described anywhere above or require further clarification:
+
+*PC1*, *PC2*, *PC3*, *PC4*: principal component values from the principal component analysis run on *2_PCA.Rmd*
+
+*LFM*: live fuel moisture (%) as described in *lfm* above
+
+*gww.gdw.saturated*:
+
+*gdw.gww.saturated*:
+
+## mem.data.local.epi.2020.csv
+```{r, include = F}
+#mem.data.local.epi.2020 <- read_csv(here("processed-data", "mem.data.local.epi.2020.csv"))
+#head(mem.data.local.epi.2020)
+```
+REMOVED FOR NOW. SEE IF NEEDED AT END
+
+## mem.data.local.epi.alldates.csv
+```{r, include = F}
+mem.data.local.epi.alldates <- read_csv(here("processed-data", "mem.data.local.epi.alldates.csv"))
+head(mem.data.local.epi.alldates)
+```
+Where is this?

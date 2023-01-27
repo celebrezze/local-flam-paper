@@ -501,11 +501,6 @@ ignite.only.ceme <- ignite.only.ceme %>%
 
 ## Look at flam characteristics to see if they make sense:
 
-```{r, include=FALSE}
-ignite.only.ceme <- ignite.only.ceme %>%
-  mutate(flam.index = 3*((75+tti)/(12.5+tti))*exp(fh/(fh+27))) #using max tti and max fh, becomes a scale of least (1) to most (20) flammable 
-```
-
 Here we are normalizing by the dry weight of the flammability sample,
 which was calculated by multiplying the weight of the burned sample by
 the ratio of dry weight to fresh weight in the samples used for lfm
@@ -646,17 +641,6 @@ ignite.only.adfa <- ignite.only.adfa %>%
 
 ```
 
-```{r, include=FALSE}
-
-range(ignite.only.adfa$tti)
-range(ignite.only.adfa$fh)
-#chack for NAs
-ignite.only.adfa <- ignite.only.adfa %>%
-  mutate(flam.index = 3.1*((86+tti)/(12.5+tti))*exp(fh/(fh+19.5))) #using max tti and max fh, becomes a scale of least (1) to most (20) flammable 
-
-range(ignite.only.adfa$flam.index)
-```
-
 Here we are normalizing by the dry weight of the flammability sample,
 which was calculated by multiplying the weight of the burned sample by
 the ratio of dry weight to fresh weight in the samples used for lfm
@@ -701,7 +685,16 @@ no.ignites.adfa <- data.adfa %>%
 no.ignites.all <- rbind(no.ignites.adfa, no.ignites.ceme)
 
 data.local.ignites <- rbind(ignite.only.ceme, ignite.only.adfa)
+```
 
+## New Column: Flammability Index
+Derived from Essaghi et. al. 2017, using maximum *tti* and maximum *fh*, an index of flammability as a scale of least (1) to most (20) flammable
+```{r}
+data.local.ignites <- data.local.ignites %>% 
+  mutate(flam.index = 15.30412*((86-tti)/(8+tti))^((fh)/(fh + 27))^2)
+```
+
+```{r}
 data.local <- bind_rows(data.local.ignites, no.ignites.all)
 
 colSums(is.na(data.local))
