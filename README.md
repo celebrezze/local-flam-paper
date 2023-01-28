@@ -40,7 +40,6 @@ This folder includes scripts that we used to wrangle data, complete analyses, an
   
   *3.1_season_and_species_effects.Rmd*: this script includes code necessary to investigate interspecific and seasonal differences in tissue-level flammability. Like *3.0_mixed_effects_models.Rmd*, this script is rather long and convoluted in some ways; however we tried to make primary visualizations, tables and analyses and supplementary tables or visualizations obvious with headers and included a relatively well hashed-out table of contents associating with headers.
   
-  NOTE: **BUG** !!!!
   *4.0_segmented_rand_reg.Rmd*: this script includes code for the segmented regression with random effects analysis (the main segmented regression for this study). As noted in the methods section of the paper, package 'nlme' was used in this script rather than the package 'lme4' used in the *3.0* and *3.1* scripts due to its improved compatibility with package 'segmented'. This script has all segmented regression analyses for *C. megacarpus* and *A. fasciculatum* using both water potential and LFM as primary predictors and also has supplementary analyses using -1/water potential, a transformation of water potential used when conducting pressure-volume curves, as the primary predictor and splitting the dataset by sampling date prior to running segmented regressions. Because of the bulkiness of running these analyses, this script can take especially long to run and can even stall out RStudio for a little while when you open it up. That being said, after RStudio levels out, the script runs without errors.
   
   *4.1_segmented_non_random_reg.Rmd*: this script was run before we figured out how to include random effects for the segmented regressions. It runs segmented regressions on *normal* linear models and serves as somewhat of an exploratory analysis; however, due to its importance to informing our conclusions on how we interpreted the results of the segmented regressions with random effects, we felt it would be prudent to include it in the main scripts rather than put it into the *extra-analyses* folder. It is organized differently than *4.0*, as it separates the script by predictor (LFM and water potential) rather than by species and predictor.
@@ -55,10 +54,8 @@ This folder includes scripts that we used to wrangle data, complete analyses, an
   
   *3.3_mixed_effects_models_old.Rmd*: this is an outdated script that was replaced by *3.0*. NOTE: CHECK OVERLAP OF SAVING TABLES/FIGURES W 3.0
   
-  NOTE: **BUG** !!!!
   *4.3_segmented_rand_reg_limtedLFM.Rmd*: this script contains an extra analysis running segmented regressions with random effects on a dataset that excludes larger or smaller LFM values than seen in landscape-level monitoring at the Santa Barbara Botanical Gardens
   
-   NOTE: **BUG** !!!!
   *4.4_segmented_rand_reg_percentile.Rmd*: this script contains an extra analysis running segmented regressions with random effects looking at the mean values of the flammability metric per 10% bin of LFM. This was discarded into the *extra-analyses* rather than used to interpret the segmented regression results, as there were issues with unequal data distribution and some bins only had one or two points while others had more than ten, making the conclusions from this script convoluted and nearly impossible to interpret.
   
   *6.0_extra_figures.Rmd*: finally, this script contains a modge podge of extra figures that didn't end up making the main text or supplementary index. It is organized based on visualization/analysis. 

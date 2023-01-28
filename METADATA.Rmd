@@ -17,6 +17,10 @@ here = here::here
 library(tidyverse)
 ```
 
+Questions/concerns:
+- should we redo 'sample' so that the numbering system is consistent for different sampling efforts?
+- does all code run with latest removals of columns and datasets?
+
 # Introduction
 
 This .Rmd file covers the necessary metadata for the datasets that we used in the analyses for the paper, *Live fuel moisture and shoot water potential exhibit contrasting relationships with leaf-level flammability thresholds during laboratory flammability tests*.
@@ -38,7 +42,7 @@ head(flam.local.alldates)
 
 This dataframe contains n=795 observations of flammability tests on 'local species' (i.e., species sampled from the chaparral at the foothills of the Santa Ynez mountains in Santa Barbara county) and accompanying data on water status and content along the benchtop drydown.
 
-*sample*: the identification number for the individual. Due to the uneven sampling regime over the duration of this experiment, the identification number differs slightly for different years (which **NOTE** I HOPE **NOTE** we fixed during data wrangling). For more recent sampling, the identification number carries information about both the site and the individual in the format (site.individual or site.pod, see *pod* below); however in certain years, only site 1 was sampled from and in these cases the identification number only carries information about the individual in either of the following formats: for individual 3, *sample* = 3.0 or *sample* = 3.
+*sample*: the identification number for the individual. Due to the uneven sampling regime over the duration of this experiment, the identification number differs slightly for different years. For more recent sampling, the identification number carries information about both the site and the individual in the format (site.individual or site.pod, see *pod* below); however in certain years, only site 1 was sampled from and in these cases the identification number only carries information about the individual in either of the following formats: for individual 3, *sample* = 3.0 or *sample* = 3.
 
 *round*: this describes the order in which the samples were burned over the course of a laboratory drydown (i.e., round = 1 means the first sample of that particular individual that we burned)
 
@@ -49,7 +53,7 @@ This dataframe contains n=795 observations of flammability tests on 'local speci
 *mpa*: water potential (-MPa), reported here as a positive number but changed to negative values in the data wrangling step
 
 *lfm*: live fuel moisture (LFM, %), as measured using the following equation, taken on a subsample directly before testing flammability
-\start{equation}
+\begin{equation}
 LFM = 100 \times \frac{fresh weight - dry weight}{dry weight}
 \end{equation}
 
@@ -154,7 +158,7 @@ This dataset includes the daily precipitation values from a weather station near
 In many cases, these are different iterations of wrangling *flam.local.alldates.csv* as done in *1.0_data_wrangling.Rmd* in which the columns will be repeated across different datasets and will only be described if they have not ben described before. However, the first two datasets that follow are not wrangled versions of *flam.local.alldates.csv* and, thus, will be described in more detail.
 
 ## precip.clean.csv
-```{r}
+```{r, include = F}
 precip.clean <- read_csv(here("processed-data", "precip.clean.csv"))
 head(precip.clean)
 ```
@@ -227,7 +231,7 @@ All *flammability metrics* are described in *flam.local.alldates.csv* above (*fh
 *lfm.NAs.imputed*: a column reporting LFM values, with NAs replaced by imputing the predicted LFM value at that water potential
 
 *temp.change*: the difference between the starting temperature and the maximum temperature as identified by this equation:
-\start{equation}
+\begin{equation}
 temp.change = temp.max - start.temp
 \end{equation}
 
@@ -291,7 +295,7 @@ sample.wt - dw.flam.sample
 
 *flam.index*: derived from Essaghi et. al. 2017, using maximum *tti* and maximum *fh*, an index of flammability as a scale of least (1) to most (20) flammable. The following equation was used: 
 \begin{equation}
-flam_index = x \times (\frac{max(tti) - tti}{min(tti) + tti})^{\frac{fh}{fh + max(fh)}^2}
+flam.index = x \times (\frac{max(tti) - tti}{min(tti) + tti})^{\frac{fh}{fh + max(fh)}^2}
 \end{equation}
 where max(tti), min(tti), and max(fh) were determined prior to calculating and where x is some arbitrary coefficient so that the maximum value off the flammability index (i.e., tti = 0, fh = max(fh)) is equal to 20
 
@@ -348,7 +352,7 @@ This dataset was wrangled in the *2_PCA.Rmd* script, as the principal components
 *LFM*: live fuel moisture (%) as described in *lfm* above
 
 ## mem.data.subset.alldates.csv
-```{r}
+```{r, include = F}
 mem.data.subset.alldates <- read_csv(here("processed-data", "mem.data.subset.alldates.csv"))
 head(mem.data.subset.alldates)
 ```
@@ -364,7 +368,7 @@ This dataset was created at the bottom of *1.0_data_wrangling.Rmd* as a wrangled
 *mpa.scaled*: scaled water potential using scale() function
 
 *excess.water.unscaled*: excess water was determined using the following equation:
-\start{equation}
+\begin{equation}
 excess water = wet weight - dry weight
 \end{equation}
 where wet weight = *ww.flam.sample* and dry weight = *dw.flam.sample*  
@@ -376,7 +380,7 @@ where wet weight = *ww.flam.sample* and dry weight = *dw.flam.sample*
 *...unscaled*: any columns with this suffix represent the unscaled variable that precedes the suffix, which have all been described above
 
 ## seg.reg.data.local.csv
-```{r}
+```{r, include = F}
 seg.reg.data.local <- read_csv(here("processed-data", "seg.reg.data.local.csv"))
 head(seg.reg.data.local)
 ```

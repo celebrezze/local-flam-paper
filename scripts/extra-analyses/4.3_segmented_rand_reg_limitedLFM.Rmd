@@ -638,7 +638,7 @@ rsegplot.lfm(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'ttfg',y.lab = "Time 
 # Main Figure: Arranging Plots
 
 ```{r}
-jpeg(here('figures', 'seg.reg.rand.plot.LIMITED.jpg'), width = 1200, height = 900, res = 100)
+jpeg(here('figures', 'extra-figures', 'seg.reg.rand.plot.LIMITED.jpg'), width = 1200, height = 900, res = 100)
 par(mfrow = c(2,2))
 par(mar = c(4,5,3,2))
 par(font.lab = 2)
@@ -763,7 +763,7 @@ dev.off()
 # ---------------------------------
 # Splitting by Sampling Date
 ```{r}
-jpeg(here('figures', 'seg.reg.rand.sDATES.LIMITED.jpg'), width = 1500, height = 1950, res = 150)
+jpeg(here('figures', 'extra-figures', 'seg.reg.rand.sDATES.LIMITED.jpg'), width = 1500, height = 1950, res = 150)
 par(mfrow = c(4,3))
 par(font.lab = 2)
 par(mar = c(5,4.75,3.5,1))
