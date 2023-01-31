@@ -31,8 +31,6 @@ group_by = dplyr::group_by
 Using all dates instead of just Sept. 2020 data
 ```{r}
 seg.data.subset <- read.csv(here('processed-data', 'seg.reg.data.local.csv'))
-
-seg.data.subset.alldates <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
 ```
 
 # Data Wrangling
@@ -103,10 +101,12 @@ It is a bit clunky, but seems to do the trick. Could not figure out how to itera
 
 Note: I did not include flame duration, glow-to-ignition or flame height below, as those variables were interrupting the for loop when they did not return a threshold
 
-Note: this chunk of code sometimes fails when a threshold is not found for one of the iterations, but eventually it runs. This issue was fixed for flam. metrics that consistently caused the for loop to fail as stated below
+Note: I set a seed so that the code would consistently run and so that our analyses are repeatable
 ```{r}
 for(i in 1:10){
    for(j in 1:nrow(ceme.thresholds)){
+set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+     
   ceme.binned.df <- seg.ceme.subset %>% 
   group_by(lfm.bin) %>% 
   sample_n(8, replace = T)
@@ -312,10 +312,12 @@ adfa.thresholds <- data.frame(psi.PC1, psi.PC2, psi.tti, psi.fh, psi.fd, psi.gd,
 For loop
 It is a bit clunky, but seems to do the trick. Could not figure out how to iterate dependent variables in the linear models.
 
-Note: like above, this for loop often gets interrupted when a threshold is not found. After a few times, it should run okay
+Note: I set a seed so that the code would consistently run and so that our analyses are repeatable
 ```{r}
 for(i in 1:10){
    for(j in 1:nrow(adfa.thresholds)){
+  set.seed(seed = j+150, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+     
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
   sample_n(19, replace = T)
@@ -662,10 +664,10 @@ thresholds <- c('98.274','63.142','78.541','43.254','98.274','78.872','98.274','
                 '65.864','65.509','78.622', 'Avg: 78.08 +/- 11.56',
                 '132.543','63.437','119.281','91.053','120.89',
                 '57.0196','55.385','48.83','64.737','68.003','59.153', 'Avg: 93.18 +/- 21.38')
-bootstrap.thresholds <- c('97.36','81.17','87.15','NA','104.78','87.3','98.98',
-                          '93.11','86.79','63.75','70.94','Avg: 87.13','118.07','108.73',
-                          '110.85','93.51','126.48','75.36','63.23','137.93',
-                          '153.45','137.56','79.17', 'Avg: 109.49')
+bootstrap.thresholds <- c('101.82', '79.83', '87.60', 'NA', '104.78', '88.41', '98.98',
+                          '94.72', '86.79', '64.75', '70.64','Avg: 87.83','114.38', '114.98',
+                          '112.85', '93.34', '126.48', '75.36', '65.50', '137.93', '155.79',
+                          '133.19', '82.80', 'Avg: 110.24')
 seg.reg.table.df <- data.frame(dep.var, spp, sig.p, thresholds, bootstrap.thresholds)
 
 seg.reg.table.df %>%
