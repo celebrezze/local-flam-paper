@@ -98,17 +98,17 @@ seg.data.subset.alldates <- seg.data.subset.alldates %>%
   na.omit()
 ```
 
-Numerical 1 or 0 for site, dry vs. wet season
+Numerical 1 or 2 for site, dry vs. wet season
 ```{r}
 seg.data.subset.alldates <- seg.data.subset.alldates %>% 
   mutate(season = case_when(
     precip.2mo < 0.5 ~ "Dry", 
     precip.2mo > 0.5 ~ "Wet")
   ) %>% 
-  mutate(site.test = case_when(
+  mutate(site.test = case_when( 
     site == "St. Marys" ~ 1,
     site == "Painted Caves" ~ 2
-  ))
+  )) # Making new variable, site.test, that uses numbers to represent the site instead of character values; this allows the site to be included in mixed effects models as a fixed effect.
 ```
 
 ```{r, message=FALSE, warning=FALSE, include=FALSE}
