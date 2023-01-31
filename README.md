@@ -17,13 +17,13 @@ This repository is meant for the storage and sharing of data, scripts, figures, 
 
 [Breakdown of Folders](https://github.com/celebrezze/local-flam-paper#breakdown-of-folders)
 
-  [Raw Data](https://github.com/celebrezze/local-flam-paper#raw-data)
+[- Raw Data](https://github.com/celebrezze/local-flam-paper#raw-data)
   
-  [Processed Data](https://github.com/celebrezze/local-flam-paper#processed-data)
+[- Processed Data](https://github.com/celebrezze/local-flam-paper#processed-data)
   
-  [Scripts](https://github.com/celebrezze/local-flam-paper#scripts)
+[- Scripts](https://github.com/celebrezze/local-flam-paper#scripts)
   
-  [Figures](https://github.com/celebrezze/local-flam-paper#figures)
+[- Figures](https://github.com/celebrezze/local-flam-paper#figures)
   
 [Contact Information](https://github.com/celebrezze/local-flam-paper#contact-information)
 
