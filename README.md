@@ -4,7 +4,7 @@
 
 ## Live fuel moisture and shoot water potential exhibit contrasting relationships with leaf-level flammability thresholds during laboratory flammability tests
 
-## Indra Boving, Joe Celebrezze, Aaron Ramirez, Ryan Salladay, Leander Love-Anderegg and Max Moritz
+### Indra Boving, Joe Celebrezze, Aaron Ramirez, Ryan Salladay, Leander Love-Anderegg and Max Moritz
 
 --------------------------------
 
@@ -13,10 +13,16 @@ This repository is meant for the storage and sharing of data, scripts, figures, 
 
 --------------------------------
 
+## Table of Contents
+
+[Breakdown of Folders](https://github.com/celebrezze/local-flam-paper#breakdown-of-folders)
+
+--------------------------------
+
 ## Breakdown of Folders
 
-**Raw Data**:
-The *raw-data* folder consists of three datasets in .csv format. Below are brief descriptions of each of these dataframes and their use(s); however, for a more comprehensive breakdown of the data, see the metadata.
+### Raw Data:
+The **raw-data** folder consists of three datasets in .csv format. Below are brief descriptions of each of these dataframes and their use(s); however, for a more comprehensive breakdown of the data, see the metadata.
 
   *flam.local.alldates.csv*: this includes the flammability testing results for chapparal shrubs, *Adenostoma fasciculatum* and *Ceanothus megacarpus*, reporting a variety of metrics including the sample, round and siteneeded to identify the invidual sample and flammability test (see metadata for exactly what this means), live fuel moisture (LFM), the components necessary to calculate LFM (dry weight and fresh weight), and water potential data along the benchtop drydown; a variety of flammability metrics including flame height (fh), time to first glow (ttfg), glow to ignition (gti), time to ignition (tti), flame duration (fd), glow duration (gd), post-flame glow (pfg), maximum temperature (temp.max), and temperature at ignition (ignition.temp); sample weight; the proportion of new growth, and a variety of other variables. 
   
@@ -24,10 +30,10 @@ The *raw-data* folder consists of three datasets in .csv format. Below are brief
   
   *Precip_SBBG.csv*: this includes daily precipitation values as measured at the Santa Barbara Botanical Gardens for the County of Santa Barbara. This data was accessed at: https://www.countyofsb.org/2256/Historical-Rainfall-Reservoir-Informatio and wrangled to our needs in *1.1_SBBG_precip.Rmd*
 
-**Processed Data**:
+### Processed Data:
 Versions of the above datasets after wrangling data on *1.0_data_wrangling.Rmd* and *1.1_SBBG_precip.Rmd*. It also includes a dataset wrangled prior to the creation of this repository which includes the data garnered from running pressure-volume (PV) curves in *pv_summary_df_timing.csv*. For a comprehensive breakdown of each dataset and descriptions of each variable, see the metadata.
 
-**Scripts**:
+### Scripts:
 This folder includes scripts that we used to wrangle data, complete analyses, and design tables and figures for the main text, the supplementary index, and for exploratory analyses. The scripts are grouped by numbers in a logical order which follows the order presented in the manuscript.
 
   *1.0_data_wrangling.Rmd*: this script involves necessary data wrangling for most of our analyses in the following scripts. It works off of the *flam.local.alldates.csv* raw data above and cleans up the data, removing NA values and outliers when necessary, filtering out hot plate burns (this method was used in other studies and at-times burned samples alongside  the epiradiator method, but this study focused solely on epiradiator burns); creates new columns used for different analyses; and designs datasets specific to certain analyses -- the segmented regression analyses (in *4.x*_...Rmd scripts, dataset = *seg.reg.data.local.csv*) and the mixed effects models analyses (in *3.x*_...Rmd scripts, datasets = *mem.data.local.epi.alldates.csv* and *mem.data.subset.alldates.csv*)
@@ -60,8 +66,8 @@ This folder includes scripts that we used to wrangle data, complete analyses, an
   
   *6.0_extra_figures.Rmd*: finally, this script contains a modge podge of extra figures that didn't end up making the main text or supplementary index. It is organized based on visualization/analysis. 
 
-**Figures**: 
-This folder contains all figures included in the main text (*main-figures* folder) and the supplementary index (*supp-figures* folder), as well as mixed effect model results tables (*MEM.figures* folder) and extra figures and tables that were not included in the main text or supplementary index but were a part of exploratory analyses or were different visualizations for main analyses (*extra-figures* folder). The figure labels describe the figure; however, for only Figures 3-4 and Table 2 are they explicitly labelled matching the figures in the paper. For the other figures in the *main-figures* and *supp-figures* folders, here are the figures that they match up with in the paper:
+### Figures: 
+This folder contains all figures included in the main text (**main-figures** folder) and the supplementary index (**supp-figures** folder), as well as mixed effect model results tables (**MEM.figures** folder) and extra figures and tables that were not included in the main text or supplementary index but were a part of exploratory analyses or were different visualizations for main analyses (**extra-figures** folder). The figure labels describe the figure; however, for only Figures 3-4 and Table 2 are they explicitly labelled matching the figures in the paper. For the other figures in the **main-figures** and **supp-figures** folders, here are the figures that they match up with in the paper:
   
   *main-figures*
   
@@ -98,3 +104,5 @@ This folder contains all figures included in the main text (*main-figures* folde
   Table S8: *MEM_SpeciesDiff_kable.html*
   
   Figure S5: *field.plots.jpg*
+
+--------------------------------
