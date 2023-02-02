@@ -76,7 +76,7 @@ Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db
 # 1. Data wrangling
 Reading in dataframe
 ```{r}
-scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates.csv'))
 ```
 
 Seasonal mins and maxs from 2016 - 2020:
@@ -802,18 +802,18 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12,
 Setting up dataframe:
 ```{r}
 dep.var <- c("Intercept", "Species Effect (C. megacarpus)", "Site (St. Mary's)", "Date (Jan. 2018)", "Date (Dec. 2019)","Date (Jan. 2020)", "Date (Sept. 2020)", "Sample Weight (g)", "LFM (%)", "Water Potential", "Dry Weight (g)", "Water Weight (g)", "Excess Water", "Random Effects", paste("\U03C3", "2"), paste("\U03C4", "00"), " ", "Marginal R2/Conditional R2", "AIC")
-m1.est <- c("0.599*", "-0.913***", "0.452*", "-0.547", "-0.506", "0.022", "-0.977***", "-0.153*", "-0.240**", " ", " ", " ", " ", " ", "2.36", "0.08ind", " ", "0.192/0.219", "1696.552")
-m2.est <- c("-0.060", "-0.835***", "0.471*", "-0.573*", "-0.748*", "-0.269", "-0.965***", "-0.137"," ", "-0.137***", " ", " ", " ", " ", "2.29", "0.02ind", " ", "0.230/0.238", "1676.524")
-m3.est <- c("0.596*", "-0.965***", "0.437*", "-0.563", "-0.408", "0.134", "-0.965***", "-0.289***"," ", " ", "0.347***", " ", " ", " ", "2.34", "0.07ind", " ", "0.202/0.224", "1690.926")
-m4.est <- c("0.594*", "-0.956***", "0.439*", "-0.562", "-0.412", "0.118", "-0.965***", "-0.050"," ", " ", " ", "-0.343***", " ", " ", "2.35", "0.07ind", " ", "0.201/0.223", "1691.375")
-m5.est <- c("0.595*", "-0.961***", "0.438*", "-0.561", "-0.407", "0.129", "-0.965***", "-0.169*", " ", " ", " ", " ", "-0.324***", " ", "2.34", "0.07ind", " ", "0.201/0.223", "1691.249")
-m6.est <- c("-0.101", "-0.823***", "0.474*", "-0.555", "-0.763*", "-0.293", "-0.952***", "-0.137", "0.034", "-0.143***", " ", " ", " ", " ", "2.30", "0.02ind", " ", "0.230/0.236", "1681.234")
-m7.est <- c("-0.081", "-0.828***", "0.473*", "-0.567*", "-0.761", "-0.286", "-0.962***", "-0.129", " ", "-0.141***", "-0.019", " ", " ", " ", "2.30", "0.02ind", " ", "0.230/0.237", "1680.822")
-m8.est <- c("-0.090", "-0.825***", "0.474*", "-0.565*", "-0.766*", "-0.292", "-0.960***", "-0.145", " ", "-0.142***", " ", "0.027", " ", " ", "2.30", "0.02ind", " ",  "0.230/0.237", "1680.798")
-m9.est <- c("-0.085", "-0.826***", "0.473*", "-0.566*", "-0.764*", "-0.289", "-0.961***", "-0.136", " ", "-0.142***", " ", " ", "0.021", " ", "2.30", "0.02ind", " ", "0.230/0.237", "1680.941")
-m10.est <- c("-0.087", "-0.823***", "0.474*", "-0.567*", "-0.769*", "-0.298", "-0.963***", " ", " ", "-0.142***", "-0.202", "-0.178", " ", " ", "2.30", "0.02ind", " ", "2.30/2.37", "1680.284")
-m11.est <- c("0.595*", "-0.959***", "0.439*", "-0.561", "-0.408", "0.124", "-0.967***", " ", " ", " ", "-0.470*", " ", "-0.765***", " ", "2.35", "0.07ind", " ", "0.201/0.223", "1689.435")
-m12.est <- c("0.596*", "-0.956***", "0.439*", "-0.564", "-0.415", "0.118", "-0.968***", " ", " ", " ", "-0.062", "-0.408***", " ", " ", "2.35", "0.07ind", " ", "0.201/0.223", "1690.743")
+m1.est <- c("0.575", "-0.925*", "0.467", "-0.558", "-0.458", "0.077", "-0.975**", "-0.121", "-0.296***", " ", " ", " ", " ", " ", "2.26", "0.20ind", " ", "0.192/0.258", "1687.590")
+m2.est <- c("-0.106", "-0.824**", "0.487", "-0.567", "-0.755", "-0.272", "-0.964**", "-0.103"," ", "-0.142***", " ", " ", " ", " ", "2.15", "0.18ind", " ", "0.229/0.289", "1668.106")
+m3.est <- c("0.571", "-0.972***", "0.449", "-0.564", "-0.358", "0.188", "-0.958***", "-0.276***"," ", " ", "0.399***", " ", " ", " ", "2.23", "0.20ind", " ", "0.201/0.268", "1681.577")
+m4.est <- c("0.569", "-0.966***", "0.451", "-0.564", "-0.360", "0.171", "-0.959**", "-0.001"," ", " ", " ", "-0.396***", " ", " ", "2.23", "0.20ind", " ", "0.201/0.267", "1682.009")
+m5.est <- c("0.570", "-0.971***", "0.450", "-0.563", "-0.356", "0.182", "-0.958**", "-0.138", " ", " ", " ", " ", "-0.373***", " ", "2.23", "0.20ind", " ", "0.201/0.268", "1681.903")
+m6.est <- c("-0.077", "-0.833**", "0.485", "-0.580", "-0.742", "-0.253", "-0.973**", "-0.103", "-0.026", "-0.138***", " ", " ", " ", " ", "2.16", "0.19ind", " ", "0.228/0.289", "1672.881")
+m7.est <- c("-0.060", "-0.840**", "0.482", "-0.580", "-0.724", "-0.232", "-0.971**", "-0.121", " ", "-0.134***", "0.044", " ", " ", " ", "2.16", "0.19ind", " ", "0.228/0.290", "1672.325")
+m8.est <- c("-0.067", "-0.838**", "0.483", "-0.578", "-0.728", "-0.240", "-0.970**", "-0.092", " ", "-0.135***", " ", "-0.038", " ", " ", "2.16", "0.19ind", " ",  "0.228/0.289", "1672.357")
+m9.est <- c("-0.063", "-0.839**", "0.483", "-0.579", "-0.725", "-0.236", "-0.971**", "-0.105", " ", "-0.135***", " ", " ", "-0.039", " ", "2.16", "0.19ind", " ", "0.228/0.290", "1672.468")
+m10.est <- c("-0.065", "-0.837**", "0.484", "-0.580", "-0.729", "-0.242", "-0.972**", " ", " ", "-0.135***", "-0.126", "-0.167", " ", " ", "2.16", "0.19ind", " ", "0.228/0.290", "1671.735")
+m11.est <- c("0.569", "-0.969***", "0.451", "-0.562", "-0.356", "0.179", "-0.960**", " ", " ", " ", "-0.383", " ", "-0.733***", " ", "2.23", "0.20ind", " ", "0.201/0.268", "1680.009")
+m12.est <- c("0.570", "-0.967***", "0.451", "-0.565", "-0.362", "0.174", "-0.961**", " ", " ", " ", "0.007", "-0.391***", " ", " ", "2.23", "0.20ind", " ", "0.201/0.268", "1681.279")
 main.mem.table.df <- data.frame(dep.var, m1.est, m2.est, m3.est, m4.est, m5.est, m6.est, m7.est, m8.est, m9.est, m10.est, m11.est, m12.est)
 ```
 
@@ -1044,12 +1044,11 @@ tab_model(a.g5, a.g4, a.g2, a.g3, a.g1, c.g5, c.g4, c.g1, c.g2, c.g3, a.g6, a.g7
 ```{r}
 dep.var <- c("PC1", " ", " ", " ", " ",  " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " "," ", " ", " ", " ",  " ", "Flame Duration (s)", " ", " ", " ", " "," ", " ", " ", " ",  " ", "Glow Duration (s)", " ", " ", " "," ", " ", " ", " ",  " ", " ")
 sp.lab <- c("Adenostoma fasciculatum", " ", " ", " ", " ", "Ceanothus megacarpus", " ", " ", " ", " ", "Adenostoma fasciculatum", " ", " ", " ", " ", "Ceanothus megacarpus", " ", " ", " ", " ", "Adenostoma fasciculatum", " ", " ", " ", " ", "Ceanothus megacarpus", " ", " ", " ", " ", "Adenostoma fasciculatum", " ", " ", " ", " ", "Ceanothus megacarpus", " ", " ", " ", " ")
-fix.fx <- c("Water Potential", "Water Potential, Sample Weight & Dry Weight", "Wet Weight", "Live Fuel Moisture", "Dry Weight", "Water Potential", "Wet Weight", "Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Live Fuel Moisture", "Water Potential, Sample Weight & Dry Weight", "Water Potential", "Wet Weight", "Live Fuel Moisture", "Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Water Potential", "Wet Weight", "Dry Weight", "Live Fuel Moisture", "Water Potential", "Dry Weight", "Live Fuel Moisture", "Wet Weight", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Live Fuel Moisture", "Water Potential", "Wet Weight", "Water Potential, Sample Weight & Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Live Fuel Moisture", "Wet Weight", "Water Potential", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Water Potential", "Live Fuel Moisture", "Wet Weight")
-est <- c('-0.419***',	'-0.477***', '-0.314**', '-0.186', '0.107', '-0.430***', '-0.427***', '0.363***', '-0.317*', '-0.347**', "4.578***",	'4.239***', '3.329***', '2.013**', '-1.452', '5.159***',	'5.501***', '4.798***', '-3.901***', '3.714***', '0.677*', '0.642*', '-0.566', '-0.574', '-0.561', '0.646', '-0.569', '-0.475', '-0.324', '-0.296', '0.065', '5.119**', '-2.799', '-2.381', '-1.922', '-2.357', '3.973', '-2.619', '-2.084', '-0.411')
-aic.values <- c(1002.567, 1006.955,	1011.885,	1015.979,	1018.052,	675.567,	679.110,	682.000,	682.408,	683.557, 1943.187,	1948.918,	1970.582,	1980.425,	1984.906,	1381.167,	1382.278,	1403.649,	1411.852,	1415.261, 1514.945,	1516.389,	1516.763,	1517.257,	1518.621,	1054.163,	1055.065,	1055.530,	1056.797,	1057.601, 2403.453,	2406.658,	2411.868,	2412.876,	2413.393,	1735.668,	1741.923,	1743.649,	1744.252,	1745.063)
-bic.values <- c(1027.5186, 1039.0352, 1036.8362, 1040.9305, 1043.0035,  698.1477,  701.6903, 704.5801,  711.4394,  706.1369, 1975.2679, 1973.8693, 1995.5338, 2005.3769, 2009.8577, 1410.1989, 1404.8579, 1426.2289, 1434.4318, 1437.8416, 1539.8966,1541.3407, 1541.7144, 1542.2083, 1550.7014, 1076.7429, 1077.6451, 1078.1099, 1079.3774, 1086.6325, 2435.5335, 2431.6095, 2436.8196, 2437.8279, 2438.3448, 1764.7001, 1764.5028, 1766.2295, 1766.8324, 1767.6434)
-r2.values <- c('0.154 / NA','	0.166 / NA',	'0.122 / 0.125',	'0.110 / 0.116',	'0.101 / NA',	'0.150 / 0.230',	'0.130 / 0.232',	'0.115 / 0.233',	'0.155 / 0.238',	'0.107 / 0.224', '0.250 / NA',	'0.232 / 0.237',	'0.167 / 0.202',	'0.136 / 0.185',	'0.118 / 0.156',	'0.286 / 0.308',	'0.282 / 0.313',	'0.190 / 0.246',	'0.151 / 0.244',	'0.133 / 0.239', '0.063 / 0.162',	'0.056 / 0.157',	'0.055 / 0.174',	'0.053 / 0.174',	'0.066 / 0.160',	'0.043 / 0.162',	'0.037 / 0.129',	'0.037 / 0.135',	'0.028 / 0.107',	'0.047 / 0.177', '0.249 / 0.290',	'0.247 / 0.289',	'0.233 / 0.283',	'0.230 / 0.282',	'0.230 / 0.280',	'0.125 / 0.171',	'0.113 / 0.131',	'0.106 / 0.126',	'0.101 / 0.112',	'0.098 / 0.110')
-d.aic <- c(0, 4.388, 9.318, 13.412, 15.485, 0, 3.543, 6.433, 6.841, 7.990, 0, 5.731, 27.395, 37.238, 41.719, 0, 1.111, 22.482, 30.685, 34.094, 0, 1.444, 1.818, 2.312, 3.676, 0, 0.902, 1.367, 2.634, 3.438, 0, 3.205, 8.415, 9.423, 9.940, 0, 6.255, 7.981, 8.584, 9.395)
+fix.fx <- c("Water Potential", "Water Potential, Sample Weight & Dry Weight", "Wet Weight", "Live Fuel Moisture", "Dry Weight", "Water Potential", "Wet Weight", "Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Live Fuel Moisture", "Water Potential, Sample Weight & Dry Weight", "Water Potential", "Wet Weight", "Live Fuel Moisture", "Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Water Potential", "Wet Weight", "Dry Weight", "Live Fuel Moisture", "Water Potential", "Dry Weight", "Live Fuel Moisture", "Wet Weight", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Live Fuel Moisture", "Water Potential", "Wet Weight", "Water Potential, Sample Weight & Dry Weight", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Wet Weight", "Live Fuel Moisture", "Water Potential", "Water Potential, Sample Weight & Dry Weight", "Dry Weight", "Water Potential", "Live Fuel Moisture", "Wet Weight")
+est <- c('-0.455***',	'-0.447***', '-0.388***', '-0.288**', '0.225', '-0.429***', '-0.428***', '0.371**', '-0.321*', '-0.357**', "4.353***",	'4.502***', '3.899***', '2.750***', '-2.243**', '5.113***',	'5.454***', '4.823***', '-4.031***', '3.874***', '0.688*', '0.657*', '-0.556*', '-0.574', '-0.588', '0.548', '-0.473', '-0.420', '-0.210', '-0.353', '-0.410', '3.345', '-1.755', '-1.682', '-1.559', '-2.218', '3.954', '-2.584', '-2.072', '-0.393')
+aic.values <- c(991.932, 998.721, 1001.523,	1005.452,	1009.031,	675.597,	679.522, 682.241, 682.551, 683.855, 1934.922, 1938.040, 1960.263, 1970.769,	1977.598,	1379.405,	1380.281,	1402.308,	1410.268,	1413.893, 1513.504,	1515.244,	1515.939,	1516.295,	1517.224,	1051.365,	1052.229,	1052.325,	1053.778,	1054.336, 2392.661,	2395.074,	2397.632, 2397.718,	2397.866,	1735.815,	1741.946,	1743.660,	1744.259,	1745.052)
+r2.values <- c('0.161 / 0.269',	'0.166 / 0.263',	'0.133 / 0.242',	'0.122 / 0.235',	'0.109 / 0.217',	'0.151 / 0.176',	'0.132 / 0.154',	'0.119 / 0.153',	'0.155 / 0.178',	'0.111 / 0.141', '0.253 / 0.335',	'0.242 / 0.335',	'0.182 / 0.279',	'0.152 / 0.252',	'0.129 / 0.219',	'0.283 / 0.327',	'0.280 / 0.328',	'0.193 / 0.240',	'0.159 / 0.216',	'0.143 / 0.199', '0.067 / 0.136',	'0.061 / 0.126',	'0.059 / 0.127',	'0.057 / 0.128',	'0.069 / 0.136',	'0.037 / 0.134',	'0.033 / 0.124',	'0.033 / 0.131',	'0.025 / 0.119',	'0.042 / 0.151', '0.229 / 0.345',	'0.229 / 0.348', '0.218 / 0.354',	'0.219 / 0.352',	'0.218 / 0.355',	'0.125 / 0.125',	'0.113 / NA',	'0.106 / 0.111',	'0.101 / 0.103',	'0.097 / 0.103')
+d.aic <- c(0, 6.789, 9.591, 13.52, 17.099, 0, 3.925, 6.644, 6.954, 8.258, 0, 3.118, 25.341, 35.847, 42.676, 0, 0.876, 22.903, 30.863, 34.488, 0, 1.74, 2.435, 2.791, 3.72, 0, 0.864, 0.96, 2.413, 2.971, 0, 2.413, 4.971, 5.057, 5.205, 0, 6.131, 7.845, 8.444, 9.237)
 mem.spp.table.df <- data.frame(dep.var, sp.lab, fix.fx, est, d.aic, r2.values)
 ```
 
@@ -1232,7 +1231,7 @@ p4 <- ggplot(r_scaled.mem.data.alldates.noNAs, aes(x = dw.flam.sample, y = PC2))
 
 ggarrange(p1, p3, p2, p4)
 
-ggsave(here('figures', 'MEM.figures', 'remef.dry.weight.jpg'), height = 8, width = 13)
+ggsave(here('figures', 'extra-figures', 'remef.dry.weight.jpg'), height = 8, width = 13)
 ```
 
 ## Composite Model
@@ -1353,27 +1352,6 @@ tab_model(max_model, m7, mpa_mod_fig.mpa, max_model_nolfm, max_model_nompa, m12.
 
 The intra-class correlation coefficient (ICC) is a related statistic that quantifies the proportion of variance explained by a grouping (random) factor in multilevel/hierarchical data.
 
-##### kableExtra Table
-First, making dataframe with fixed effects, water estimate, species estimate, AIC, marginal and conditional R2 values, and deltaAIC (for barebones models with only one water-related fixed effect:
-```{r}
-fix.fx <- c("Species & Water Potential", "Species & LFM", "Species & Dry Weight", "Species & Wet Weight")
-est1 <- c('-0.121***', '-0.084', '0.072','-0.061')
-est2 <- c('-1.112***', '-1.035***', '-0.072***', '-0.061***')
-aic.values <- c(1682.036, 1703.207, 1703.476, 1703.673)
-r2.values <- c('0.189/0.196', '0.145/0.161', '0.145/0.163', '0.144/0.161')
-d.aic <- c(0, 21.171, 21.44, 21.637)
-mem.table.df <- data.frame(fix.fx, est1, est2, aic.values, r2.values, d.aic)
-```
-there was probably a more elegant way to do that (just like PCA table), but since there aren't too many numbers to enter in by hand, I thought it would be quicker to just go ahead and do so.
-
-Now, using kableExtra package to visualize how each component is weighted by each flam. metric
-```{r}
-mem.table.df %>%
-  kable(format = 'html', escape = F, col.names = c('Model Fixed Effects', 'Water Estimate', 'Species Estimate', 'AIC', expression('Marginal R2/Conditional R2'), 'Change in AIC')) %>% 
-  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) 
-```
-
-
 ## 2.0.3 Other figures
 ### Predicted vs. Observed PC1
 ```{r}
@@ -1491,14 +1469,14 @@ m7 <- lmer(tti ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | i
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5, m6, m7,
+tab_model(m5, m1, m3, m2, m4, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
+         dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1527,14 +1505,14 @@ m7 <- lmer(fh ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | in
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5, m6, m7,
+tab_model(m1, m4, m2, m5, m3, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
+         dv.labels = c("Model 1", "Model 4", "Model 2", "Model 5", "Model 3", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1563,14 +1541,14 @@ m7 <- lmer(gd ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | in
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5, m6, m7,
+tab_model(m5, m4, m2, m1, m3, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
+         dv.labels = c("Model 5", "Model 4", "Model 2", "Model 1", "Model 3", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1599,14 +1577,14 @@ m7 <- lmer(fd ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | in
 
 Table
 ```{r}
-tab_model(m1, m2, m3, m4, m5, m6, m7,
+tab_model(m1, m4, m2, m5, m3, m6, m7,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         dv.labels = c("Model 1", "Model 2", "Model 3", "Model 4", "Model 5", "Model 6", "Model 7"),
+         dv.labels = c("Model 1", "Model 4", "Model 2", "Model 5", "Model 3", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
@@ -1759,7 +1737,47 @@ tab_model(m1, m2, m3, m4, m5, m6, m7,
 ```
 
 # MAIN TABLE
-Only looking at PC1, TTI, FD and GD
+All data below is from above MEM tables (2.1; for TTI, FD, GD) and from MAIN MODEL SELECTION (for PC1)
+
+## BIC, AIC included
+```{r}
+dep.var <- c("PC1", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " ", " ", "Flame Duration (s)", " ", " ", " ", " ", " ", "Glow Duration (s)", " ", " ", " ", " ", " ")
+fix.fx <- c(" ", "Water Potential","Composite Model", "Wet Weight", "Dry Weight", "Live Fuel Moisture",
+            " ", "Composite Model", "Water Potential",  "Wet Weight", "Live Fuel Moisture", "Dry Weight",
+            " ", "Water Potential",  "Dry Weight", "Live Fuel Moisture",  "Composite Model", "Wet Weight",
+             " ", "Composite Model", "Dry Weight", "Live Fuel Moisture", "Water Potential", "Wet Weight")
+est1 <- c(" ", '-0.142***', '-0.134***', '-0.038', '0.399**','-0.296***',
+          " ", '4.709***','4.889***', '4.260***', '3.126***', '-3.005***',
+          " ", '-0.574**',  '0.612**', '-0.530*', '-0.491', '-0.426',
+          " ", '-1.280', '3.741**','-1.834', '-2.029', '-1.122')
+aic.values <- c(" ", '1668.106', '1672.325', '1672.357', '1681.577', '1687.590',
+                " ", '3316.212',	'3318.910',	'3363.524',	'3385.911',	'3390.382',
+                " ", '2562.408',	'2563.221',	'2564.659',	'2566.012',	'2567.067',
+              	" ", '4141.659',	'4145.782',	'4151.125',	'4150.366',	'4152.267')
+r2.values <- c(" ", '0.229 / 0.289',  '0.228 / 0.290', '0.228 / 0.289', '0.201 / 0.268', '0.192 / 0.258', 
+               " ", '0.343 / 0.404',	'0.337 / 0.403',	'0.271 / 0.342',	'0.236 / 0.312',	'0.229 / 0.302',
+               " ", '0.059 / 0.136',	'0.058 / 0.131',	'0.055 / 0.128',	'0.064 / 0.140',	'0.050 / 0.123',
+               " ", '0.229 / 0.288',	'0.225 / 0.286',	'0.215 / 0.286',	'0.215 / 0.290',	'0.212 / 0.287')
+d.aic <- c(" ", '0', '4.219',  '4.251', '13.471', '19.484',
+           " ", '0', '2.698', '47.312', '69.699', '74.17',
+           " ", '0', '0.813', '2.251', '3.604', '4.659',
+           " ", '0', '4.123',  '9.466',  '8.707', '10.608')
+deltaAIC <- c('\U0394 AIC')
+
+x <- 1668.106
+y <- c(1672.325, 1672.357, 1681.577, 1687.590)
+y - x
+mem.table.df <- data.frame(dep.var, fix.fx, est1, d.aic, aic.values, r2.values)
+mem.table.df %>%
+  mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), aic.values = cell_spec(aic.values, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','\U0394 AIC', 'AIC', expression('Marginal R2/Conditional R2'))) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  row_spec(c(1, 7, 13, 19), background = "#D3D3D3", bold = T, font_size = 16) %>% 
+  row_spec(c(2, 8, 14, 15, 16, 20), bold = T) %>% 
+  save_kable(here('figures', 'extra-figures', 'expanded_MEM_kable.html'))
+```
+
+## Kable
 ```{r}
 mem.table2.df <- data.frame(dep.var, fix.fx, est1, d.aic, r2.values)
 mem.table2.df %>%
@@ -1771,50 +1789,11 @@ mem.table2.df %>%
   save_kable(here('figures', 'main-figures', 'Table2_MEM_kable.html'))
 ```
 
-## BIC, AIC included
-```{r}
-dep.var <- c("PC1", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " ", " ", " ", "Flame Duration (s)", " ", " ", " ", " ", " ", "Glow Duration (s)", " ", " ", " ", " ", " ")
-fix.fx <- c(" ", "Water Potential","Composite Model", "Wet Weight", "Live Fuel Moisture", "Dry Weight",
-            " ", "Composite Model", "Water Potential",  "Wet Weight", "Live Fuel Moisture", "Dry Weight",
-            " ", "Water Potential",  "Dry Weight", "Live Fuel Moisture",  "Composite Model", "Wet Weight",
-             " ", "Composite Model", "Dry Weight", "Live Fuel Moisture", "Water Potential", "Wet Weight")
-est1 <- c(" ", '-0.140***', '-0.141***', '-0.364***', '-0.246**','-0.215*',
-           " ", '4.890***','4.776***', '3.955***', '2.636***', '-2.502***',
-          " ", '-0.591**',  '0.645**', '-0.570*', '-0.455', '-0.468*',
-          " ", '-0.879', '4.668***','-2.567', '-2.261', '-1.544')
-aic.values <- c(" ", '1674.577', '1680.822', '1686.568', '1695.289', '1697.884',
-                " ", '3327.326', '3332.028',	'3375.534',	'3397.523',	'3400.992',
-                " ", '2566.495',	'2566.660',	'2567.954',	'2569.929',	'2570.455',
-              	" ", '4147.778', '4152.387',	'4159.953', '4160.481',	'4162.278')
-bic.values <- c(" ", '1715.603', '1730.053', '1727.594', '1736.315', '1738.909',
-                " ", '3376.557', '3373.053', '3416.559', '3438.548', '3442.017', 
-                " ", '2607.521', '2607.685', '2608.980', '2619.160', '2611.481',
-               " ",  '4197.009', '4193.413', '4200.978', '4201.506', '4203.303')
-r2.values <- c(" ", '0.225/0.237','0.230/0.237', '0.201/0.224', '0.185/0.217', '0.180/0.206',
-              	" ", '0.345 / 0.345', '0.336 / 0.346',	'0.269 / 0.306',	'0.233 / 0.293', '0.225 / 0.273',
-               " ", '0.059 / 0.154',	'0.058 / 0.156',	'0.055 / 0.156',	'0.063 / 0.160',	'0.049 / 0.149',
-               " ", '0.238 / 0.275', '0.233 / 0.269', '0.220 / 0.259',	'0.220 / 0.260',	'0.216 / 0.258')
-d.aic <- c(" ", '0', '6.25', '11.99', '20.71', '23.31',
-           " ", '0', '4.702', '48.208', '70.197', '73.666',
-           " ", '0', '0.165', '1.459', '3.434', '3.960',
-           " ", '0', '4.609', '12.175', '12.703', '14.500')
-deltaAIC <- c('\U0394 AIC')
-
-mem.table.df <- data.frame(dep.var, fix.fx, est1, d.aic, aic.values, bic.values, r2.values)
-mem.table.df %>%
-  mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), aic.values = cell_spec(aic.values, 'html', color = 'black'), bic.values = cell_spec(bic.values, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
-  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','\U0394 AIC', 'AIC', 'BIC', expression('Marginal R2/Conditional R2'))) %>% 
-  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1, 7, 13, 19), background = "#D3D3D3", bold = T, font_size = 16) %>% 
-  row_spec(c(2, 8, 14, 15, 16, 20), bold = T) %>% 
-  save_kable(here('figures', 'extra-figures', 'expanded_MEM_kable.html'))
-```
-
 ## Shortened Table (for presentation)
 ```{r}
 dep.var.s <- c("Ignitability-Combustibility Proxy (PC1)", "Time to Ignition (s)", "Flame Duration (s)", " ", " ", "Glow Duration (s)", "Flame Height (cm)", " ")
-top.models <- c("Water Potential", "Dry Weight, Sample Weight & Water Potential", "Water Potential", "Dry Weight", "LFM", "Dry Weight, Sample Weight & Water Potential", "Water Potential", "Dry Weight, Sample Weight & Water Potential")
-significance <- c("p<0.001", "p<0.001", "p<0.01", "p<0.01", "p<0.05", "non-significant", "p<0.001", "p<0.01")
+top.models <- c("Water Potential", "Dry Weight, Sample Weight & Water Potential", "Water Potential", "Dry Weight", "LFM", "Dry Weight, Sample Weight & Water Potential", "Dry Weight, Sample Weight & Water Potential", "Water Potential")
+significance <- c("p<0.001", "p<0.001", "p<0.01", "p<0.01", "p<0.05", "non-significant", "p<0.01", "p<0.001")
 shortened.table.df <- data.frame(dep.var.s, top.models, significance)
 
 shortened.table.df %>%
@@ -1953,27 +1932,22 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8,
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c('Intercept', 
-                          'Water Potential (scaled)', 
                           'Species Effect (C. megacarpus)',
-                          'Water Potential x Species Effect
-                          (interaction)',
-                          'LFM (%)',
-                          'Water Weight (g)', 
-                          'Dry Weight (g)',
+                          'Excess Dry Weight (centered)',
+                          'Excess Dry Weight (unscaled)',
+                          'Sample Wt. (g)',
                           'Site Effect (Site 1)',
-                          'Excess Water (scaled)',
-                          'Excess Water x Species Effect
-                          (interaction)'),
-         dv.labels = c("mpa_spp", 
-                       "m11", 
-                       "m7", 
-                       "m7",
-                       "m10",
-                       "m3", 
-                       "m6", 
-                       "m6.5", 
-                       "m12",
-                       "m15"),
+                          'Sampling Date (Jan. 2018)',
+                          'Sampling Date (Dec. 2019)',
+                          'Sampling Date (Jan. 2020)',
+                          'Sampling Date (Sept. 2020)',
+                          'Excess Dry Weight (percentile)',
+                          'Water Potential (MPa)',
+                          'LFM (%)',
+                          'Dry Weight (g)',
+                          'Excess Water (scaled)'),
+         dv.labels = c('Model 1', 'Model 2', 'Model 3', 'Model 4', 'Model 5',
+                       'Model 6', 'Model 7', 'Model 8'),
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 

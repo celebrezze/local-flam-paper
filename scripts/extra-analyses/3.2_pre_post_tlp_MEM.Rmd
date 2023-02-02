@@ -7,11 +7,6 @@ output: html_document
 
 The following script was written in response to a peer editor's comments. The summary tables at the bottom cross-referenced with the segmented regression results further support our conclusion that water potential has more of a linear response with flammability metrics or proxies than any sort of TLP-driven thresholding response.
 
-
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 # Setup
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -58,7 +53,7 @@ Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db
 # 1. Data wrangling
 Reading in dataframe
 ```{r}
-scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates.csv'))
 ```
 
 Seasonal mins and maxs from 2016 - 2020:

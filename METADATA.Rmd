@@ -211,6 +211,7 @@ This dataset contains data gathered from the pressure-volume curves conducted on
 ```{r, include = F}
 local_flam_data_all <- read_csv(here("processed-data", "local_flam_data_all.csv"))
 head(local_flam_data_all)
+mean(local_flam_data_all$round)
 ```
 
 *individual*: an identifier for the individual which includes the date (YYYY_month), model (EPI = epiradiator), species (CEME = *Ceanothus megacarpus* and ADFA = *Adenostoma fasciculatum*), 10% bin of LFM (see *gr*), and a identification number for the individual

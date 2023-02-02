@@ -29,7 +29,7 @@ Using all dates instead of just Sept. 2020 data
 ```{r}
 seg.data.subset <- read.csv(here('processed-data', 'seg.reg.data.local.csv'))
 
-seg.data.subset.alldates <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+seg.data.subset.alldates <- read.csv(here('processed-data', 'mem.data.subset.alldates.csv'))
 
 scaled.mem.data.alldates <- read.csv(here('processed-data', 'mem.data.local.epi.alldates.csv'))
 ```

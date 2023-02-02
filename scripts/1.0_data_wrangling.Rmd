@@ -9,11 +9,6 @@ output: html_document
 knitr::opts_chunk$set(echo = FALSE, warning = FALSE, message = FALSE)
 ```
 
-# NOTES
-- do we use proportion ignited?
-  - if so, which metric or proportion ignited is used?
-- do we use flam. index?
-
 # SETUP
 
 ```{r setup, include = FALSE}
@@ -34,11 +29,12 @@ filter = dplyr::filter #correct filter problem (gets confused with stats::filter
 here = here::here
 read_csv = readr::read_csv
 select = dplyr::select
+rename = dplyr::rename
 ```
 
 This script deals with outliers and missing values in flammability metrics for tests conducted on C. megacarpus and A. fasciculatum outside Santa Barbara between 2016 and 2020 on both hotplate and epiradiator devices. 
 
-In addition to measured metrics, it also computes other metrics from the data: flammability index (coposite metric that incorporates flame height and time to ignition in a single score), proportion ignited (bins of 5 and 10)
+In addition to measured metrics, it also computes other metrics from the data: flammability index (composite metric that incorporates flame height and time to ignition in a single score), proportion ignited (bins of 5 and 10)
 ```{r warning=FALSE}
 #Read in data:
 raw.data <- read.csv(here("raw-data", "flam.local.alldates.csv")) 
@@ -168,6 +164,32 @@ data.with.na.new <- data.with.na.new %>%
   filter(sample.wt > 0.4 & sample.wt < 0.6) # filtering out outlier sample weights
 ```
 
+### Sample ID adjustment
+The sampling ID was slightly different for different sampling regimes (i.e. for more recent sampling, the identification number carries information about both the site and the individual in the format (site.individual or site.pod); however in certain years, only site 1 was sampled from and in these cases the identification number only carries information about the individual in either of the following formats: for individual 3, sample = 3.0 or sample = 3), so to make sure they are all given a sample ID that is similar, we will adjust sample IDs so they are in this format: site.pod.individual with the assumption that, upon each sampling effort, different individuals were sampled from (but from the same relative location (i.e., pod)), as sampling for flammability tests is rather invasive on the plants, so we typically avoided over-sampling if possible.
+
+```{r}
+data.with.na.new <- data.with.na.new %>% 
+  mutate(year.month.num = case_when(
+   year.month == '2016_December' ~ 1,
+   year.month == '2018_January' ~ 2,
+   year.month %in% c('2019_December','2020_January') ~ 3,
+   year.month == '2020_September' ~ 4
+  )) %>% 
+  mutate(site.pod = case_when(
+    sample == 1 ~ 1.1,
+    sample == 2 ~ 1.2,
+    sample == 3 ~ 1.3,
+    sample == 4 ~ 1.4,
+    sample == 5 ~ 1.5,
+    sample == 6 ~ 1.6,
+    sample == 7 ~ 1.7,
+    sample == 8 ~ 1.8,
+    sample == 9 ~ 1.9,
+    sample %in% c(1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6) ~ sample
+  )) %>% 
+  unite(sample, c("site.pod", "year.month.num"), sep = '.', remove = TRUE)
+```
+
 
 # 2. Impute missing values
 
@@ -213,9 +235,8 @@ data <- data %>%
   ungroup() %>% #ungroup so r doesnt get confused
   unite(model.spp.gr, c("year", "month", "model", "spp", "gr"), remove = FALSE) %>% #create column for each group as above, which will be associated with the n of each group based on the above add_tally step. 
   unite(model.spp.gr.sample, c("year", "month", "model", "spp", "gr", "sample"), remove = FALSE) %>% #create column with group for each indvidual sample (this is a unique ID)
-  mutate(individual = model.spp.gr.sample) %>% 
+  unite(individual, c('year','month','spp', 'sample'), remove = FALSE) %>% 
   #group for month and year
-  select(-model.spp.gr.sample) %>% 
   mutate(precip.2month = year.month) %>%
  mutate(precip.2mo = recode(precip.2month, "2020_September" = 0.01, "2018_January" = 0.09, "2019_December" = 3.69, "2020_January" = 5.82, "2016_December" = 3.49)) %>%
   mutate(season = year.month) %>%
@@ -241,8 +262,7 @@ data.5bins <- data %>%
   add_tally %>% #column with n for each of these groups
   ungroup() %>% #ungroup so r doesnt get confused
   unite(model.spp.bins5lfm_gr, c("year", "month", "model", "spp", "bins5lfm_gr"), remove = FALSE) %>% #create column for each group as above, which will be associated with the n of each group based on the above add_tally step. 
-  unite(model.spp.bins5lfm_gr.sample, c("year", "month", "model", "spp", "bins5lfm_gr", "sample"), remove = FALSE) %>% #create column with group for each indvidual sample (this is a unique ID)
-  rename(individual.bins5lfm_gr = model.spp.bins5lfm_gr.sample) %>% 
+  unite(individual.bins5lfm_gr, c("year", "month", "model", "spp", "bins5lfm_gr", "sample"), remove = FALSE) %>% #create column with group for each indvidual sample (this is a unique ID)
   group_by(individual.bins5lfm_gr)#group by year, model, spp, group column
  
 setDT(data.5bins)[,total_bins5lfm_gr:=sum(ignition),by=model.spp.bins5lfm_gr][] #add column called "total" with the total number of ignitions per group ("sum" works because we have 0s and 1s)
@@ -343,14 +363,13 @@ data <- data %>%
          dw.outs = dw.flam.sample) %>%
   replace_with_na_at(.vars = c("ww.flam.sample"), condition = ~.x < 0) # oe was below 0 (due to missing lfm), so remove that one 
 ```
-#### wet weights
 
+#### wet weights
 ```{r}
 outlierKD2(data, ww.outs)
 ```
 
 Remove very high ww
-
 ```{r}
 data <- data %>% 
         filter(ww.flam.sample < .75)

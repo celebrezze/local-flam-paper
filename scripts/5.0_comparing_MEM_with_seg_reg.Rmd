@@ -37,7 +37,7 @@ library(kableExtra)
 # 1. Data wrangling
 Reading in dataframe
 ```{r}
-scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates.csv'))
 ```
 
 Species split
@@ -96,9 +96,9 @@ summary.segmented(os.m2.pa)
 #AIC: 1015.843
 
 s.m3<-lme(PC1~ ww.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
-os.m3.pa<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
-summary.segmented(os.m3.pa)
-#AIC: 1009.496
+#os.m3.pa<-segmented.default(s.m3, ~ww.flam.sample, npsi=list(ww.flam.sample=1))
+#summary.segmented(os.m3.pa)
+#AIC: NA, error occurred
 
 s.m4<-lme(PC1~ dw.flam.sample + year.month + site, random=~1|id, data=mem.data.adfa)
 os.m4.pa<-segmented.default(s.m4, ~dw.flam.sample, npsi=list(dw.flam.sample=1))
@@ -614,14 +614,14 @@ aic.values <- AIC(m1.pa, os.m1.pa, m2.pa, os.m2.pa, m1.pc, os.m1.pc, m2.pc, os.m
 diff.aic <- AIC(m1.pa, m2.pa, m1.pc, m2.pc, m1.ta, m2.ta, m1.tc, m2.tc, m1.fha, m2.fha, m1.fhc, m2.fhc, m1.ga, m2.ga, m1.gc, m2.gc, m1.fda, m2.fda, m1.fdc, m2.fdc)$AIC - AIC(os.m1.pa, os.m2.pa, os.m1.pc, os.m2.pc, os.m1.ta, os.m2.ta, os.m1.tc, os.m2.tc, os.m1.fha, os.m2.fha, os.m1.fhc, os.m2.fhc, os.m1.ga, os.m2.ga, os.m1.gc, os.m2.gc, os.m1.fda, os.m2.fda, os.m1.fdc, os.m2.fdc)$AIC 
 diff.aic
 
-d.aic <- c('7.3382544', " ", '0.1354309', " ", '0.5257', " ",  '6.2493515', " ", '13.5140596', " ",  '12.9497412', " ",  '3.1629817', " ",  '22.2718000', " ",  '9.2936522', " ",  '8.5088373', " ",  '16.8151998', " ",  '13.8684488', " ",  '7.6481625', " ",  '6.1603456', " ",  '8.6774760', " ",  '7.1176700', " ",  '3.5365891', " ",  '1.9709327', " ",  '3.8982039', " ",  '2.3846002', ' ')
+d.aic <- c('7.62504980', " ", '-0.02300228', " ", '-0.07314890', " ",  '6.35947790', " ", '14.46551012', " ",  '12.17356390', " ",  '3.19816683', " ",  '22.20671746', " ",  '3.88609038', " ",  '7.99002428', " ",  '17.48653269', " ",  '14.59977267', " ",  '8.60958029', " ",  '7.51919544', " ",  '8.62388566', " ",  '7.11361267', " ",  '3.32824736', " ",  '2.39598947', " ",  '3.75932306', " ",  '2.18676268', ' ')
 
 bic.values <- BIC(m1.pa, os.m1.pa, m2.pa, os.m2.pa, m1.pc, os.m1.pc, m2.pc, os.m2.pc, m1.ta, os.m1.ta, m2.ta, os.m2.ta, m1.tc, os.m1.tc, m2.tc, os.m2.tc, m1.fha, os.m1.fha, m2.fha, os.m2.fha, m1.fhc, os.m1.fhc, m2.fhc, os.m2.fhc, m1.ga, os.m1.ga, m2.ga, os.m2.ga, m1.gc, os.m1.gc, m2.gc, os.m2.gc, m1.fda, os.m1.fda, m2.fda, os.m2.fda, m1.fdc, os.m1.fdc, m2.fdc, os.m2.fdc)$BIC
 
 diff.bic <- BIC(m1.pa, m2.pa, m1.pc, m2.pc, m1.ta, m2.ta, m1.tc, m2.tc, m1.fha, m2.fha, m1.fhc, m2.fhc, m1.ga, m2.ga, m1.gc, m2.gc, m1.fda, m2.fda, m1.fdc, m2.fdc)$BIC - BIC(os.m1.pa, os.m2.pa, os.m1.pc, os.m2.pc, os.m1.ta, os.m2.ta, os.m1.tc, os.m2.tc, os.m1.fha, os.m2.fha, os.m1.fhc, os.m2.fhc, os.m1.ga, os.m2.ga, os.m1.gc, os.m2.gc, os.m1.fda, os.m2.fda, os.m1.fdc, os.m2.fdc)$BIC
 diff.bic
 
-d.bic <- c('0.31848815', " ", '-6.88433538', " ", '-5.7712', " ", '-0.04764151', " ",  '6.49429335', " ", '5.92997495', " ", '-3.13401131', " ", '15.97480701', " ", '2.27388591', " ", '1.48907102', " ", '10.51820680', " ", '7.57145578', " ", '0.62839626', " ", '-0.85942067', " ",    '2.38048296', " ", '0.82067692', " ", '-3.48317716', " ", '-5.04883355', " ", '-2.39878913', " ",  '-3.91239284', " ")
+d.bic <- c('0.60528351', " ", '-7.04276857', " ", '-6.37014193', " ", '0.06248487', " ",  '7.44574383', " ", '5.15379761', " ", '-3.09882621', " ", '15.90972443', " ", '-3.13367591', " ", '0.97025799', " ", '11.18953965', " ", '8.30277964', " ", '1.58981400', " ", '0.49942914', " ",    '2.32689262', " ", '0.81661963', " ", '-3.69151893', " ", '-4.62377682', " ", '-2.53766998', " ",  '-4.11023036', " ")
 
 dep.var <- c("PC1", " ", " ", " ", " ", " ", " ", " ", "Time to Ignition (s)", " ", " ", " "," ", " ", " ", " ", "Flame Height (cm)", " ", " ", " "," ", " ", " ", " ", "Glow Duration (s)", " ", " ", " "," ", " ", " ", " ", "Flame Duration (s)", " ", " ", " "," ", " ", " ", " ")
 
@@ -639,4 +639,3 @@ mem.vs.seg.table.df %>%
   row_spec(c(1, 9, 17, 25, 33), background = "#D3D3D3") %>% 
   save_kable(here('figures', 'extra-figures', 'MEM_vs_SegReg_kable.html'))
 ```
-

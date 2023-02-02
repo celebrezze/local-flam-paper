@@ -76,7 +76,7 @@ Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db
 # 1. Data wrangling
 Reading in dataframe
 ```{r}
-scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+scaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates.csv'))
 ```
 
 Seasonal mins and maxs from 2016 - 2020:

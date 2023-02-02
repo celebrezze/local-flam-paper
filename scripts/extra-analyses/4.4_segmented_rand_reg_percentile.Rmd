@@ -31,7 +31,7 @@ Using all dates instead of just Sept. 2020 data
 ```{r}
 seg.data.subset <- read.csv(here('processed-data', 'seg.reg.data.local.csv'))
 
-seg.data.subset.alldates <- read.csv(here('processed-data', 'mem.data.subset.alldates'))
+seg.data.subset.alldates <- read.csv(here('processed-data', 'mem.data.subset.alldates.csv'))
 
 scaled.mem.data.alldates <- read.csv(here('processed-data', 'mem.data.local.epi.alldates.csv'))
 
@@ -321,7 +321,8 @@ confint(segmented.mod)
 
 fit <- numeric(length(seg.adfa.subset.p$lfm)) * NA
 
-fit[complete.cases(rowSums(cbind(seg.adfa.subset.p$prop.ignite.bins10_nodate, seg.adfa.subset.p$lfm)))] <- broken.line(segmented.mod)$fit
+#fit[complete.cases(rowSums(cbind(seg.adfa.subset.p$prop.ignite.bins10_nodate, seg.adfa.subset.p$lfm)))] <- broken.line(segmented.mod)$fit
+# No breakpoint estimated
 
 confint <- confint(segmented.mod)
 confint

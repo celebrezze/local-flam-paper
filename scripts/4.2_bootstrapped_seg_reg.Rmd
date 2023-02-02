@@ -174,8 +174,9 @@ for(j in 1:nrow(ceme.thresholds)){
 Huh.. Luckily, seeds 1:100 did not cause the for loop to be interrupted!
 
 Glow to Ignition:
+#EDIT! Fix...
 ```{r}
-for(j in 1:25){
+for(j in 1:17){
   set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   ceme.binned.df <- seg.ceme.subset %>% 
@@ -186,7 +187,7 @@ for(j in 1:25){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 26:48){
+for(j in 18:48){
   set.seed(seed = j+1, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   ceme.binned.df <- seg.ceme.subset %>% 
@@ -208,7 +209,7 @@ for(j in 49:69){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 70:93){
+for(j in 70:80){
   set.seed(seed = j+4, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   ceme.binned.df <- seg.ceme.subset %>% 
@@ -219,8 +220,19 @@ for(j in 70:93){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 94:100){
-  set.seed(seed = j+5, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 81:91){
+  set.seed(seed = j+6, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  ceme.binned.df <- seg.ceme.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(8, replace = T)
+  
+ out.lm<-lm(gti ~ lfm + site + year.month, data = ceme.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  ceme.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 91:100){
+  set.seed(seed = j+17, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   ceme.binned.df <- seg.ceme.subset %>% 
   group_by(lfm.bin) %>% 
@@ -363,7 +375,7 @@ Since the above for loop kept getting interrupted when thresholds were not disco
 
 Glow Duration:
 ```{r}
-for(j in 1:8){
+for(j in 1:3){
   set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
@@ -374,8 +386,8 @@ for(j in 1:8){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 9:17){
-  set.seed(seed = j+3, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 4:10){
+  set.seed(seed = j+6, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -385,18 +397,7 @@ for(j in 9:17){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 18:24){
-  set.seed(seed = j+9, kind = 'default', normal.kind = 'default', sample.kind = 'default')
-  
-  adfa.binned.df <- seg.adfa.subset %>% 
-  group_by(lfm.bin) %>% 
-  sample_n(19, replace = T)
-
-  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
-  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
-  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
-
-for(j in 25:29){
+for(j in 11:29){
   set.seed(seed = j+11, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
@@ -418,8 +419,8 @@ for(j in 30:33){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 34:37){
-  set.seed(seed = j+16, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 34:38){
+  set.seed(seed = j+21, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -429,8 +430,8 @@ for(j in 34:37){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 38:42){
-  set.seed(seed = j+17, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 38:41){
+  set.seed(seed = j+24, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -440,8 +441,8 @@ for(j in 38:42){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 43:50){
-  set.seed(seed = j+46, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 42:64){
+  set.seed(seed = j+100, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -451,8 +452,8 @@ for(j in 43:50){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 51:60){
-  set.seed(seed = j+64, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 65:71){
+  set.seed(seed = j+126, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -462,8 +463,8 @@ for(j in 51:60){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 60:68){
-  set.seed(seed = j+68, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 72:85){
+  set.seed(seed = j+200, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -473,8 +474,8 @@ for(j in 60:68){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 69:81){
-  set.seed(seed = j+83, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 86:91){
+  set.seed(seed = j+320, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -484,8 +485,8 @@ for(j in 69:81){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 82:87){
-  set.seed(seed = j+89, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 92:96){
+  set.seed(seed = j+400, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -495,19 +496,8 @@ for(j in 82:87){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 88:95){
-  set.seed(seed = j+96, kind = 'default', normal.kind = 'default', sample.kind = 'default')
-  
-  adfa.binned.df <- seg.adfa.subset %>% 
-  group_by(lfm.bin) %>% 
-  sample_n(19, replace = T)
-
-  out.lm<-lm(gd ~ lfm + site + year.month, data = adfa.binned.df)
-  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
-  adfa.thresholds$psi.gd[j] <- summary(segmented.mod)$psi[2]}
-
-for(j in 95:100){
-  set.seed(seed = j+98, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 97:100){
+  set.seed(seed = j+411, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -521,8 +511,8 @@ Oh boy that took a while.
 
 Glow to Ignition:
 ```{r}
-for(j in 1:28){
-  set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 1:24){
+  set.seed(seed = j+4, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -532,7 +522,7 @@ for(j in 1:28){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 29:77){
+for(j in 25:75){
   set.seed(seed = j+10, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
@@ -543,7 +533,7 @@ for(j in 29:77){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.gti[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 78:100){
+for(j in 76:100){
   set.seed(seed = j+50, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
@@ -571,7 +561,7 @@ for(j in 1:6){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 7:29){
+for(j in 7:15){
   set.seed(seed = j+9, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
@@ -582,8 +572,8 @@ for(j in 7:29){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 30:38){
-  set.seed(seed = j+12, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 16:30){
+  set.seed(seed = j+20, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -593,18 +583,7 @@ for(j in 30:38){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 39:47){
-  set.seed(seed = j+19, kind = 'default', normal.kind = 'default', sample.kind = 'default')
-  
-  adfa.binned.df <- seg.adfa.subset %>% 
-  group_by(lfm.bin) %>% 
-  sample_n(19, replace = T)
-
-  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
-  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
-  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
-
-for(j in 48:64){
+for(j in 31:44){
   set.seed(seed = j+21, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
@@ -615,8 +594,19 @@ for(j in 48:64){
   segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
   adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
 
-for(j in 65:77){
-  set.seed(seed = j+29, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+for(j in 45:67){
+  set.seed(seed = j+30, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  
+  adfa.binned.df <- seg.adfa.subset %>% 
+  group_by(lfm.bin) %>% 
+  sample_n(19, replace = T)
+
+  out.lm<-lm(temp.max ~ lfm + site + year.month, data = adfa.binned.df)
+  segmented.mod <- segmented(out.lm, seg.Z = ~lfm)
+  adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
+
+for(j in 68:77){
+  set.seed(seed = j+50, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -627,7 +617,7 @@ for(j in 65:77){
   adfa.thresholds$psi.temp.max[j] <- summary(segmented.mod)$psi[2]}
 
 for(j in 78:91){
-  set.seed(seed = j+33, kind = 'default', normal.kind = 'default', sample.kind = 'default')
+  set.seed(seed = j+63, kind = 'default', normal.kind = 'default', sample.kind = 'default')
   
   adfa.binned.df <- seg.adfa.subset %>% 
   group_by(lfm.bin) %>% 
@@ -655,6 +645,8 @@ summary(adfa.thresholds)
 ```
 
 # -------------------------------
+# EDIT!!
+
 # Summary Table: LFM
 ```{r}
 dep.var <- c('PC1','PC2','TTI','Prop Ignite (5%)','GTI','FH','Max Temp.','FD','GD','PFG','TTFG', 'Summary','PC1','PC2','TTI','Prop Ignite (5%)','GTI','FH','Max Temp.','FD','GD','PFG','TTFG', 'Summary')
