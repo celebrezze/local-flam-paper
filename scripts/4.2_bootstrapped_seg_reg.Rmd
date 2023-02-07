@@ -174,7 +174,6 @@ for(j in 1:nrow(ceme.thresholds)){
 Huh.. Luckily, seeds 1:100 did not cause the for loop to be interrupted!
 
 Glow to Ignition:
-#EDIT! Fix...
 ```{r}
 for(j in 1:17){
   set.seed(seed = j, kind = 'default', normal.kind = 'default', sample.kind = 'default')
@@ -645,47 +644,63 @@ summary(adfa.thresholds)
 ```
 
 # -------------------------------
-# EDIT!!
-
 # Summary Table: LFM
 ```{r}
 dep.var <- c('PC1','PC2','TTI','Prop Ignite (5%)','GTI','FH','Max Temp.','FD','GD','PFG','TTFG', 'Summary','PC1','PC2','TTI','Prop Ignite (5%)','GTI','FH','Max Temp.','FD','GD','PFG','TTFG', 'Summary')
 spp <- c(rep('ADFA', 11), 'TLP = 74.33 +/- 7.37', rep('CEME', 11), 'TLP = 88.96 +/- 2.53')
-sig.p <- c('Yes (p = 0.00731)','Yes (p < 0.0005)','Yes (p < 0.0005)','Yes (p = 0.001)','Yes (p = 0.044)','Yes (p < 0.0005)','Yes (p < 0.0005)','No','No','Yes (p = 0.0103)','Yes (p < 0.0005)', '9/11 Significant','Yes (p < 0.0005)','Yes (p = 0.008)','Yes (p < 0.0005)','Yes (p < 0.0005)','Yes (p = 0.0009)','Yes (p < 0.0005)','No','No','No','Yes (p = 0.0426)','No', '7/11 Significant')
-thresholds <- c('98.274','63.142','78.541','43.254','98.274','78.872','98.274','46.394',
-                '65.864','65.509','78.622', 'Avg: 78.08 +/- 11.56',
-                '132.543','63.437','119.281','91.053','120.89',
-                '57.0196','55.385','48.83','64.737','68.003','59.153', 'Avg: 93.18 +/- 21.38')
-bootstrap.thresholds <- c('101.82', '79.83', '87.60', 'NA', '104.78', '88.41', '98.98',
-                          '94.72', '86.79', '64.75', '70.64','Avg: 87.83','114.38', '114.98',
-                          '112.85', '93.34', '126.48', '75.36', '65.50', '137.93', '155.79',
-                          '133.19', '82.80', 'Avg: 110.24')
+sig.p <- c('Yes (p < 0.0005)','Yes (p < 0.0005)','Yes (p < 0.0005)','Yes (p < 0.0005)','Yes (p = 0.025)','Yes (p < 0.0005)','Yes (p < 0.0005)','No','Yes (p = 0.032)','Yes (p = 0.0063)','Yes (p < 0.0005)', '10/11 Significant','Yes (p < 0.0005)','Yes (p = 0.0206)','Yes (p < 0.0005)','Yes (p < 0.0005)','Yes (p < 0.0005)','Yes (p = 0.0058)','Yes (p = 0.044)','No','No','Yes (p = 0.037)','No', '8/11 Significant') 
+thresholds <- c('98.279','62.659','98.059','43.146','98.279','79.506','98.279',
+                '46.555','65.827', '65.843', '78.536', 'Avg: 78.84',
+                '132.532','60.301','120.141','91.879','119.911',
+                '57.192','55.577','49.685','63.750','68.051','59.891',
+                'Avg: 88.198')
+bootstrap.thresholds <- c('101.00', '80.38', '87.86', 'NA', '105.27', '87.32', '99.57',
+                          '88.62', '80.93', '64.91', '70.25','Avg: 86.61','111.10', '112.50',
+                          '109.50', '92.28', '133.35', '78.71', '66.29', '135.80', '153.2',
+                          '136.86','85.82','Avg: 110.49')
 seg.reg.table.df <- data.frame(dep.var, spp, sig.p, thresholds, bootstrap.thresholds)
 
 seg.reg.table.df %>%
   mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), spp = cell_spec(spp, 'html', color = 'black'), sig.p = cell_spec(sig.p, 'html', color = 'black'), thresholds = cell_spec(thresholds, 'html', color = 'black'), bootstrap.thresholds = cell_spec(bootstrap.thresholds, 'html', color = 'black')) %>% 
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Species', 'Significant?','Threshold', 'Bootstrapped Threshold'), caption = 'Live Fuel Moisture') %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1:7, 10:11, 13:18, 22), bold = T) %>% 
-  row_spec(c(8, 9, 19:21, 23), bold = F) %>% 
+  row_spec(c(1:7, 9:11, 13:19, 22), bold = T) %>% 
+  row_spec(c(8, 20:21, 23), bold = F) %>% 
   row_spec(c(12, 24), background = "#D3D3D3", bold = T) %>%
   save_kable(here('figures', 'supp-figures', 'LFM.segreg.summary.html'))
 ```
+
+Mean, St. Dev., Median
+```{r}
+adfa.sig.lfm.psi <- c(98.279,62.659,98.059,43.146,98.279,79.506,98.279,65.827,65.843,78.536)
+mean(adfa.sig.lfm.psi)
+sd(adfa.sig.lfm.psi)
+median(adfa.sig.lfm.psi)
+ceme.sig.lfm.psi <- c(132.532,60.301,120.141,91.879,119.911,57.192,55.577,68.051)
+mean(ceme.sig.lfm.psi)
+sd(ceme.sig.lfm.psi)
+median(ceme.sig.lfm.psi)
+both.sig.lfm.psi <- c(98.279,62.659,98.059,43.146,98.279,79.506,98.279,65.827,65.843,78.536,132.532,60.301,120.141,91.879,119.911,57.192,55.577,68.051)
+mean(both.sig.lfm.psi)
+sd(both.sig.lfm.psi)
+median(both.sig.lfm.psi)
+```
+
 
 # Summary Table: Water Potential
 ```{r}
 dep.var <- c('PC1','PC2','TTI','Prop Ignite (5%)','GTI','FH','Max Temp.','FD','GD','PFG','TTFG', 'Summary','PC1','PC2','TTI','Prop Ignite (5%)','GTI','FH','Max Temp.','FD','GD','PFG','TTFG', 'Summary')
 spp <- c(rep('ADFA', 11), ' ', rep('CEME', 11), ' ')
-sig.p <- c('Yes (p = 0.011)','Yes (p < 0.0005)','Yes (p < 0.0005)','No','Yes (p < 0.0005)','No','No','No','No','Yes (p = 0.0126)','No', '5/11 Significant', 'No', 'No','No','Yes (p = 0.024)','No','Yes (p = 0.00188)','No','No','No','No','No', '2/11 Significant')
-thresholds <- c('-0.911','-0.4','-0.4','-0.4','-0.4','NA','NA','NA','-0.4','-0.4','NA', 'Avg:  -0.502','NA','NA','NA','-8.199','-1.240','-7.77','NA','NA','NA','NA','NA', 'Avg: -7.98')
+sig.p <- c('Yes (p < 0.0005)','Yes (p < 0.0005)','Yes (p < 0.0005)','No','Yes (p = 0.0042)','No','No','Yes (p = 0.0086)','No','Yes (p = 0.0015)','No', '6/11 Significant', 'No', 'No','No','No','No','Yes (p = 0.0072)','No','No','No','No','Yes (p < 0.0005)', '2/11 Significant')
+thresholds <- c('-0.4','-0.4','-0.4','-0.4','-0.504','-9.88','NA','-0.4','-0.331','-3.45','-9.96', 'Avg:  -0.925','-9.99','-9.99','-10','-10','-10','-8.05','-10','-9.99','-10','-10','-0.76', 'Avg: -4.41')
 seg.reg.table2.df <- data.frame(dep.var, spp, sig.p, thresholds)
 
 seg.reg.table2.df %>% 
    mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), spp = cell_spec(spp, 'html', color = 'black'), sig.p = cell_spec(sig.p, 'html', color = 'black'), thresholds = cell_spec(thresholds, 'html', color = 'black')) %>% 
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Species', 'Significant?','Threshold'), caption = 'Water Potential') %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1:3, 5, 10, 16, 18), bold = T) %>% 
-  row_spec(c(4, 6:9, 11, 13:15, 17, 19:23), bold = F) %>% 
+  row_spec(c(1:3, 5, 8, 10, 18, 23), bold = T) %>% 
+  row_spec(c(4, 6:7, 9, 11, 13:17, 19:22), bold = F) %>% 
   row_spec(c(12, 24), background = "#D3D3D3", bold = T) %>%
   save_kable(here('figures', 'supp-figures', 'mpa.segreg.summary.html'))
 ```

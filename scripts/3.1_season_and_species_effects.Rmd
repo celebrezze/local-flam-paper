@@ -375,7 +375,7 @@ szn.diff.kable.df %>%
   row_spec(c(1:42), color = "black") %>%
   column_spec(c(5), background = "#D3D3D3") %>% 
   row_spec(c(2, 4, 6, 10, 14, 18, 20, 25, 27, 31, 33, 35, 37, 39), bold = T) %>% 
-  row_spec(c(8:9, 12:13, 16:17, 23:24, 29:30, 41:42), italic = T) %>% 
+  row_spec(c(2:5, 8:9, 12:13, 16:17, 23:24, 29:30, 41:42), italic = T) %>% 
   row_spec(c(1, 22), background = "#D3D3D3", bold = T, italic = T) %>% 
   column_spec(c(1), bold = T, border_right = T) %>% 
   column_spec(c(3), border_right = T) %>% 
@@ -494,10 +494,10 @@ pc1.vs.mpa.adfa <- precip_groups_ranis.adfa  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = -0.138, intercept = 0.128,
+  geom_abline(slope = -0.143, intercept = -0.052,
               color = '#c1121f', cex = 1, alpha = .9,
               show.legend = FALSE) +
-  geom_abline(slope = -0.138, intercept = 0.954,
+  geom_abline(slope = -0.143, intercept = 0.645,
               color = '#669bbc', cex = 1, alpha = .9,
               show.legend = FALSE) +
   geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') + # CHANGE TO x = 9 if text above!
@@ -626,10 +626,10 @@ pc1.vs.mpa.ceme <- precip_groups_ranis.ceme  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = -0.147, intercept = -0.842,
+  geom_abline(slope = -0.145, intercept = 0.044,
               color = '#c1121f', cex = 1, alpha = .9,
               show.legend = FALSE) +
-  geom_abline(slope = -0.147, intercept = -0.520,
+  geom_abline(slope = -0.145, intercept = 0.472,
               color = '#669bbc', cex = 1, alpha = .9,
               show.legend = FALSE) +
   geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') + # CHANGE TO x = 9 if text above!
@@ -669,10 +669,10 @@ pc2.vs.mpa.adfa <- precip_groups_ranis.adfa  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = 0.109, intercept = 0.615,
+  geom_abline(slope = 0.113, intercept = -0.010,
               color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.109, intercept = 1.300,
+  geom_abline(slope = 0.113, intercept = 0.695,
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.3), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
@@ -707,10 +707,10 @@ pc2.vs.mpa.ceme <- precip_groups_ranis.ceme  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = 0.121, intercept = 0.401,
+  geom_abline(slope = 0.120, intercept = 0.015,
               color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.121, intercept = 1.142,
+  geom_abline(slope = 0.120, intercept = 0.744,
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.3), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
@@ -745,16 +745,17 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = 0.039, intercept = 0.040,
+  geom_abline(slope = 0.170, intercept = 0.200,
               color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.039, intercept = 0.299,
+  geom_abline(slope = 0.170, intercept = 0.297,
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   labs(x = "Water Potential (MPa)", 
        y = "Live Fuel Moisture (Scaled, Effects Removed)", 
        fill = "Season",
        color = "Season") +
+  scale_y_continuous(limits=c(-2.5,2), breaks=c(-2,-1,0,1,2)) +
   th +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "none", 
@@ -765,7 +766,7 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
         axis.title.x = element_blank(),
         axis.text = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  annotate('text', x = -9.7, y = 0.5, label = 'e', size = 12, face = 'bold') +
+  annotate('text', x = -9.7, y = 1.5, label = 'e', size = 12, face = 'bold') +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.adfa
 ```
@@ -780,16 +781,17 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = 0.032, intercept = 0.002,
+  geom_abline(slope = 0.128, intercept = -0.171,
               color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.032, intercept = 0.409,
+  geom_abline(slope = 0.128, intercept = 0.398,
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   labs(x = "Water Potential (MPa)", 
        y = "Live Fuel Moisture (Scaled, Effects Removed)", 
        fill = "Season",
        color = "Season") +
+  scale_y_continuous(limits=c(-2.5,2), breaks=c(-2,-1,0,1,2)) +
   th +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "none", 
@@ -800,7 +802,7 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
         axis.text.x = element_text(size = 14),
         axis.text.y = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  annotate('text', x = -9.7, y = 0.37, label = 'f', size = 12, face = 'bold') +
+  annotate('text', x = -9.7, y = 1.5, label = 'f', size = 12, face = 'bold') +
   scale_fill_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.ceme
 ```
@@ -1025,10 +1027,10 @@ pc1.vs.lfm.adfa <- szn_lfm_ranis  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = -0.011, intercept = -0.063,
+  geom_abline(slope = -0.014, intercept = 0.082,
               color = '#c1121f', cex = 1, alpha = .9,
               show.legend = FALSE) +
-  geom_abline(slope = -0.011, intercept = 0.703,
+  geom_abline(slope = -0.014, intercept = 0.854,
               color = '#669bbc', cex = 1, alpha = .9,
               show.legend = FALSE) +
   geom_segment(aes(x = 15, xend = 15, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
@@ -1065,10 +1067,10 @@ pc1.vs.lfm.ceme <- szn_lfm_ranis  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = -0.012, intercept = 0.038,
+  geom_abline(slope = -0.013, intercept = -0.029,
               color = '#c1121f', cex = 1, alpha = .9,
               show.legend = FALSE) +
-  geom_abline(slope = -0.012, intercept = 0.878,
+  geom_abline(slope = -0.013, intercept = 0.800,
               color = '#669bbc', cex = 1, alpha = .9,
               show.legend = FALSE) +
   geom_segment(aes(x = 20, xend = 20, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
@@ -1106,10 +1108,10 @@ pc2.vs.lfm.adfa <- szn_lfm_ranis  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = 0.016, intercept = -0.590,
+  geom_abline(slope = 0.016, intercept = -0.570,
               color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.016, intercept = 0.377,
+  geom_abline(slope = 0.016, intercept = 0.338,
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   geom_segment(aes(x = 15, xend = 15, y = -5, yend = -3.3), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
@@ -1143,10 +1145,10 @@ pc2.vs.lfm.ceme <- szn_lfm_ranis  %>%
              color = season,
              group = season)) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
-  geom_abline(slope = 0.008, intercept = 0.206,
+  geom_abline(slope = 0.007, intercept = 0.223,
               color = '#c1121f', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
-  geom_abline(slope = 0.008, intercept = 0.773,
+  geom_abline(slope = 0.007, intercept = 0.773,
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   geom_segment(aes(x = 20, xend = 20, y = -5, yend = -3.3), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
@@ -1599,15 +1601,15 @@ tab_model(m.tti, m.tti.nospp, m.tti.linear, m.fd, m.fd.nospp, m.fd.linear, m.gd,
 ```{r}
 pc1.mpa.spp <- ggplot(data= pc1_remef_year_df, aes(mpa.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
   geom_point(size = 2, alpha = .65) + 
-  geom_abline(slope = -0.113, intercept = -0.934, color = "#9D0208", cex = 1, alpha = 0.9) +
-  geom_abline(slope = -0.113, intercept = -1.738, color = "#F48C06", cex = 1, alpha = 0.9) +
+  geom_abline(slope = -0.118, intercept = -0.939, color = "#9D0208", cex = 1, alpha = 0.9) +
+  geom_abline(slope = -0.118, intercept = -1.743, color = "#F48C06", cex = 1, alpha = 0.9) +
   labs(x="Water Potential (-Mpa)", y="Ignitability-Combustibility Proxy") +
-  annotate('point', x = -5.411, y = -0.322557, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = -7.444, y = -0.896828, color = "#F48C06", size = 5, alpha = 0.9) +
+  annotate('point', x = -5.411, y = -0.300502, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = -7.444, y = -0.864608, color = "#F48C06", size = 5, alpha = 0.9) +
   annotate('text', x = -4, y = -5.35, label = 'Species Difference: *** p < 0.001', size = 4.5) +
   geom_segment(aes(x = -9, xend = -9, y = -5.56, yend = -4.66), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
   annotate('text', x = -9, y = -3.66, label = 'More \n Combustible \n & Ignitable', fontface = 2) +
-  annotate('text', x = -9.7, y = 3.6, label = 'a', size = 12) +
+  annotate('text', x = -9.7, y = 3.56, label = 'a', size = 12) +
   th +
   th_panels +
   theme(axis.text.x = element_blank(),
@@ -1620,12 +1622,12 @@ pc1.mpa.spp
 ```{r}
 tti.mpa.spp <- ggplot(data= tti_groups_ranis, aes(mpa.unscaled, r1_1, color = Species, shape = Species)) + 
   geom_point(size = 2, alpha = .65) + 
-  geom_abline(slope = 1.423, intercept = 47.891, color = "#9D0208", cex = 1, alpha = 0.9) +
-  geom_abline(slope = 1.423, intercept = 55.367, color = "#F48C06", cex = 1, alpha = 0.9) +
-  annotate('point', x = -5.411, y = 40.19115, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = -7.444, y = 44.77419, color = "#F48C06", size = 5, alpha = 0.9) +
-  annotate('text', x = -6.5, y = 14, label = 'Species Difference: *** p < 0.001', size = 4.5) +
-  annotate('text', x = -9.7, y = 86.1, label = 'b', size = 12) +
+  geom_abline(slope = 1.443, intercept = 47.659, color = "#9D0208", cex = 1, alpha = 0.9) +
+  geom_abline(slope = 1.443, intercept = 55.086, color = "#F48C06", cex = 1, alpha = 0.9) +
+  annotate('point', x = -5.411, y = 39.85093, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = -7.444, y = 44.34431, color = "#F48C06", size = 5, alpha = 0.9) +
+  annotate('text', x = -6.5, y = 15.5, label = 'Species Difference: *** p < 0.001', size = 4.5) +
+  annotate('text', x = -9.7, y = 88.2, label = 'b', size = 12) +
   labs(x="Water Potential (-Mpa)", y="Time to Ignition")  +
   th +
   th_panels +
@@ -1639,10 +1641,10 @@ tti.mpa.spp
 ```{r}
 fd.mpa.spp <- ggplot(data= fd_remef_year_df, aes(mpa.unscaled, fd_remef_year, color = Species,shape = Species)) + 
   geom_point(size = 2, alpha = .65) + 
-  geom_abline(slope = -0.143, intercept = 7.077, color = "#9D0208", cex = 1, alpha = 0.9) +
-  geom_abline(slope = -0.143, intercept = 4.966, color = "#F48C06", cex = 1, alpha = 0.9) +
-  annotate('point', x = -5.411, y = 7.850773, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = -7.444, y = 5.963496, color = "#F48C06", size = 5, alpha = 0.9) +
+  geom_abline(slope = -0.137, intercept = 7.137, color = "#9D0208", cex = 1, alpha = 0.9) +
+  geom_abline(slope = -0.137, intercept = 4.99, color = "#F48C06", cex = 1, alpha = 0.9) +
+  annotate('point', x = -5.411, y = 8.058307, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = -7.444, y = 6.009828, color = "#F48C06", size = 5, alpha = 0.9) +
   labs(x="Water Potential (-Mpa)", y="Flame Duration")  +
   annotate('text', x = -6.5, y = 0.1, label = 'Species Difference: *** p < 0.001', size = 4.5) +
   annotate('text', x = -9.7, y = 22.6, label = 'c', size = 12) +
@@ -1657,13 +1659,13 @@ fd.mpa.spp
 ```{r}
 gd.mpa.spp <- ggplot(data= gd_remef_year_df, aes(mpa.unscaled, gd_remef_year, color = Species, shape = Species)) + 
   geom_point(size = 2, alpha = .65) + 
-  geom_abline(slope = -1.214, intercept = 125.726, color = "#9D0208", cex = 1, alpha = 0.9) +
-  geom_abline(slope = -1.214, intercept = 124.922, color = "#F48C06", cex = 1, alpha = 0.9) +
-  annotate('point', x = -5.411, y = 132.295, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = -7.444, y = 133.959, color = "#F48C06", size = 5, alpha = 0.9) +
+  geom_abline(slope = -1.090, intercept = 126.542, color = "#9D0208", cex = 1, alpha = 0.9) +
+  geom_abline(slope = -1.090, intercept = 132.955, color = "#F48C06", cex = 1, alpha = 0.9) +
+  annotate('point', x = -5.411, y = 132.44, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = -7.444, y = 141.069, color = "#F48C06", size = 5, alpha = 0.9) +
   labs(x="Water Potential (-Mpa)", y="Glow Duration")  +
-  annotate('text', x = -6.35, y = 45.726, label = 'Species Difference: non-significant', size = 4.5) +
-  annotate('text', x = -9.7, y = 205, label = 'd', size = 12) +
+  annotate('text', x = -6.35, y = 55, label = 'Species Difference: non-significant', size = 4.5) +
+  annotate('text', x = -9.7, y = 216.5, label = 'd', size = 12) +
   th +
   th_panels +
   theme(axis.text = element_text(size = 14)) +
@@ -1791,10 +1793,10 @@ tab_model(m.tti, m.tti.nospp, m.tti.linear, m.fd, m.fd.nospp, m.fd.linear, m.gd,
 ```{r}
 pc1.lfm.mem <- ggplot(data= pc1_remef_year_df, aes(lfm.unscaled, pc1_remef_year, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -0.014, intercept = 0.629, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -0.014, intercept = -0.053, color = "#F48C06", cex = 1) +
-  annotate('point', x = 65.67, y = -0.29038, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = 59.55, y = -0.8867, color = "#F48C06", size = 5, alpha = 0.9) +
+  geom_abline(slope = -0.015, intercept = 0.680, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -0.015, intercept = 0.002, color = "#F48C06", cex = 1) +
+  annotate('point', x = 65.67, y = -0.30505, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = 59.55, y = -0.89125, color = "#F48C06", size = 5, alpha = 0.9) +
   labs(x="Live Fuel Moisture (%)", y="Ignitability-Combustibility Proxy") +
   annotate('text', x = 110, y = -4.8, label = 'Species Difference: ** p < 0.01', size = 4.5) +
   geom_segment(aes(x = 45, xend = 45, y = -5, yend = -4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
@@ -1812,10 +1814,10 @@ pc1.lfm.mem
 ```{r}
 tti.lfm.mem <- ggplot(data= tti_groups_ranis, aes(lfm.unscaled, r1_1, color = Species, shape = Species), xlim = c(0, 170)) + 
   geom_point(size = 1.2, alpha = .6) + 
- geom_abline(slope = 0.183, intercept = 27.984, color = "#9D0208", cex = 1) +
-  geom_abline(slope = 0.183, intercept = 33.901, color = "#F48C06", cex = 1) +
-  annotate('point', x = 65.67, y = 40.00161, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = 59.55, y = 44.79865, color = "#F48C06", size = 5, alpha = 0.9) +
+ geom_abline(slope = 0.188, intercept = 27.670, color = "#9D0208", cex = 1) +
+  geom_abline(slope = 0.188, intercept = 33.528, color = "#F48C06", cex = 1) +
+  annotate('point', x = 65.67, y = 40.01596, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = 59.55, y = 44.7234, color = "#F48C06", size = 5, alpha = 0.9) +
   annotate('text', x = 75, y = 14, label = 'Species Difference: *** p < 0.001', size = 4.5) +
   annotate('text', x = 37, y = 85, label = 'b', size = 12) +
   labs(x="Live Fuel Moisture (%)", y="Time to Ignition")  +
@@ -1831,10 +1833,10 @@ tti.lfm.mem
 ```{r}
 fd.lfm.mem <- ggplot(data= fd_remef_year_df, aes(lfm.unscaled, fd_remef_year, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -0.014, intercept = 8.772, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -0.014, intercept = 6.78, color = "#F48C06", cex = 1) +
-  annotate('point', x = 65.67, y = 7.85262, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = 59.55, y = 5.9463, color = "#F48C06", size = 5, alpha = 0.9) +
+  geom_abline(slope = -0.011, intercept = 8.57, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -0.011, intercept = 6.517, color = "#F48C06", cex = 1) +
+  annotate('point', x = 65.67, y = 7.84763, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = 59.55, y = 5.86195, color = "#F48C06", size = 5, alpha = 0.9) +
   labs(x="Live Fuel Moisture (%)", y="Flame Duration")  +
   annotate('text', x = 75, y = 0.95, label = 'Species Difference: *** p < 0.001', size = 4.5) +
   annotate('text', x = 37, y = 21.7, label = 'c', size = 12) +
@@ -1849,10 +1851,10 @@ fd.lfm.mem
 ```{r}
 gd.lfm.mem <- ggplot(data= gd_remef_year_df, aes(lfm.unscaled, gd_remef_year, color = Species,shape = Species)) + 
   geom_point(size = 1.2, alpha = .6) + 
-  geom_abline(slope = -0.157, intercept = 142.348, color = "#9D0208", cex = 1) +
-  geom_abline(slope = -0.157, intercept = 150.068, color = "#F48C06", cex = 1) +
-  annotate('point', x = 65.67, y = 125.5943, color = "#9D0208", size = 5, alpha = 0.9) +
-  annotate('point', x = 59.55, y = 134.2862, color = "#F48C06", size = 5, alpha = 0.9) +
+  geom_abline(slope = -0.135, intercept = 141.131, color = "#9D0208", cex = 1) +
+  geom_abline(slope = -0.135, intercept = 148.668, color = "#F48C06", cex = 1) +
+  annotate('point', x = 65.67, y = 132.2655, color = "#9D0208", size = 5, alpha = 0.9) +
+  annotate('point', x = 59.55, y = 140.6287, color = "#F48C06", size = 5, alpha = 0.9) +
   labs(x="Live Fuel Moisture (%)", y="Glow Duration")  +
   scale_y_continuous(limits = c(50,235), breaks = c(50, 100, 150, 200)) +
   annotate('text', x = 70, y = 55, label = 'Species Difference: * p < 0.05', size = 4.5) +

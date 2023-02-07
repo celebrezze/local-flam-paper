@@ -327,11 +327,6 @@ os.mod.b<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.b)
 
-u.mod <- lm(tti~lfm + year.month + site, data = seg.ceme.subset)
-u.mod.b <- segmented(u.mod, ~lfm)
-davies.test(u.mod.b)
-summary.segmented(u.mod.b)
-
 rsegplot.lfm(os.mod.b, seg.ceme.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
 ```
 
@@ -497,25 +492,6 @@ summary.segmented(os.mod)
 
 rsegplot.mpa(os.mod, seg.ceme.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
 ```
-
-Split by Sampling Date
-
-
-o.mod<-lme(fh~mpa + site, random=~1|id, data=seg.ceme.s20.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
-summarizing results (note the '.coef' argument) -- hash this out if need code
-summary.segmented(os.mod)
-
-rsegplot.mpa(os.mod, seg.ceme.s20.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
-
-
-
-o.mod<-lme(fh~mpa, random=~1|id, data=seg.ceme.d19.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
-summarizing results (note the '.coef' argument) -- hash this out if you need code
-summary.segmented(os.mod)
-
-rsegplot.mpa(os.mod, seg.ceme.d19.subset, 'CEME', y.variable = 'fh',y.lab = "Flame Height (cm)", tlp = mean_mpa_ceme, tlp.lower = lwr_mpa_ceme, tlp.upper = upr_mpa_ceme)
 
 ### Max. Temp.
 ```{r}
@@ -684,8 +660,6 @@ os.mod<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod)
 
-confint.segmented(os.mod, 'lfm', .coef=fixef(os.mod))
-
 rsegplot.lfm(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'ttfg',y.lab = "Time to First Glow (s)", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa)
 ```
 
@@ -702,27 +676,7 @@ summary.segmented(os.mod.c1)
 rsegplot.mpa(os.mod.c1, seg.adfa.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
 ```
 
-Split by Sampling Date
-
-o.mod<-lme(PC1~mpa + site, random=~1|id, data=seg.adfa.s20.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
-summarizing results (note the '.coef' argument) -- hash this out if you need code
-summary.segmented(os.mod)
-
-rsegplot.mpa(os.mod, seg.adfa.s20.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
-
-
-
-o.mod<-lme(PC1~mpa, random=~1|id, data=seg.adfa.d16.subset)
-os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
-summarizing results (note the '.coef' argument) -- hash this out if you need code
-summary.segmented(os.mod)
-
-rsegplot.mpa(os.mod, seg.adfa.d16.subset, 'ADFA', y.variable = 'PC1',y.lab = "PC1", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
-
-
 ### PC2
-SIGNIFICANT 0.1738 (-5.75)
 ```{r}
 o.mod<-lme(PC2~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
@@ -787,23 +741,18 @@ No threshold able to be identified (segmented.default returns error)
 #summarizing results (note the '.coef' argument)
 #summary.segmented(os.mod)
 
-#plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
-
 #rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'temp.max',y.lab = "Maxiumum Temp.", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
 ```
 
 Sustainability Metrics:
 ### Flame Duration
-No threshold able to be identified (segmented.default returns error)
 ```{r}
-#o.mod<-lme(fd~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
-#os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
+o.mod<-lme(fd~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
+os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
 #summarizing results (note the '.coef' argument)
-#summary.segmented(os.mod)
+summary.segmented(os.mod)
 
-#plot.segmented(os.mod, "mpa", .coef=fixef(os.mod), conf.level=.95)
-
-#rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'fd',y.lab = "Flame Duration", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
+rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'fd',y.lab = "Flame Duration", tlp = mean_mpa_adfa, tlp.lower = lwr_mpa_adfa, tlp.upper = upr_mpa_adfa)
 ```
 
 Consumability Metrics:
@@ -828,7 +777,6 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'pfg',y.lab = "Post-F
 ```
 
 ### Time to First Glow
-No threshold able to be identified (segmented.default returns error)
 ```{r}
 o.mod<-lme(ttfg~mpa + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa, npsi=list(mpa=1))
@@ -843,6 +791,18 @@ rsegplot.mpa(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'ttfg',y.lab = "Time 
 # ---------------------------------
 # MAIN Figure: Arranging Plots
 
+For threshold values from above segmented regressions and the 95% CI (+/- 1.96*SE); in the following order (repeated twice; once for CEME, then ADFA): PC2, Prop. Ignite, GTI, FH, PFG, FD, MT, GD, TTFG 
+```{r}
+psi <- c(60.30118, 91.87861, 119.9111, 57.1915, 68.05055, 49.68505, 55.57693, 63.74955, 59.89132, 62.65922, 43.14614, 98.27882, 79.50582, 65.84311, 46.55515, 98.27882, 65.82738, 78.53595)
+se.psi <- c(6.658953, 5.592003, 22.37689, 4.920527, 9.347637, 7.83918, 6.153706, 9.380537, 7.690371, 4.290069, 2.192261, 10.12274, 5.414246, 6.058802, 6.604431, 8.924882, 7.186473, 6.963152)
+lwr.psi <- psi - 1.96*se.psi
+upr.psi <- psi + 1.96*se.psi
+psi
+lwr.psi
+upr.psi
+```
+
+
 ```{r}
 jpeg(here('figures', 'main-figures', 'seg.reg.rand.plot.v2.jpg'), width = 1200, height = 900, res = 100)
 par(mfrow = c(2,2))
@@ -850,9 +810,9 @@ par(mar = c(4,5,3,2))
 par(font.lab = 2)
 
 rsegplot.lfm(os.mod.a, seg.ceme.subset, 'CEME', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-draw.circle(63.43661, -3.84, 2.4, col = 'black') # PC2 Threshold
-segments(x0 = 51.27564, x1 = 75.59758, y0 = -3.84, y1 = -3.84, col = 'black')
-text(x = 63.43661, y = -3.44, labels = c("Consumability"), cex = 1)
+draw.circle(60.30118, -3.84, 2.4, col = 'black') # PC2 Threshold
+segments(x0 = 47.24963, x1 = 73.35273, y0 = -3.84, y1 = -3.84, col = 'black')
+text(x = 60.30118, y = -3.44, labels = c("Consumability"), cex = 1)
 arrows(x0 = 15, x1 = 15, y0 = -4, y1 = -2, length = 0.15, lwd = 2)
 text(x = 15, y = -1, labels = c("More \n Combustible \n & Ignitable"), cex = 1)
 mtext("a", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
@@ -877,39 +837,39 @@ for(z in 1:length(seg.ceme.subset[,'lfm'])){
     segments(x0 = 0, x1 = summary.segmented(os.mod.b)$psi[2], y0 = intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]], y1 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]]*((intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] - intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]])/(slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]] - slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]))+intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]], lwd = 3, col = "#9D0208")
   }else{
     segments(x0 = summary.segmented(os.mod.b)$psi[2], x1 = max.lfm, y0 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]*((intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]] - intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]])/(slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] - slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]]))+intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] , y1 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]*max.lfm + intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]], lwd = 3, col = "#9D0208")}}
-draw.circle(91.053, -7, 2.4, col = 'black') # Prop ignite threshold
-segments(x0 = 79.2544, x1 = 102.851, y0 = -7, y1 = -7, col = 'black')
-text(x = 93.053, y = -2, labels = c("Prop. Ig."), cex = 1)
-draw.circle(120.89, -20, 2.4, col = 'black') # Glow to ignition threshold
-segments(x0 = 81.5424, x1 = 160.237, y0 = -20, y1 = -20, col = 'black')
-text(x = 120.89, y = -15, labels = c("GTI"), cex = 1)
-draw.circle(57.0196, -12, 2.4, col = 'black') # Flame height threshold
-segments(x0 = 47.4926, x1 = 66.5465, y0 = -12, y1 = -12, col = 'black')
-text(x = 57.0196, y = -7, labels = c("FH"), cex = 1)
-draw.circle(68.003, -16, 2.4, col = 'black') # Post-flame glow threshold
-segments(x0 = 49.5801, x1 = 86.4253, y0 = -16, y1 = -16, col = 'black')
-text(x = 75.003, y = -11, labels = c("PFG"), cex = 1)
-draw.circle(48.83, -20, 2.4) # Flame duration threshold
-segments(x0 = 33.8529, x1 = 63.8074, y0 = -20, y1 = -20, col = 'black')
-text(x = 43.83, y = -15.25, labels = c("FD"), cex = 1)
-draw.circle(55.385, -2, 2.4) # Maximum temp. threshold
-segments(x0 = 43.2009, x1 = 67.5694, y0 = -2, y1 = -2, col = 'black')
-text(x = 46.385, y = 2.5, labels = c("Max. T."), cex = 1)
-draw.circle(64.737, 5.75, 2.4) # Glow duration threshold
-segments(x0 = 45.3899, x1 = 82.0848, y0 = 5.75, y1 = 5.75, col = 'black')
-text(x = 53.485, y = 8.75, labels = c("GD"), cex = 1)
-draw.circle(59.153, 13.5, 2.4) # Time to first glow threshold
-segments(x0 = 43.6794, x1 = 74.626, y0 = 13.5, y1 = 13.5, col = 'black')
-text(x = 49.153, y = 17.5, labels = c("TTFG"), cex = 1)
+draw.circle(91.87861, -7, 2.4, col = 'black') # Prop ignite threshold
+segments(x0 = 80.91828, x1 = 102.83894, y0 = -7, y1 = -7, col = 'black')
+text(x = 93.87861, y = -2, labels = c("Prop. Ig."), cex = 1)
+draw.circle(119.91110, -20, 2.4, col = 'black') # Glow to ignition threshold
+segments(x0 = 76.05240, x1 = 163.76980, y0 = -20, y1 = -20, col = 'black')
+text(x = 119.91110, y = -15, labels = c("GTI"), cex = 1)
+draw.circle(57.19150, -12, 2.4, col = 'black') # Flame height threshold
+segments(x0 = 47.54727, x1 = 66.83573, y0 = -12, y1 = -12, col = 'black')
+text(x = 57.19150, y = -7, labels = c("FH"), cex = 1)
+draw.circle(68.05055, -16, 2.4, col = 'black') # Post-flame glow threshold
+segments(x0 = 49.72918, x1 = 86.37192, y0 = -16, y1 = -16, col = 'black')
+text(x = 75.05055, y = -11, labels = c("PFG"), cex = 1)
+draw.circle(49.68505, -20, 2.4) # Flame duration threshold
+segments(x0 = 34.32026, x1 = 65.04984, y0 = -20, y1 = -20, col = 'black')
+text(x = 44.68505, y = -15.25, labels = c("FD"), cex = 1)
+draw.circle(55.57693, -2, 2.4, col = 'black') # Maximum temp. threshold
+segments(x0 = 43.51567, x1 = 67.63819, y0 = -2, y1 = -2, col = 'black')
+text(x = 46.57693, y = 2.5, labels = c("Max. T."), cex = 1)
+draw.circle(63.74955, 5.75, 2.4) # Glow duration threshold
+segments(x0 = 45.36370, x1 = 82.13540, y0 = 5.75, y1 = 5.75, col = 'black')
+text(x = 52.74955, y = 8.75, labels = c("GD"), cex = 1)
+draw.circle(59.89132, 13.5, 2.4) # Time to first glow threshold
+segments(x0 = 44.81819, x1 = 74.96445, y0 = 13.5, y1 = 13.5, col = 'black')
+text(x = 49.89132, y = 17.5, labels = c("TTFG"), cex = 1)
 mtext("b", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
 text(labels = "C. megacarpus", font = 4, cex = 1.75, x = 190, y = 81)
 
 #-----------------------------------------------------------------------
 
 rsegplot.lfm(os.mod.c, seg.adfa.subset, 'ADFA', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-draw.circle(63.16255, -4.6, 1.25, col = 'black') # PC2 Threshold
-segments(x0 = 52.79064, x1 = 73.53446, y0 = -4.6, y1 = -4.6, col = 'black')
-text(x = 63.16255, y = -4.2, labels = c("Consumability"), cex = 1)
+draw.circle(62.65922, -4.6, 1.25, col = 'black') # PC2 Threshold
+segments(x0 = 54.25068, x1 = 71.06776, y0 = -4.6, y1 = -4.6, col = 'black')
+text(x = 62.65922, y = -4.2, labels = c("Consumability"), cex = 1)
 arrows(x0 = 7, x1 = 7, y0 = -4.8, y1 = -2.8, length = 0.15, lwd = 2)
 text(x = 7, y = -1.8, labels = c("More \n Combustible \n & Ignitable"), cex = 1)
 mtext("c", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
@@ -935,30 +895,30 @@ for(z in 1:length(seg.adfa.subset[,'lfm'])){
     segments(x0 = 0, x1 = summary.segmented(os.mod.d)$psi[2], y0 = intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]], y1 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]]*((intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] - intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]])/(slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]] - slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]))+intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]], lwd = 3, col = "#9D0208")
   }else{
     segments(x0 = summary.segmented(os.mod.d)$psi[2], x1 = max.lfm, y0 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]*((intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]] - intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]])/(slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] - slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]]))+intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] , y1 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]*max.lfm + intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]], lwd = 3, col = "#9D0208")}}
-draw.circle(43.1461, -17, 1.25, col = 'black') # Prop ignite threshold
-segments(x0 = 39.0287, x1 = 47.2636, y0 = -17, y1 = -17, col = 'black')
-text(x = 43.1461, y = -12.5, labels = c("Prop. Ig."), cex = 1)
-draw.circle(98.2788, -15, 1.25, col = 'black') # Glow to ignition threshold
-segments(x0 = 78.4386, x1 = 118.119, y0 = -15, y1 = -15, col = 'black')
-text(x = 98.2788, y = -10.5, labels = c("GTI"), cex = 1)
-draw.circle(78.9439, 2, 1.25, col = 'black') # Flame height threshold
-segments(x0 = 69.1201, x1 = 88.7678, y0 = 2, y1 = 2, col = 'black')
-text(x = 78.9439, y = 6.5, labels = c("FH"), cex = 1)
-draw.circle(65.5869, -18, 1.25, col = 'black') # Post-flame glow threshold
-segments(x0 = 51.3356, x1 = 79.8382, y0 = -18, y1 = -18, col = 'black')
-text(x = 62.9869, y = -13.5, labels = c("PFG"), cex = 1)
-draw.circle(46.453, -7.75, 1.25) # Flame duration threshold
-segments(x0 = 32.1032, x1 = 60.8027, y0 = -7.75, y1 = -7.75, col = 'black')
-text(x = 45.453, y = -3.25, labels = c("FD"), cex = 1)
-draw.circle(98.2788, -4, 1.25, col = 'black') # Maximum temp. threshold
-segments(x0 = 80.4224, x1 = 116.135, y0 = -4, y1 = -4, col = 'black')
-text(x = 98.2788, y = 0.5, labels = c("Max. T."), cex = 1)
-draw.circle(65.8129, -2.5, 1.25) # Glow duration threshold
-segments(x0 = 48.3101, x1 = 83.3156, y0 = -2.5, y1 = -2.5, col = 'black')
-text(x = 64.4129, y = 2, labels = c("GD"), cex = 1)
-draw.circle(78.5259, -11, 1.25, col = 'black') # Time to first glow threshold
-segments(x0 = 65.3508, x1 = 91.701, y0 = -11, y1 = -11, col = 'black')
-text(x = 78.5259, y = -6.5, labels = c("TTFG"), cex = 1)
+draw.circle(43.14614, -17, 1.25, col = 'black') # Prop ignite threshold
+segments(x0 = 38.84931, x1 = 47.44297, y0 = -17, y1 = -17, col = 'black')
+text(x = 43.14614, y = -12.5, labels = c("Prop. Ig."), cex = 1)
+draw.circle(98.27882, -15, 1.25, col = 'black') # Glow to ignition threshold
+segments(x0 = 78.43825, x1 = 118.11939, y0 = -15, y1 = -15, col = 'black')
+text(x = 98.27882, y = -10.5, labels = c("GTI"), cex = 1)
+draw.circle(79.50582, 2, 1.25, col = 'black') # Flame height threshold
+segments(x0 = 68.89390, x1 = 90.11774, y0 = 2, y1 = 2, col = 'black')
+text(x = 79.50582, y = 6.5, labels = c("FH"), cex = 1)
+draw.circle(65.84311, -18, 1.25, col = 'black') # Post-flame glow threshold
+segments(x0 = 53.96786, x1 = 77.71836, y0 = -18, y1 = -18, col = 'black')
+text(x = 62.84311, y = -13.5, labels = c("PFG"), cex = 1)
+draw.circle(46.55515, -7.75, 1.25) # Flame duration threshold
+segments(x0 = 33.61047, x1 = 59.49983, y0 = -7.75, y1 = -7.75, col = 'black')
+text(x = 45.55515, y = -3.25, labels = c("FD"), cex = 1)
+draw.circle(98.27882, -4, 1.25, col = 'black') # Maximum temp. threshold
+segments(x0 = 80.78605, x1 = 115.77159, y0 = -4, y1 = -4, col = 'black')
+text(x = 98.27882, y = 0.5, labels = c("Max. T."), cex = 1)
+draw.circle(65.82738, -2.5, 1.25, col = 'black') # Glow duration threshold
+segments(x0 = 51.74189, x1 = 79.91287, y0 = -2.5, y1 = -2.5, col = 'black')
+text(x = 64.42738, y = 2, labels = c("GD"), cex = 1)
+draw.circle(78.53595, -11, 1.25, col = 'black') # Time to first glow threshold
+segments(x0 = 64.88817, x1 = 92.18373, y0 = -11, y1 = -11, col = 'black')
+text(x = 78.53595, y = -6.5, labels = c("TTFG"), cex = 1)
 mtext("d", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
 text(labels = "A. fasciculatum", font = 4, cex = 1.75, x = 92, y = 72)
 mtext("Live Fuel Moisture (%)", font = 2, side = 1, cex = 1.5, line = 2.7, at = -27)
@@ -1194,7 +1154,7 @@ summary.segmented(os.mod.a1)
 ```
 
 ### PC2
-n.s. 0.1001 (-9.99)
+sig (p = 0.017856280) 0.1546915 (-6.46)
 ```{r}
 o.mod<-lme(PC2~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1204,7 +1164,7 @@ summary.segmented(os.mod)
  
 Ignitability Metrics:
 ### Time to Ignition
-SIGNIFICANT (p = 0.01297), 0.222 (-4.504)
+SIGNIFICANT (p = 0.0015312), 0.3219623 (-3.105954)
 ```{r}
 o.mod<-lme(tti~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod.b1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1213,7 +1173,7 @@ summary.segmented(os.mod.b1)
 ```
 
 ### Prop. Ignite (5%)
-SIGNIFICANT (p = 0.0397), 0.1207 (-8.285)
+n.s., 0.1195791 (-8.36)
 ```{r}
 o.mod<-lme(prop.ignite.bins5_nodate~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1232,7 +1192,7 @@ summary.segmented(os.mod)
 
 Combustibility Metrics:
 ### Flame Height
-SIGNIFICANT (p = 0.0153) 0.1237 (-8.08)
+SIGNIFICANT (p = 0.003973) 0.1275757 (-7.84)
 ```{r}
 o.mod<-lme(fh~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1241,7 +1201,7 @@ summary.segmented(os.mod)
 ```
 
 ### Max. Temp.
-n.s. 0.1 (-10)
+n.s. 0.1235898 (-8.09)
 ```{r}
 o.mod<-lme(temp.max~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1261,7 +1221,7 @@ summary.segmented(os.mod.f1)
 
 Consumability Metrics:
 ### Glow Duration
-n.s. 0.1 (-10)
+n.s. 0.1482018 (-6.75)
 ```{r}
 o.mod<-lme(gd~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod.h1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1270,7 +1230,7 @@ summary.segmented(os.mod.h1)
 ```
 
 ### Post-Flame Glow
-n.s. 0.10006 (-9.99)
+n.s. 0.1508012 (-6.63)
 ```{r}
 o.mod<-lme(pfg~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1279,7 +1239,7 @@ summary.segmented(os.mod)
 ```
 
 ### Time to First Glow
-SIGNIFICANT (p = 0.03727) 0.179 (-5.5897)
+n.s. 0.1123685 (-8.90)
 ```{r}
 o.mod<-lme(ttfg~mpa.inverse + year.month + site, random=~1|id, data=seg.ceme.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1296,7 +1256,7 @@ seg.adfa.subset <- seg.adfa.subset %>%
 ```
 
 ### PC1
-SIGNIFICANT (p = 0.00545) 0.4303 (-2.324)
+SIGNIFICANT (p = 0.001931591) 0.4268678 (-2.34)
 ```{r}
 o.mod<-lme(PC1~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod.c1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1305,7 +1265,7 @@ summary.segmented(os.mod.c1)
 ```
 
 ### PC2
-SIGNIFICANT (p = 0.007566) 0.1738 (-5.75)
+SIGNIFICANT (p = 0.002949292) 0.1742132 (-5.74)
 ```{r}
 o.mod<-lme(PC2~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1315,7 +1275,7 @@ summary.segmented(os.mod)
  
 Ignitability Metrics:
 ### Time to Ignition
-SIGNIFICANT (p = 8.1962 x 10^-5) 0.4175 (-2.395)
+SIGNIFICANT (p = 6.4785 x 10^-6) 0.3814873 (-2.62)
 ```{r}
 o.mod<-lme(tti~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod.d1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1324,7 +1284,7 @@ summary.segmented(os.mod.d1)
 ```
 
 ### Prop. Ignite (5%)
-n.s. 0.1131 (-8.8417)
+n.s. 0.1062578 (-9.41)
 ```{r}
 o.mod<-lme(prop.ignite.bins5_nodate~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1333,7 +1293,7 @@ summary.segmented(os.mod)
 ```
 
 ### Glow to Ignition
-SIGNIFICANT (p = 0.00811) 0.4322 (-2.314)
+SIGNIFICANT (p = 0.0070038) 0.4280231 (-2.336)
 ```{r}
 o.mod<-lme(gti~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1343,7 +1303,7 @@ summary.segmented(os.mod)
 
 Combustibility Metrics:
 ### Flame Height
-SIGNIFICANT (p = 0.00492) 0.3885 (-2.574)
+SIGNIFICANT (p = 0.002695) 0.3761366 (-2.659)
 ```{r}
 o.mod<-lme(fh~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1352,7 +1312,7 @@ summary.segmented(os.mod)
 ```
 
 ### Max. Temp.
-n.s. 0.1046 (-9.56)
+n.s. 0.1848124 (-5.411)
 ```{r}
 o.mod<-lme(temp.max~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1362,7 +1322,7 @@ summary.segmented(os.mod)
 
 Sustainability Metrics:
 ### Flame Duration
-n.s. 0.1734 (-5.768)
+n.s. 0.1175808 (-8.50)
 ```{r}
 o.mod<-lme(fd~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1372,7 +1332,7 @@ summary.segmented(os.mod)
 
 Consumability Metrics:
 ### Glow Duration
-n.s. 8.5786 (-0.1166)
+n.s. 8.310105 (-0.1203l)
 ```{r}
 o.mod<-lme(gd~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod.g1<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1381,7 +1341,7 @@ summary.segmented(os.mod.g1)
 ```
 
 ### Post-Flame Glow
-n.s. 0.1580 (-6.331)
+n.s. 0.1611068 (-6.21)
 ```{r}
 o.mod<-lme(pfg~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1390,7 +1350,7 @@ summary.segmented(os.mod)
 ```
 
 ### Time to First Glow
-n.s. 0.24881 (-4.0191)
+n.s. 0.2488277 (-4.0188)
 ```{r}
 o.mod<-lme(ttfg~mpa.inverse + year.month + site, random=~1|id, data=seg.adfa.subset)
 os.mod<-segmented.default(o.mod, ~mpa.inverse, npsi=list(mpa.inverse=1))
@@ -1399,15 +1359,14 @@ summary.segmented(os.mod)
 ```
 
 # ----
-# EDIT!!
 # Kable Table
 Setup:
 ```{r}
 dep.var <- c('PC1','PC2','TTI','Prop Ignite (5%)','GTI','FH','Max Temp.','FD','GD','PFG','TTFG', 'Summary','PC1','PC2','TTI','Prop Ignite (5%)','GTI','FH','Max Temp.','FD','GD','PFG','TTFG', 'Summary')
 spp <- c(rep('ADFA', 11), ' ', rep('CEME', 11), ' ')
-sig.p <- c('Yes (p = 0.0055)','Yes (p = 0.0076)','Yes (p < 0.0005)','No','Yes (p = 0.0081)','Yes (p = 0.0049)','No','No','No','No','No', '5/11 Significant', 'No', 'No','Yes (p = 0.013)','Yes (p = 0.040)','No','Yes (p = 0.015)','No','No','No','No','Yes (p = 0.037)', '4/11 Significant')
-threshold <- c('0.4303','0.1738','0.4175','0.1131','0.4322','0.3885','0.1046','0.1734','8.5786','0.1580','0.2488', 'Avg: 0.3685','0.1001','0.1001','0.222','0.1207','0.1001','0.1237','0.1','0.1001','0.1','0.1001','0.179', 'Avg: 0.1614')
-threshold.mpa <- c('-2.32','-5.75','-2.40','-8.84','-2.31','-2.57','-9.56','-5.77','-0.12','-6.33','-4.02', 'Avg: -2.71 ','-9.99','-9.99','-4.50','-8.29','-9.99','-8.08','-10','-9.99','-10','-9.99','-5.59', 'Avg: -6.20')
+sig.p <- c('Yes (p = 0.0019)','Yes (p = 0.0029)','Yes (p < 0.0005)','No','Yes (p = 0.0070)','Yes (p = 0.0027)','No','No','No','No','Yes (p = 0.013)', '6/11 Significant', 'No', 'Yes (p = 0.018)','Yes (p = 0.0015)','No','No','Yes (p = 0.0040)','No','No','No','No','No', '3/11 Significant')
+threshold <- c('0.4269','0.1742','0.3815','0.1063','0.4280','0.3761','0.1848','0.1176','8.3102','0.1611','0.2488', 'Avg: 0.3393','0.1001','0.1547','0.3220','0.1196','0.1001','0.1276','0.1236','0.1001','0.1482','0.1508','0.1124', 'Avg: 0.2014')
+threshold.mpa <- c('-2.34','-5.74','-2.62','-9.41','-2.34','-2.66','-5.41','-8.50','-0.12','-6.21','-4.02', 'Avg: -2.95','-9.99','-6.46','-3.11','-8.36', '-9.99','-7.84','-8.09', '-9.99','-6.75','-6.63','-8.90', 'Avg: -4.96')
 seg.reg.table.df <- data.frame(dep.var, spp, sig.p, threshold, threshold.mpa)
 ```
 
@@ -1417,8 +1376,8 @@ seg.reg.table.df %>%
    mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), spp = cell_spec(spp, 'html', color = 'black'), sig.p = cell_spec(sig.p, 'html', color = 'black'), threshold = cell_spec(threshold, 'html', color = 'black'), threshold.mpa = cell_spec(threshold.mpa, 'html', color = 'black')) %>% 
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Species', 'Significant?','Threshold (-1/MPa)', 'Threshold (MPa)'), caption = '-1/MPa') %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1:3, 5:6, 15:16, 18, 23), bold = T) %>% 
-  row_spec(c(4, 7:11, 13:14, 17, 19:22), bold = F) %>% 
+  row_spec(c(1:3, 5:6, 11, 14:15, 18), bold = T) %>% 
+  row_spec(c(4, 7:10, 13, 16:17, 19:23), bold = F) %>% 
   row_spec(c(12, 24), background = "#D3D3D3", bold = T) %>%
   save_kable(here('figures', 'supp-figures', 'inverse.mpa.segreg.summary.html'))
 ```

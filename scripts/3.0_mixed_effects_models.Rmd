@@ -1058,7 +1058,7 @@ mem.spp.table.df %>%
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
   row_spec(c(1, 6, 11, 16, 21, 26, 31, 36), background = "#D3D3D3") %>%
   row_spec(c(1:40), color = 'black') %>% 
-  row_spec(c(1, 6, 11, 16:17, 21:23, 26:28, 31, 36), bold = T) %>% 
+  row_spec(c(1, 6, 11, 16:17, 21:22, 26:28, 31, 36), bold = T) %>% 
   column_spec(2, italic = T) %>% 
   column_spec(1, width = "0.1in") %>% 
   save_kable(here('figures', 'supp-figures', 'Supp_Species_Split_MEM_kable.html'))
@@ -1773,7 +1773,7 @@ mem.table.df %>%
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','\U0394 AIC', 'AIC', expression('Marginal R2/Conditional R2'))) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
   row_spec(c(1, 7, 13, 19), background = "#D3D3D3", bold = T, font_size = 16) %>% 
-  row_spec(c(2, 8, 14, 15, 16, 20), bold = T) %>% 
+  row_spec(c(2, 8, 14, 15, 20), bold = T) %>% 
   save_kable(here('figures', 'extra-figures', 'expanded_MEM_kable.html'))
 ```
 
@@ -1785,7 +1785,7 @@ mem.table2.df %>%
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimate','\U0394 AIC', expression('Marginal R2/Conditional R2'))) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
   row_spec(c(1, 7, 13, 19), background = "#D3D3D3", bold = T, font_size = 16) %>% 
-  row_spec(c(2, 8, 14, 15, 16, 20), bold = T) %>% 
+  row_spec(c(2, 8, 14, 15, 20), bold = T) %>% 
   save_kable(here('figures', 'main-figures', 'Table2_MEM_kable.html'))
 ```
 

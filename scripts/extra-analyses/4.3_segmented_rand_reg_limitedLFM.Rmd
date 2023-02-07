@@ -313,11 +313,6 @@ os.mod.b<-segmented.default(o.mod, ~lfm, npsi=list(lfm=1))
 #summarizing results (note the '.coef' argument)
 summary.segmented(os.mod.b)
 
-u.mod <- lm(tti~lfm + year.month + site, data = seg.ceme.subset)
-u.mod.b <- segmented(u.mod, ~lfm)
-davies.test(u.mod.b)
-summary.segmented(u.mod.b)
-
 rsegplot.lfm(os.mod.b, seg.ceme.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
 ```
 
@@ -637,6 +632,19 @@ rsegplot.lfm(os.mod, seg.adfa.subset, 'ADFA', y.variable = 'ttfg',y.lab = "Time 
 # ---------------------------------
 # Main Figure: Arranging Plots
 
+Thresholds and SE from above:
+```{r}
+adfa.psi <- c(98.77, 62.78, 98.77, 46.101, 98.77, 79.95, 98.77, 46.101, 112.56, 46.101, 78.62)
+adfa.se <- c(6.8955, 4.7506, 5.5787, 1.7542, 9.4375, 6.0396, 8.1785, 9.9315, 5.3866, 3.7673, 7.0544)
+adfa.lwr <- adfa.psi - (1.96*adfa.se)
+adfa.upr <- adfa.psi + (1.96*adfa.se)
+ceme.psi <- c(133.51, 57.41, 120.087, 91.93, 45.86, 55.542, 45.86, 46.76, 48.41, 48.63, 61.26)
+ceme.se <- c(23.9544, 5.4342, 12.5255, 5.92398, 12.6156, 3.5374, 2.2294, 3.3154, 3.3476, 3.5405, 8.9037)
+ceme.lwr <- ceme.psi - (1.96*ceme.se)
+ceme.upr <- ceme.psi + (1.96*ceme.se)
+```
+
+
 ```{r}
 jpeg(here('figures', 'extra-figures', 'seg.reg.rand.plot.LIMITED.jpg'), width = 1200, height = 900, res = 100)
 par(mfrow = c(2,2))
@@ -644,9 +652,9 @@ par(mar = c(4,5,3,2))
 par(font.lab = 2)
 
 rsegplot.lfm(os.mod.a, seg.ceme.subset, 'CEME', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-draw.circle(48.3825, -3.84, 2.4, col = 'black') # PC2 Threshold
-segments(x0 = 43.8785, x1 = 52.8865, y0 = -3.84, y1 = -3.84)
-text(x = 48.3825, y = -3.44, labels = c("Consumability"), cex = 1)
+draw.circle(57.410, -3.84, 2.4, col = 'black') # PC2 Threshold
+segments(x0 = 46.75897, x1 = 68.06103, y0 = -3.84, y1 = -3.84)
+text(x = 57.410, y = -3.44, labels = c("Consumability"), cex = 1)
 arrows(x0 = 15, x1 = 15, y0 = -4, y1 = -2, length = 0.15, lwd = 2)
 text(x = 15, y = -1, labels = c("More \n Combustible \n & Ignitable"), cex = 1)
 mtext("a", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
@@ -672,38 +680,38 @@ for(z in 1:length(seg.ceme.subset[,'lfm'])){
   }else{
     segments(x0 = summary.segmented(os.mod.b)$psi[2], x1 = max.lfm, y0 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]*((intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]] - intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]])/(slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] - slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]]))+intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] , y1 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]*max.lfm + intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]], lwd = 3, col = "#9D0208")}}
 draw.circle(91.054, -7, 2.4, col = 'black') # Prop ignite threshold
-segments(x0 = 78.2758, x1 = 103.8318, y0 = -7, y1 = -7, col = 'black')
+segments(x0 = 80.31900, x1 = 103.54100, y0 = -7, y1 = -7, col = 'black')
 text(x = 91.054, y = -2, labels = c("Prop. Ig."), cex = 1)
-draw.circle(120.4134, -20, 2.4, col = 'black') # Glow to ignition threshold
-segments(x0 = 81.0944, x1 = 159.7324, y0 = -20, y1 = -20, col = 'black')
-text(x = 120.4134, y = -15, labels = c("GTI"), cex = 1)
-draw.circle(55.595, -12, 2.4, col = 'black') # Flame height threshold
-segments(x0 = 48.4524, x1 = 62.7376, y0 = -12, y1 = -12, col = 'black')
+draw.circle(45.860, -20, 2.4, col = 'black') # Glow to ignition threshold
+segments(x0 = 40, x1 = 70.58658, y0 = -20, y1 = -20, col = 'black')
+text(x = 45.86, y = -15, labels = c("GTI"), cex = 1)
+draw.circle(55.542, -12, 2.4, col = 'black') # Flame height threshold
+segments(x0 = 48.60870, x1 = 62.47530, y0 = -12, y1 = -12, col = 'black')
 text(x = 60.595, y = -7, labels = c("FH"), cex = 1)
-draw.circle(48.4292, -13, 2.4) # Post-flame glow threshold
-segments(x0 = 41.881, x1 = 54.9774, y0 = -13, y1 = -13, col = 'black')
-text(x = 48.4292, y = -8, labels = c("PFG"), cex = 1)
-draw.circle(46.8897, -20, 2.4) # Flame duration threshold
-segments(x0 = 41.6759, x1 = 52.1035, y0 = -20, y1 = -20, col = 'black')
-text(x = 46.8897, y = -16, labels = c("FD"), cex = 1)
-draw.circle(48.921, -2, 2.4) # Maximum temp. threshold
-segments(x0 = 43.33122, x1 = 56.51082, y0 = -2, y1 = -2, col = 'black')
-text(x = 48.921, y = 2.5, labels = c("Max. T."), cex = 1)
-draw.circle(48.5155, 5.75, 2.4) # Glow duration threshold
-segments(x0 = 41.8363, x1 = 55.1947, y0 = 5.75, y1 = 5.75, col = 'black')
-text(x = 48.5155, y = 8.75, labels = c("GD"), cex = 1)
-draw.circle(45.8619, 13.5, 2.4) # Time to first glow threshold
-segments(x0 = 38.25109, x1 = 53.47271, y0 = 13.5, y1 = 13.5, col = 'black')
-text(x = 45.8619, y = 17.5, labels = c("TTFG"), cex = 1)
+draw.circle(48.630, -13, 2.4) # Post-flame glow threshold
+segments(x0 = 41.69062, x1 = 55.56938, y0 = -13, y1 = -13, col = 'black')
+text(x = 48.630, y = -8, labels = c("PFG"), cex = 1)
+draw.circle(46.760, -20, 2.4) # Flame duration threshold
+segments(x0 = 40.26182, x1 = 53.25818, y0 = -20, y1 = -20, col = 'black')
+text(x = 46.760, y = -16, labels = c("FD"), cex = 1)
+draw.circle(45.860, -2, 2.4) # Maximum temp. threshold
+segments(x0 = 41.49038, x1 = 50.22962, y0 = -2, y1 = -2, col = 'black')
+text(x = 45.860, y = 2.5, labels = c("Max. T."), cex = 1)
+draw.circle(48.410, 5.75, 2.4) # Glow duration threshold
+segments(x0 = 41.84870, x1 = 54.97130, y0 = 5.75, y1 = 5.75, col = 'black')
+text(x = 48.410, y = 8.75, labels = c("GD"), cex = 1)
+draw.circle(61.260, 13.5, 2.4) # Time to first glow threshold
+segments(x0 = 43.80875, x1 = 78.71125, y0 = 13.5, y1 = 13.5, col = 'black')
+text(x = 61.260, y = 17.5, labels = c("TTFG"), cex = 1)
 mtext("b", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
 text(labels = "C. megacarpus", font = 4, cex = 1.75, x = 190, y = 81)
 
 #-----------------------------------------------------------------------
 
 rsegplot.lfm(os.mod.c, seg.adfa.subset, 'ADFA', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)
-draw.circle(63.1676, -4.6, 1.25, col = 'black') # PC2 Threshold
-segments(x0 = 49.4744, x1 = 76.8608, y0 = -4.6, y1 = -4.6, col = 'black')
-text(x = 63.16255, y = -4.2, labels = c("Consumability"), cex = 1)
+draw.circle(62.780, -4.6, 1.25, col = 'black') # PC2 Threshold
+segments(x0 = 53.46882, x1 = 72.09118, y0 = -4.6, y1 = -4.6, col = 'black')
+text(x = 62.780, y = -4.2, labels = c("Consumability"), cex = 1)
 arrows(x0 = 7, x1 = 7, y0 = -4.8, y1 = -2.8, length = 0.15, lwd = 2)
 text(x = 7, y = -1.8, labels = c("More \n Combustible \n & Ignitable"), cex = 1)
 mtext("c", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
@@ -729,30 +737,30 @@ for(z in 1:length(seg.adfa.subset[,'lfm'])){
     segments(x0 = 0, x1 = summary.segmented(os.mod.d)$psi[2], y0 = intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]], y1 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]]*((intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] - intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]])/(slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]] - slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]))+intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]], lwd = 3, col = "#9D0208")
   }else{
     segments(x0 = summary.segmented(os.mod.d)$psi[2], x1 = max.lfm, y0 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]*((intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]] - intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]])/(slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] - slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]]))+intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] , y1 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]*max.lfm + intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]], lwd = 3, col = "#9D0208")}}
-draw.circle(46.1009, -14, 1.25, col = 'black') # Prop ignite threshold
-segments(x0 = 43.1415, x1 = 49.0603, y0 = -14, y1 = -14, col = 'black')
+draw.circle(46.101, -14, 1.25, col = 'black') # Prop ignite threshold
+segments(x0 = 42.66277, x1 = 49.53923, y0 = -14, y1 = -14, col = 'black')
 text(x = 46.1009, y = -9.5, labels = c("Prop. Ig."), cex = 1)
-draw.circle(98.7732, -18, 1.25, col = 'black') # Glow to ignition threshold
-segments(x0 = 79.8982, x1 = 117.6482, y0 = -18, y1 = -18, col = 'black')
+draw.circle(98.770, -18, 1.25, col = 'black') # Glow to ignition threshold
+segments(x0 = 80.27250, x1 = 117.26750, y0 = -18, y1 = -18, col = 'black')
 text(x = 102.7732, y = -13.5, labels = c("GTI"), cex = 1)
-draw.circle(79.8596, 2, 1.25, col = 'black') # Flame height threshold
-segments(x0 = 67.8658, x1 = 91.8534, y0 = 2, y1 = 2, col = 'black')
-text(x = 79.8596, y = 6.5, labels = c("FH"), cex = 1)
-draw.circle(46.1009, -19, 1.25) # Post-flame glow threshold
-segments(x0 = 40, x1 = 54.6617, y0 = -19, y1 = -19, col = 'black')
+draw.circle(79.950, 2, 1.25, col = 'black') # Flame height threshold
+segments(x0 = 68.11238, x1 = 91.78762, y0 = 2, y1 = 2, col = 'black')
+text(x = 79.950, y = 6.5, labels = c("FH"), cex = 1)
+draw.circle(46.101, -19, 1.25) # Post-flame glow threshold
+segments(x0 = 40, x1 = 53.48491, y0 = -19, y1 = -19, col = 'black')
 text(x = 51.1009, y = -17, labels = c("PFG"), cex = 1)
-draw.circle(46.1009, -4.75, 1.25) # Flame duration threshold
-segments(x0 = 40, x1 = 69.34018, y0 = -4.75, y1 = -4.75, col = 'black')
+draw.circle(46.101, -4.75, 1.25) # Flame duration threshold
+segments(x0 = 40, x1 = 65.56674, y0 = -4.75, y1 = -4.75, col = 'black')
 text(x = 46.1009, y = -0.25, labels = c("FD"), cex = 1)
-draw.circle(98.77321, -4, 1.25, col = 'black') # Maximum temp. threshold
-segments(x0 = 82.19021, x1 = 115.3562, y0 = -4, y1 = -4, col = 'black')
+draw.circle(98.770, -4, 1.25, col = 'black') # Maximum temp. threshold
+segments(x0 = 82.74014, x1 = 114.79986, y0 = -4, y1 = -4, col = 'black')
 text(x = 98.77321, y = 0.5, labels = c("Max. T."), cex = 1)
-draw.circle(46.101, 5.5, 1.25) # Glow duration threshold
-segments(x0 = 40, x1 = 57.9888, y0 = 5.5, y1 = 5.5, col = 'black')
-text(x = 46.101, y = 9, labels = c("GD"), cex = 1)
-draw.circle(93.4667, -11, 1.25, col = 'black') # Time to first glow threshold
-segments(x0 = 80.9377, x1 = 105.9957, y0 = -11, y1 = -11, col = 'black')
-text(x = 93.4667, y = -6.5, labels = c("TTFG"), cex = 1)
+draw.circle(112.560, 5.5, 1.25) # Glow duration threshold
+segments(x0 = 102.00226, x1 = 123.11774, y0 = 5.5, y1 = 5.5, col = 'black')
+text(x = 112.560, y = 9, labels = c("GD"), cex = 1)
+draw.circle(78.620, -11, 1.25, col = 'black') # Time to first glow threshold
+segments(x0 = 64.79338, x1 = 92.44662, y0 = -11, y1 = -11, col = 'black')
+text(x = 78.620, y = -6.5, labels = c("TTFG"), cex = 1)
 mtext("d", font = 2, cex = 2, side = 3, line = 0.5, at = 0)
 text(labels = "A. fasciculatum", font = 4, cex = 1.75, x = 92, y = 72)
 mtext("Live Fuel Moisture (%)", font = 2, side = 1, cex = 1.5, line = 2.7, at = -27)
