@@ -466,8 +466,7 @@ tab_model(m1, m2, m3, m4, m5,
          string.pred = "Coeffcient", 
          title = "models with no collinearity",
   string.p = "P-Value", 
-  p.style = "stars",
-  file = here('figures', 'MEM.figures','main.model.selection.html')) # saving .html into figures folder
+  p.style = "stars")
 ```
 
 

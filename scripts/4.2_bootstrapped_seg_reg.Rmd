@@ -667,7 +667,7 @@ seg.reg.table.df %>%
   row_spec(c(1:7, 9:11, 13:19, 22), bold = T) %>% 
   row_spec(c(8, 20:21, 23), bold = F) %>% 
   row_spec(c(12, 24), background = "#D3D3D3", bold = T) %>%
-  save_kable(here('figures', 'supp-figures', 'LFM.segreg.summary.html'))
+  save_kable(here('figures', 'supp-figures', 'TabS4_LFM.segreg.summary.html'))
 ```
 
 Mean, St. Dev., Median
@@ -702,6 +702,6 @@ seg.reg.table2.df %>%
   row_spec(c(1:3, 5, 8, 10, 18, 23), bold = T) %>% 
   row_spec(c(4, 6:7, 9, 11, 13:17, 19:22), bold = F) %>% 
   row_spec(c(12, 24), background = "#D3D3D3", bold = T) %>%
-  save_kable(here('figures', 'supp-figures', 'mpa.segreg.summary.html'))
+  save_kable(here('figures', 'supp-figures', 'TabS5_mpa.segreg.summary.html'))
 ```
 

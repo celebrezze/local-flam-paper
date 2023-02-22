@@ -74,47 +74,10 @@ This folder includes scripts that we used to wrangle data, complete analyses, an
   
   *4.4_segmented_rand_reg_percentile.Rmd*: this script contains an extra analysis running segmented regressions with random effects looking at the mean values of the flammability metric per 10% bin of LFM. This was discarded into the *extra-analyses* rather than used to interpret the segmented regression results, as there were issues with unequal data distribution and some bins only had one or two points while others had more than ten, making the conclusions from this script convoluted and nearly impossible to interpret.
   
-  *6.0_extra_figures.Rmd*: finally, this script contains a modge podge of extra figures that didn't end up making the main text or supplementary index. It is organized based on visualization/analysis. 
+  *6.0_extra_figures.Rmd*: finally, this script contains a modge podge of extra figures that didn't end up making the main text or supplementary index (with the notable exception of the PV curve summary table (Table S3) which is made in this script). It is organized based on visualization/analysis.
 
 ### Figures: 
-This folder contains all figures included in the main text (**main-figures** folder) and the supplementary index (**supp-figures** folder), as well as mixed effect model results tables (**MEM.figures** folder) and extra figures and tables that were not included in the main text or supplementary index but were a part of exploratory analyses or were different visualizations for main analyses (**extra-figures** folder). The figure labels describe the figure; however, for only Figures 3-4 and Table 2 are they explicitly labelled matching the figures in the paper. For the other figures in the **main-figures** and **supp-figures** folders, here are the figures that they match up with in the paper:
-  
-  *main-figures*
-  
-  Figure 1: *pca.jpg*
-  
-  Table 1: *pca_table.html*
-  
-  Figure 2: *seg.reg.rand.plot.v2.jpg*
-  
-  *supp-figures*
-  
-  Figure S1: *spp.pca.supp.jpg*
-  
-  Table S1: *Main_MEM_Selection_kable.html*
-  
-  Table S2: *MEM_SpeciesDiff_kable.html*
-  
-  Table S3: *PVcurve.table.html*
-  
-  Figure S2: *seg.reg.rand.sDATES.jpg*
-  
-  Table S4: *LFM.segreg.summary.html*
-  
-  Table S5: *mpa.segreg.summary.html*
-  
-  Table S6: *inverse.mpa.segreg.summary.html*
-  
-  Figure S3: *LFM.season.plot.suppfigure.jpg*
-  
-  Table S7: *MEM_SeasonDiff_kable.html*
-  
-  Figure S4: *LFM.species.plot.MEM.jpg*
-  
-  Table S8: *MEM_SpeciesDiff_kable.html*
-  
-  Figure S5: *field.plots.jpg*
-
+This folder contains all figures included in the main text (**main-figures** folder) and the supplementary index (**supp-figures** folder), as well as mixed effect model results tables (**MEM.figures** folder) and extra figures and tables that were not included in the main text or supplementary index but were a part of exploratory analyses or were different visualizations for main analyses (**extra-figures** folder). The figure labels describe the figure and, for main and supplementary figures, they are explicitly labelled matching the figures in the paper. 
 --------------------------------
 
 ## Contact Information

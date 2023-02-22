@@ -627,5 +627,5 @@ pv.data.table.df %>%
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, stripe_color = "black") %>% 
   column_spec(c(1), italic = T, border_right = T) %>%
   row_spec(c(1:2), color = 'black') %>% 
-  save_kable(here('figures', 'extra-figures', 'PVcurve.table.html'))
+  save_kable(here('figures', 'supp-figures', 'TabS3_PVcurve.table.html'))
 ```

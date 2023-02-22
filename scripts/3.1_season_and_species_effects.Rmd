@@ -221,45 +221,45 @@ mpa_rel_df.ceme <- mpa_rel_df %>%
 ### Effect of Season - All Flam Metrics
 #### ADFA
 ```{r}
-pc1.m <- lmer(PC1 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+pc1.m <- lmer(PC1 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-pc1.x <- lmer(PC1 ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+pc1.x <- lmer(PC1 ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-pc2.m <- lmer(PC2 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+pc2.m <- lmer(PC2 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-pc2.x <- lmer(PC2 ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+pc2.x <- lmer(PC2 ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-tti.m <- lmer(tti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+tti.m <- lmer(tti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-tti.x <- lmer(tti ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+tti.x <- lmer(tti ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-fd.m <- lmer(fd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+fd.m <- lmer(fd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-fd.x <- lmer(fd ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+fd.x <- lmer(fd ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-gd.m <- lmer(gd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+gd.m <- lmer(gd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-gd.x <- lmer(gd ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+gd.x <- lmer(gd ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-fh.m <- lmer(fh ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+fh.m <- lmer(fh ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-fh.x <- lmer(fh ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+fh.x <- lmer(fh ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-gti.m <- lmer(gti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+gti.m <- lmer(gti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-gti.x <- lmer(gti ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+gti.x <- lmer(gti ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-ttfg.m <- lmer(ttfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+ttfg.m <- lmer(ttfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-ttfg.x <- lmer(ttfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+ttfg.x <- lmer(ttfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-pfg.m <- lmer(pfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+pfg.m <- lmer(pfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-pfg.x <- lmer(pfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+pfg.x <- lmer(pfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
-temp.m <- lmer(temp.max ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset)
+temp.m <- lmer(temp.max ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.adfa.subset, REML = T)
 
-temp.x <- lmer(temp.max ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset)
+temp.x <- lmer(temp.max ~ mpa.unscaled + site.test + (1 | individual), data = seg.adfa.subset, REML = T)
 
 tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m, fh.x, pfg.m, pfg.x, ttfg.m, ttfg.x, temp.m, temp.x, gti.m, gti.x,
           show.reflvl = TRUE, 
@@ -288,47 +288,54 @@ tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m
   file = here('figures','MEM.figures','season.effects.ADFA.html'))
 ```
 
+##### P Values
+```{r}
+adfa.szn.mem.list <- list(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m, fh.x, pfg.m, pfg.x, ttfg.m, ttfg.x, temp.m, temp.x, gti.m, gti.x)
+
+lapply(adfa.szn.mem.list, function(x) summary(x, ddf = 'Kenward-Roger'))
+```
+
 #### CEME
 ```{r}
-pc1.m <- lmer(PC1 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+pc1.m <- lmer(PC1 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-pc1.x <- lmer(PC1 ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+pc1.x <- lmer(PC1 ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-pc2.m <- lmer(PC2 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+pc2.m <- lmer(PC2 ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-pc2.x <- lmer(PC2 ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+pc2.x <- lmer(PC2 ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-tti.m <- lmer(tti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+tti.m <- lmer(tti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-tti.x <- lmer(tti ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+tti.x <- lmer(tti ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-fd.m <- lmer(fd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+fd.m <- lmer(fd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-fd.x <- lmer(fd ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+fd.x <- lmer(fd ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-gd.m <- lmer(gd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+gd.m <- lmer(gd ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-gd.x <- lmer(gd ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+gd.x <- lmer(gd ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-fh.m <- lmer(fh ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+fh.m <- lmer(fh ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-fh.x <- lmer(fh ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+fh.x <- lmer(fh ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-gti.m <- lmer(gti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+gti.m <- lmer(gti ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-gti.x <- lmer(gti ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+gti.x <- lmer(gti ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-ttfg.m <- lmer(ttfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+ttfg.m <- lmer(ttfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-ttfg.x <- lmer(ttfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+ttfg.x <- lmer(ttfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-pfg.m <- lmer(pfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+pfg.m <- lmer(pfg ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-pfg.x <- lmer(pfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+pfg.x <- lmer(pfg ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
-temp.m <- lmer(temp.max ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset)
+temp.m <- lmer(temp.max ~ mpa.unscaled + site.test + season + (1 | individual), data = seg.CEME.subset, REML = T)
 
-temp.x <- lmer(temp.max ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset)
+temp.x <- lmer(temp.max ~ mpa.unscaled + site.test + (1 | individual), data = seg.CEME.subset, REML = T)
 
 tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m, fh.x, pfg.m, pfg.x, ttfg.m, ttfg.x, temp.m, temp.x, gti.m, gti.x,
           show.reflvl = TRUE, 
@@ -357,11 +364,18 @@ tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m
   file = here('figures','MEM.figures','season.effects.CEME.html'))
 ```
 
+##### P Values
+```{r}
+ceme.szn.mem.list <- list(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m, fh.x, pfg.m, pfg.x, ttfg.m, ttfg.x, temp.m, temp.x, gti.m, gti.x)
+
+lapply(ceme.szn.mem.list, function(x) summary(x, ddf = 'Kenward-Roger'))
+```
+
 ### SUPP: Kable Table
 ```{r}
 dep.var <- c('A. fasciculatum','PC1', 'PC1 (w/o Season)','PC2', 'PC2 (w/o Season)','Time to Ignition', 'Time to Ignition (w/o Season)','Flame Duration', 'Flame Duration (w/o Season)', 'Glow Duration', 'Glow Duration (w/o Season)','Flame Height', 'Flame Height (w/o Season)','Post-Flame Glow', 'Post-Flame Glow (w/o Season)','Time to First Glow', 'Time to First Glow (w/o Season)','Max. Temp.', 'Max. Temp. (w/o Season)','Glow to Ignition', 'Glow to Ignition (w/o Season)', 'C. megacarpus', 'PC1', 'PC1 (w/o Season)','PC2', 'PC2 (w/o Season)','Time to Ignition', 'Time to Ignition (w/o Season)','Flame Duration', 'Flame Duration (w/o Season)', 'Glow Duration', 'Glow Duration (w/o Season)','Flame Height', 'Flame Height (w/o Season)','Post-Flame Glow', 'Post-Flame Glow (w/o Season)','Time to First Glow', 'Time to First Glow (w/o Season)','Max. Temp.', 'Max. Temp. (w/o Season)','Glow to Ignition', 'Glow to Ignition (w/o Season)')
-col1 <- c(' ', '-0.143***',	'-0.138 ***',	'0.113***',	'0.117***',	'1.451***',	'1.427***',	'-0.189*',	'-0.204*',	'-0.538',	'-0.628',	'-0.415***',	'-0.404***',	'-1.133**',	'-1.204**',	'0.669***',	'0.664***',	'-2.653***',	'-2.593***', '0.756***',	'0.720***', ' ', '-0.147***',	'-0.152***',	'0.119***',	'0.114***',	'1.851***',	'1.887***',	'-0.091',	'-0.100',	'-0.560',	'-0.431',	'-0.264**',	'-0.286**',	'-1.765**',	'-1.650*',	'0.649***',	'0.676***',	'-2.472**',	'-2.347**',	'1.148***',	'1.155***')
-col2 <- c(' ', '0.768*', ' ',	'0.691*', ' ', '-3.105', ' ',	'-1.309', ' ', '-20.348**', ' ',	'1.075', ' ',	'-16.767**', ' ',	'-0.835', ' ', '4.592', ' ',	'-1.945', ' ', ' ', '0.460', ' ',		'0.756*', ' ', '-3.229', ' ', '0.910', ' ', '-10.354', ' ', '1.333', ' ', '-10.410', ' ', '-2.291', ' ', '-55.867***', ' ', '-0.486', ' ')
+col1 <- c(' ', '-0.143***',	'-0.138***',	'0.113***',	'0.117***',	'1.451***',	'1.427***',	'-0.189*',	'-0.204*',	'-0.538',	'-0.628',	'-0.415***',	'-0.404***',	'-1.133**',	'-1.204**',	'0.669***',	'0.664***',	'-2.653***',	'-2.593***', '0.756***',	'0.720***', ' ', '-0.147***',	'-0.152***',	'0.119***',	'0.114***',	'1.851***',	'1.887***',	'-0.091',	'-0.100',	'-0.560',	'-0.431',	'-0.264**',	'-0.286**',	'-1.765**',	'-1.650*',	'0.649***',	'0.676***',	'-2.472**',	'-2.347**',	'1.148***',	'1.155***')
+col2 <- c(' ', '0.768', ' ',	'0.691', ' ', '-3.105', ' ',	'-1.309', ' ', '-20.348**', ' ',	'1.075', ' ',	'-16.767**', ' ',	'-0.835', ' ', '4.592', ' ',	'-1.945', ' ', ' ', '0.460', ' ',		'0.756*', ' ', '-3.229', ' ', '0.910', ' ', '-10.354', ' ', '1.333', ' ', '-10.410', ' ', '-2.291', ' ', '-55.867***', ' ', '-0.486', ' ')
 col3 <- c(' ', '0.159 / 0.278',	'0.126 / 0.274',	'0.152 / 0.345',	'0.083 / 0.319',	'0.228 / 0.335',	'0.219 / 0.332',	'0.044 / 0.114',	'0.025 / 0.105',	'0.195 / 0.339',	'0.076 / 0.312',	'0.094 / 0.173',	'0.086 / 0.170',	'0.177 / 0.350',	'0.061 / 0.322',	'0.072 / 0.285',	'0.073 / 0.278',	'0.047 / 0.112',	'0.047 / 0.106',	'0.115 / 0.132',	'0.109 / 0.125', ' ', '0.137 / 0.172',	'0.122 / 0.164',	'0.131 / 0.226',	'0.093 / 0.231',	'0.283 / 0.331',	'0.270 / 0.324',	'0.033 / 0.133',	'0.026 / 0.124',	'0.044 / 0.070',	'0.023 / 0.065',	'0.073 / NA',	'0.054 / NA',	'0.088 / 0.132',	'0.067 / 0.131',	'0.155 / 0.203',	'0.143 / 0.198',	'0.398 / NA',	'0.141 / 0.435',	'0.097 / 0.155',	'0.097 / 0.148')
 col4<- c(' ', '946.510',	'948.350',	'801.237',	'802.928',	'1854.497',	'1857.760',	'1453.906',	'1455.688',	'2300.492',	'2312.529',	'1415.211',	'1416.327',	'2214.319',	'2224.996',	'1692.521',	'1693.979',	'2488.123',	'2492.287',	'1858.022',	'1860.264', ' ', '651.681',	'651.482',	'612.007',	'614.999',	'1320.394',	'1323.970',	'1006.975',	'1007.627',	'1673.775',	'1680.490',	'997.282',	'999.947',	'1648.657',	'1655.467',	'1224.871',	'1227.666',	'1730.145',	'1771.595',	'1342.248',	'1343.777')
 
@@ -379,7 +393,7 @@ szn.diff.kable.df %>%
   row_spec(c(1, 22), background = "#D3D3D3", bold = T, italic = T) %>% 
   column_spec(c(1), bold = T, border_right = T) %>% 
   column_spec(c(3), border_right = T) %>% 
-  save_kable(here('figures', 'supp-figures', 'MEM_SeasonDiff_kable.html'))
+  save_kable(here('figures', 'supp-figures', 'TabS7_MEM_SeasonDiff_kable.html'))
 ```
 
 ### PC1
@@ -843,7 +857,7 @@ scatterplot.sz.mem
 plot_legend.sz.mem <- cowplot::plot_grid(legend.sz, scatterplot.sz.mem, ncol = 1, rel_heights = c(1,15))
 plot_legend.sz.mem
 
-ggsave(here("figures", "main-figures", "Figure3.Season.Plot.jpg"),
+ggsave(here("figures", "main-figures", "Fig3_Season.Plot.jpg"),
        plot = plot_legend.sz.mem,
        width = 10, height = 18, dpi = 300)
 ```
@@ -1196,7 +1210,7 @@ scatterplot.sz.lfm <- gridExtra::grid.arrange(arrangeGrob(plot.sz.lfm, bottom = 
 plot_legend.sz.lfm <- cowplot::plot_grid(legend.sz, scatterplot.sz.lfm, ncol = 1, rel_heights = c(1,15))
 plot_legend.sz.lfm
 
-ggsave(here("figures", "supp-figures", "LFM.season.plot.suppfigure.jpg"),
+ggsave(here("figures", "supp-figures", "FigS3_LFM.season.plot.suppfigure.jpg"),
        plot = plot_legend.sz.lfm,
        width = 17, height = 10, dpi = 300)
 ```
@@ -1254,43 +1268,6 @@ ggsave(here("figures", "extra-figures", "precip_plot.jpg"),
        width = 6, height = 4, dpi = 300)
 ```
 
-## LFM vs PC1
-```{r}
-precip_plot <- seg.data.subset.alldates %>%
-  ggplot(aes(y = PC1, x = lfm.unscaled, 
-             #color = as.factor(timing)
-             color = as.factor(precip.2mo)
-             )) +
-  geom_point(size = 1, alpha = .5) +
-  #geom_line(data=x_mpa_fig.mpa, aes(x=mpa.unscaled, y=fit, color = year.month)) +
-  geom_smooth(method = lm, 
-              size = 1, 
-              alpha = 1, 
-              se = FALSE) +
-  # ggpubr::stat_regline_equation(aes(label =  paste(..eq.label.., ..adj.rr.label.., sep = "~~~~")),
-  #                                   label.y = 4) +
-  #stat_cor() +
-  labs(x = "LFM", 
-       y = "PC1 ", 
-       color = "Precip. (in)") +
- # scale_color_discrete(name = "Site")+
-  th +
- # scale_color_brewer(palette = "Dark2") +
-  facet_wrap(~spp,
-              labeller = labeller(spp = spp.labs),
-             scales = "free" ) +
-  theme(legend.position = "bottom", 
-        strip.text = element_text(face = "italic", size = 12)) +
-  scale_color_manual(values=met.brewer("Morgenstern", 11)) +
-  facet_wrap(~Species) +
-  theme(legend.position = "bottom") +
-  scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
-precip_plot
-
-ggsave(here("figures", "extra-figures", "precip_plot.jpg"),
-       plot = precip_plot, 
-       width = 6, height = 4, dpi = 300)
-```
 
 ## Dry Weight vs PC1
 ```{r}
@@ -1323,10 +1300,6 @@ precip_plot.dw <- seg.data.subset.alldates %>%
   theme(legend.position = "bottom") +
   scale_x_continuous(breaks = c(-10, -8, -6, -4, -2, 0))
 precip_plot.dw
-
-#ggsave(here("figures", "dw_plot.jpg"),
-      # plot = precip_plot.dw, 
-      # width = 6, height = 4, dpi = 300)
 ```
 
 ## Timing and precip plot
@@ -1421,45 +1394,45 @@ scaled.mem.data.sept2020 <- seg.data.subset.alldates %>%
 # 3.0.2 Model Selection
 ## Effect of Species - All Flam Metrics
 ```{r}
-pc1.m <- lmer(PC1 ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+pc1.m <- lmer(PC1 ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-pc1.x <- lmer(PC1 ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+pc1.x <- lmer(PC1 ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-pc2.m <- lmer(PC2 ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+pc2.m <- lmer(PC2 ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-pc2.x <- lmer(PC2 ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+pc2.x <- lmer(PC2 ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-tti.m <- lmer(tti ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+tti.m <- lmer(tti ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-tti.x <- lmer(tti ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+tti.x <- lmer(tti ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-fd.m <- lmer(fd ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+fd.m <- lmer(fd ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-fd.x <- lmer(fd ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+fd.x <- lmer(fd ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-fh.m <- lmer(fh ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+fh.m <- lmer(fh ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-fh.x <- lmer(fh ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+fh.x <- lmer(fh ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-gd.m <- lmer(gd ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+gd.m <- lmer(gd ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-gd.x <- lmer(gd ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+gd.x <- lmer(gd ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-pfg.m <- lmer(pfg ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+pfg.m <- lmer(pfg ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-pfg.x <- lmer(pfg ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+pfg.x <- lmer(pfg ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-ttfg.m <- lmer(ttfg ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+ttfg.m <- lmer(ttfg ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-ttfg.x <- lmer(ttfg ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+ttfg.x <- lmer(ttfg ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-temp.m <- lmer(temp.max ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+temp.m <- lmer(temp.max ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-temp.x <- lmer(temp.max ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+temp.x <- lmer(temp.max ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-gti.m <- lmer(gti ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020)
+gti.m <- lmer(gti ~ mpa.unscaled + Species + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
-gti.x <- lmer(gti ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020)
+gti.x <- lmer(gti ~ mpa.unscaled + site + (1 | individual), data = scaled.mem.data.sept2020, REML = T)
 
 tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m, fh.x, pfg.m, pfg.x, ttfg.m, ttfg.x, temp.m, temp.x, gti.m, gti.x,
           show.reflvl = TRUE, 
@@ -1474,12 +1447,20 @@ tab_model(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m
   file = here('figures','MEM.figures','species.effects.html'))
 ```
 
+### P Values
+```{r}
+spp.mem.list <- list(pc1.m, pc1.x, pc2.m, pc2.x, tti.m, tti.x, fd.m, fd.x, gd.m, gd.x, fh.m, fh.x, pfg.m, pfg.x, ttfg.m, ttfg.x, temp.m, temp.x, gti.m, gti.x)
+
+lapply(spp.mem.list, function(x) summary(x, ddf = 'Kenward-Roger'))
+```
+
+
 ## SUPP: Kable Table 
 Setting up dataframe
 ```{r}
 dep.var <- c('PC1', 'PC1 (w/o Species)','PC2', 'PC2 (w/o Species)','Time to Ignition', 'Time to Ignition (w/o Species)','Flame Duration', 'Flame Duration (w/o Species)', 'Glow Duration', 'Glow Duration (w/o Species)','Flame Height', 'Flame Height (w/o Species)','Post-Flame Glow', 'Post-Flame Glow (w/o Species)','Time to First Glow', 'Time to First Glow (w/o Species)','Max. Temp.', 'Max. Temp. (w/o Species)','Glow to Ignition', 'Glow to Ignition (w/o Species)')
 col1 <- c('-0.119***',	'-0.120***',	'0.151***',	'0.151***',	'1.453***',	'1.462***',	'-0.138',	'-0.136',	'-1.097',	'-1.098',	'-0.270**',	'-0.270**',	'-1.981***',	'-1.984***',	'0.525**',	'0.533**',	'-4.810***',	'-4.768***',	'0.924***',	'0.921***')
-col2 <- c('-0.808**', ' ', '-0.051', ' ',	'7.469***', ' ', '-2.151**', ' ', '6.370', ' ', '-0.382', ' ', '4.807', ' ', '4.110**', ' ', '15.486**', ' ', '3.333', ' ')
+col2 <- c('-0.808**', ' ', '-0.051', ' ',	'7.469**', ' ', '-2.151*', ' ', '6.370', ' ', '-0.382', ' ', '4.807', ' ', '4.110**', ' ', '15.486*', ' ', '3.333', ' ')
 col3 <- c('0.119 / 0.218',	'0.067 / 0.217',	'0.113 / 0.225',	'0.114 / 0.218', '0.245 / 0.314',	'0.158 / 0.317',	'0.063 / 0.142',	'0.011 / 0.140',	'0.035 / 0.139',	'0.023 / 0.133',	'0.042 / NA',	'0.040 / NA',	'0.069 / 0.170',	'0.060 / 0.163',	'0.094 / 0.166',	'0.039 / 0.162',	'0.151 / 0.154',	'0.118 / 0.149',	'0.102 / 0.188',	'0.081 / 0.186')
 col4 <- c('842.962',	'846.605',	'749.166',	'746.299',	'1653.945',	'1666.668',	'1282.351',	'1288.217',	'2065.979',	'2070.586',	'1248.304',	'1247.451',	'2007.342',	'2011.323',	'1535.178',	'1543.170',	'2220.840',	'2231.133',	'1657.816',	'1661.730')
 spp.diff.kable.df.long <- data.frame(dep.var, col1, col2, col3, col4)
@@ -1495,7 +1476,7 @@ spp.diff.kable.df.long %>%
   row_spec(c(11:12), italic = T) %>% 
   column_spec(c(1), bold = T, border_right = T) %>% 
   column_spec(c(3), border_right = T) %>% 
-  save_kable(here('figures', 'supp-figures', 'MEM_SpeciesDiff_kable.html'))
+  save_kable(here('figures', 'supp-figures', 'TabS8_MEM_SpeciesDiff_kable.html'))
 ```
 
 # 3.0.3 Statistical Tests
@@ -1702,7 +1683,7 @@ scatterplot.spp
 plot_legend.spp <- cowplot::plot_grid (legend, scatterplot.spp, ncol = 1, rel_heights = c(1,12))
 plot_legend.spp
 
-ggsave(here("figures", 'main-figures', "Figure4.Species.Plot.jpg"),
+ggsave(here("figures", 'main-figures', "Fig4_Species.Plot.jpg"),
        plot = plot_legend.spp, 
        width = 10, height = 10, dpi = 300)
 ```
@@ -1903,7 +1884,7 @@ plot_legend.mem <- cowplot::plot_grid(legend, scatterplot.mem, ncol = 1, rel_hei
 plot_legend.mem
 
 
-ggsave(here("figures", 'supp-figures', "LFM.species.plot.MEM.jpg"),
+ggsave(here("figures", 'supp-figures', "FigS4_LFM.species.plot.MEM.jpg"),
        plot = plot_legend.mem, 
        width = 10, height = 10, dpi = 300)
 ```
