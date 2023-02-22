@@ -385,6 +385,9 @@ display: none;
 </ul>
 </div>
 
+<p>Questions/concerns: - should we redo ‘sample’ so that the numbering
+system is consistent for different sampling efforts? - does all code run
+with latest removals of columns and datasets?</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>This .Rmd file covers the necessary metadata for the datasets that we
@@ -398,7 +401,7 @@ on the GitHub. Many variables/columns are repeated on multiple datasets,
 and in these cases we do not describe them again, as this would be
 redundant; however, we try to make it clear where repeated columns exist
 and why.</p>
-<p>This metadata was last updated on: <strong>January 26, 2023</strong>
+<p>This metadata was last updated on: <strong>February 22, 2023</strong>
 by <strong>Joe Celebrezze</strong></p>
 <hr />
 </div>
@@ -413,15 +416,14 @@ accompanying data on water status and content along the benchtop
 drydown.</p>
 <p><em>sample</em>: the identification number for the individual. Due to
 the uneven sampling regime over the duration of this experiment, the
-identification number differs slightly for different years (which
-<strong>NOTE</strong> I HOPE <strong>NOTE</strong> we fixed during data
-wrangling). For more recent sampling, the identification number carries
-information about both the site and the individual in the format
-(site.individual or site.pod, see <em>pod</em> below); however in
-certain years, only site 1 was sampled from and in these cases the
-identification number only carries information about the individual in
-either of the following formats: for individual 3, <em>sample</em> = 3.0
-or <em>sample</em> = 3.</p>
+identification number differs slightly for different years. For more
+recent sampling, the identification number carries information about
+both the site and the individual in the format (site.individual or
+site.pod, see <em>pod</em> below); however in certain years, only site 1
+was sampled from and in these cases the identification number only
+carries information about the individual in either of the following
+formats: for individual 3, <em>sample</em> = 3.0 or <em>sample</em> =
+3.</p>
 <p><em>round</em>: this describes the order in which the samples were
 burned over the course of a laboratory drydown (i.e., round = 1 means
 the first sample of that particular individual that we burned)</p>
@@ -435,7 +437,7 @@ number but changed to negative values in the data wrangling step</p>
 <p><em>lfm</em>: live fuel moisture (LFM, %), as measured using the
 following equation, taken on a subsample directly before testing
 flammability <span class="math display">\[\begin{equation}
-LFM = 100 * \frac{fresh weight - dry weight}{dry weight}
+LFM = 100 \times \frac{fresh weight - dry weight}{dry weight}
 \end{equation}\]</span></p>
 <p><em>lfm.notes</em>: any notes taken on the live fuel moisture
 sample</p>
@@ -574,26 +576,6 @@ not wrangled versions of <em>flam.local.alldates.csv</em> and, thus,
 will be described in more detail.</p>
 <div id="precip.clean.csv" class="section level2">
 <h2>precip.clean.csv</h2>
-<pre class="r"><code>precip.clean &lt;- read_csv(here(&quot;processed-data&quot;, &quot;precip.clean.csv&quot;))</code></pre>
-<pre><code>## New names:
-## Rows: 46 Columns: 8
-## ── Column specification
-## ──────────────────────────────────────────────────────── Delimiter: &quot;,&quot; chr
-## (2): year.month, timing dbl (6): ...1, year, water.year, day, daily.rain,
-## rainfall.2mo
-## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
-## Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## • `` -&gt; `...1`</code></pre>
-<pre class="r"><code>head(precip.clean)</code></pre>
-<pre><code>## # A tibble: 6 × 8
-##    ...1  year water.year year.month   day daily.rain rainfall.2mo timing  
-##   &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt; &lt;chr&gt;      &lt;dbl&gt;      &lt;dbl&gt;        &lt;dbl&gt; &lt;chr&gt;   
-## 1     1  2016       2017 2016_11        1       0.01         3.49 Dec_2016
-## 2     2  2016       2017 2016_11       21       0.38         3.49 Dec_2016
-## 3     3  2016       2017 2016_11       27       0.4          3.49 Dec_2016
-## 4     4  2016       2017 2016_12        9       0.03         3.49 Dec_2016
-## 5     5  2016       2017 2016_12       11       0.01         3.49 Dec_2016
-## 6     6  2016       2017 2016_12       16       1.12         3.49 Dec_2016</code></pre>
 <p>This dataset is an alteration of <em>Precip_SBBG.csv</em> and it
 includes only the dates necessary to estimate the precipitation 2 months
 prior to sample collection dates.</p>
@@ -831,33 +813,6 @@ above</p>
 </div>
 <div id="mem.data.subset.alldates.csv" class="section level2">
 <h2>mem.data.subset.alldates.csv</h2>
-<pre class="r"><code>mem.data.subset.alldates &lt;- read_csv(here(&quot;processed-data&quot;, &quot;mem.data.subset.alldates.csv&quot;))</code></pre>
-<pre><code>## New names:
-## Rows: 447 Columns: 43
-## ── Column specification
-## ──────────────────────────────────────────────────────── Delimiter: &quot;,&quot; chr
-## (9): month, spp, year.month, individual, site, hydration, Species, id, ... dbl
-## (34): ...1, lfm.NAs.imputed, lfm.outliers.out, mpa, dw.flam.sample, samp...
-## ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
-## Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## • `` -&gt; `...1`</code></pre>
-<pre class="r"><code>head(mem.data.subset.alldates)</code></pre>
-<pre><code>## # A tibble: 6 × 43
-##    ...1 lfm.NAs.im…¹ lfm.o…²   mpa dw.fl…³ sampl…⁴ ww.fl…⁵   lfm exces…⁶ mpa.s…⁷
-##   &lt;dbl&gt;        &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
-## 1     1         2.07    2.20  -4.1   -1.70  -1.61    0.645  1.42    1.25  0.173 
-## 2     2         1.87    1.99  -4     -1.18  -0.253   1.02   1.27    1.16  0.206 
-## 3     3         2.08    2.21  -0.8   -1.11   0.254   1.29   1.43    1.28  1.27  
-## 4     4         2.43    2.57  -4.2   -1.15   0.660   1.60   1.69    1.46  0.140 
-## 5     5         2.54    2.68  -4.7   -1.35   0.153   1.47   1.76    1.50 -0.0257
-## 6     6         2.43    2.57  -8.4   -1.57  -0.693   1.12   1.68    1.43 -1.25  
-## # … with 33 more variables: PC1 &lt;dbl&gt;, PC2 &lt;dbl&gt;, PC3 &lt;dbl&gt;, PC4 &lt;dbl&gt;,
-## #   tti &lt;dbl&gt;, fh &lt;dbl&gt;, gd &lt;dbl&gt;, fd &lt;dbl&gt;, temp.max &lt;dbl&gt;, pfg &lt;dbl&gt;,
-## #   gti &lt;dbl&gt;, ttfg &lt;dbl&gt;, flam.index &lt;dbl&gt;, year &lt;dbl&gt;, month &lt;chr&gt;,
-## #   prop.ignite &lt;dbl&gt;, prop.ignite.bins5 &lt;dbl&gt;, ignition &lt;dbl&gt;, spp &lt;chr&gt;,
-## #   year.month &lt;chr&gt;, individual &lt;chr&gt;, site &lt;chr&gt;, start.temp &lt;dbl&gt;,
-## #   precip.2mo &lt;dbl&gt;, mpa.unscaled &lt;dbl&gt;, lfm.unscaled &lt;dbl&gt;,
-## #   dw.flam.sample.unscaled &lt;dbl&gt;, lfm.NAs.imputed.unscaled &lt;dbl&gt;, …</code></pre>
 <p>This dataset was created at the bottom of
 <em>1.0_data_wrangling.Rmd</em> as a wrangled version of
 <em>mem.data.local.epi.alldates.csv</em> and includes only the most
@@ -885,30 +840,6 @@ described above</p>
 </div>
 <div id="seg.reg.data.local.csv" class="section level2">
 <h2>seg.reg.data.local.csv</h2>
-<pre class="r"><code>seg.reg.data.local &lt;- read_csv(here(&quot;processed-data&quot;, &quot;seg.reg.data.local.csv&quot;))</code></pre>
-<pre><code>## Rows: 555 Columns: 23
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr  (5): id, site, spp, year.month, gr
-## dbl (18): PC1, PC2, PC3, mpa, lfm, ww.flam.sample, dw.flam.sample, sample.wt...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code>head(seg.reg.data.local)</code></pre>
-<pre><code>## # A tibble: 6 × 23
-##   id          PC1     PC2    PC3   mpa   lfm ww.fl…¹ dw.fl…² site  sampl…³ spp  
-##   &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;chr&gt;   &lt;dbl&gt; &lt;chr&gt;
-## 1 2016_Dec… 2.53   0.832  -0.895  -4.1  106.   0.235   0.222 St. …   0.457 ADFA 
-## 2 2016_Dec… 2.60   1.37    0.127  -4    103.   0.252   0.245 St. …   0.497 ADFA 
-## 3 2016_Dec… 0.888  0.748  -0.129  -0.8  106.   0.264   0.248 St. …   0.512 ADFA 
-## 4 2016_Dec… 2.84  -0.0659 -0.477  -4.2  113.   0.278   0.246 St. …   0.524 ADFA 
-## 5 2016_Dec… 2.71   0.140   0.489  -4.7  114.   0.272   0.237 St. …   0.509 ADFA 
-## 6 2016_Dec… 3.50   0.339   0.259  -8.4  112.   0.256   0.228 St. …   0.484 ADFA 
-## # … with 12 more variables: tti &lt;dbl&gt;, fh &lt;dbl&gt;, fd &lt;dbl&gt;, gd &lt;dbl&gt;, gti &lt;dbl&gt;,
-## #   pfg &lt;dbl&gt;, temp.max &lt;dbl&gt;, year.month &lt;chr&gt;,
-## #   prop.ignite.bins10_nodate &lt;dbl&gt;, prop.ignite.bins5_nodate &lt;dbl&gt;,
-## #   ttfg &lt;dbl&gt;, gr &lt;chr&gt;, and abbreviated variable names ¹​ww.flam.sample,
-## #   ²​dw.flam.sample, ³​sample.wt</code></pre>
 <p>This dataframe was created at the bottom of
 <em>1.0_data_wrangling.Rmd</em> as a wrangled version of
 <em>mem.data.local.epi.alldates.csv</em> and includes only the most

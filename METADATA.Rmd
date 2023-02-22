@@ -28,7 +28,7 @@ This .Rmd file covers the necessary metadata for the datasets that we used in th
 It does so by describing each column of each dataset included in this GitHub. For more information on the organization of the GitHub or which scripts are responsible for which analyses, see the README file included on the GitHub. Many variables/columns are repeated on multiple datasets, and in these cases we do not describe them again, as this would be redundant; however, we try to make it clear where repeated columns exist and why.
 
 This metadata was last updated on:
-**January 31, 2023** by **Joe Celebrezze**
+**February 22, 2023** by **Joe Celebrezze**
 
 --------------------------
 
