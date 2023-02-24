@@ -376,8 +376,6 @@ display: none;
 <li><a href="#precip.clean.csv" id="toc-precip.clean.csv">precip.clean.csv</a></li>
 <li><a href="#pv_summary_df_timing.csv" id="toc-pv_summary_df_timing.csv">pv_summary_df_timing.csv</a></li>
 <li><a href="#local_flam_data_all.csv" id="toc-local_flam_data_all.csv">local_flam_data_all.csv</a></li>
-<li><a href="#mem.data.local.epi.csv" id="toc-mem.data.local.epi.csv">mem.data.local.epi.csv</a></li>
-<li><a href="#mem.data.local.epi.2020.csv" id="toc-mem.data.local.epi.2020.csv">mem.data.local.epi.2020.csv</a></li>
 <li><a href="#mem.data.local.epi.alldates.csv" id="toc-mem.data.local.epi.alldates.csv">mem.data.local.epi.alldates.csv</a></li>
 <li><a href="#mem.data.subset.alldates.csv" id="toc-mem.data.subset.alldates.csv">mem.data.subset.alldates.csv</a></li>
 <li><a href="#seg.reg.data.local.csv" id="toc-seg.reg.data.local.csv">seg.reg.data.local.csv</a></li>
@@ -385,9 +383,6 @@ display: none;
 </ul>
 </div>
 
-<p>Questions/concerns: - should we redo ‘sample’ so that the numbering
-system is consistent for different sampling efforts? - does all code run
-with latest removals of columns and datasets?</p>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>This .Rmd file covers the necessary metadata for the datasets that we
@@ -401,7 +396,7 @@ on the GitHub. Many variables/columns are repeated on multiple datasets,
 and in these cases we do not describe them again, as this would be
 redundant; however, we try to make it clear where repeated columns exist
 and why.</p>
-<p>This metadata was last updated on: <strong>February 22, 2023</strong>
+<p>This metadata was last updated on: <strong>February 23, 2023</strong>
 by <strong>Joe Celebrezze</strong></p>
 <hr />
 </div>
@@ -651,8 +646,6 @@ the date (YYYY_month), model (EPI = epiradiator), species (CEME =
 <em>Ceanothus megacarpus</em> and ADFA = <em>Adenostoma
 fasciculatum</em>), 10% bin of LFM (see <em>gr</em>), and a
 identification number for the individual</p>
-<p><em>model.spp.gr.sample</em>: duplicate column of <em>individual</em>
-REMOVE? Done</p>
 <p>note: there are other columns towards the left of this dataset not
 described here, as they can be more adequately explained after
 explaining some other columns, so they are pushed to the bottom of this
@@ -721,10 +714,6 @@ flammability tests for that given LFM bin</p>
 <p><em>hydration</em>: an identifier denoting the hydration status of
 the sample based on LFM, split into “dry” (0-60% LFM), “moderate”
 (60-90% LFM), and “hydrated” (&gt;90% LFM)</p>
-<p><em>bins5lfm</em>: duplicate column of <em>bins5lfm_gr</em> REMOVE?
-Done</p>
-<p><em>bins10lfm</em>: duplicate column of <em>gr</em> and
-<em>bins10lfm_gr</em> REMOVE? Done</p>
 <p><em>bins20lfm_gr</em>: represents the 20% bin of LFM that the sample
 fell into</p>
 <p><em>gdw.gfw</em>: grams of dry weight per grams of fresh weight (from
@@ -770,33 +759,17 @@ tti = 0, fh = max(fh)) is equal to 20</p>
 are the flammability metrics normalized by the dry weight of the
 flammability sample, as reported in <em>dw.flam.sample</em>; these were
 used in some exploratory analyses, but not very extensively</p>
-<p>Returning to columns earlier in the dataset that I mentioned in the
-note above</p>
-<p><em>model.spp.bins5lfm_gr.sample</em>: duplicate column of
-<em>individual.bins5lfm_gr</em> REMOVE? Done</p>
-<p><em>model.spp.bins5lfm_gr.sample_nodate</em>: duplicate column of
-<em>individual.bins5lfm_gr_nodate</em> REMOVE? Done</p>
-<p><em>model.spp.bins10lfm_gr.sample_nodate</em>: duplicate column of
-<em>individual.bins10lfm_gr_nodate</em> REMOVE? Done</p>
 <p><em>year.month.spp</em>: column with <em>year.month</em> and
 <em>spp</em> with an underscore separating the two</p>
 <p><em>model.spp.gr</em>: an identifier which includes
 <em>year.month</em>, <em>model</em>, <em>spp</em>, and <em>gr</em>
-separated by underscores Is this duplicate? REMOVE?</p>
+separated by underscores</p>
 <p><em>model.spp.bins5lfm_gr</em>: an identifier which includes
 <em>year.month</em>, <em>model</em>, <em>spp</em>, and
 <em>bins5lfm_gr</em> separated by underscores</p>
 <p><em>model.spp.bins5lfm_gr_nodate</em>: <em>model.spp.bins5lfm_gr</em>
 but without any information regarding <em>year</em> or
 <em>month</em></p>
-</div>
-<div id="mem.data.local.epi.csv" class="section level2">
-<h2>mem.data.local.epi.csv</h2>
-<p>Removed for now</p>
-</div>
-<div id="mem.data.local.epi.2020.csv" class="section level2">
-<h2>mem.data.local.epi.2020.csv</h2>
-<p>REMOVED FOR NOW. SEE IF NEEDED AT END</p>
 </div>
 <div id="mem.data.local.epi.alldates.csv" class="section level2">
 <h2>mem.data.local.epi.alldates.csv</h2>
