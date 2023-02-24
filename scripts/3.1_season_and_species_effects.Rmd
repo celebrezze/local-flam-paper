@@ -537,7 +537,7 @@ pc1.vs.mpa.adfa <- precip_groups_ranis.adfa  %>%
         axis.text.y = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = -9.7, y = 6, label = 'a', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc1.vs.mpa.adfa
 ```
 
@@ -585,7 +585,7 @@ pc1.vs.mpa.adfa.site <- precip_groups_ranis  %>%
         axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = -9.7, y = 6, label = 'a', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc1.vs.mpa.adfa.site
 ```
 
@@ -627,7 +627,7 @@ pc1.vs.mpa.adfa.avgsite <- precip_groups_ranis  %>%
         axis.text.y = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = -9.7, y = 6, label = 'a', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc1.vs.mpa.adfa.avgsite
 ```
 
@@ -667,7 +667,7 @@ pc1.vs.mpa.ceme <- precip_groups_ranis.ceme  %>%
         axis.text = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = -9.7, y = 6, label = 'b', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc1.vs.mpa.ceme
 ```
 
@@ -708,7 +708,7 @@ pc2.vs.mpa.adfa <- precip_groups_ranis.adfa  %>%
         axis.text.y = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = -9.7, y = 4.9, label = 'c', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc2.vs.mpa.adfa
 ```
 
@@ -744,7 +744,7 @@ pc2.vs.mpa.ceme <- precip_groups_ranis.ceme  %>%
         axis.text = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = -9.7, y = 4.85, label = 'd', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc2.vs.mpa.ceme
 ```
 
@@ -781,7 +781,7 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
         axis.text = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = -9.7, y = 1.5, label = 'e', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.adfa
 ```
 
@@ -817,7 +817,7 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
         axis.text.y = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = -9.7, y = 1.5, label = 'f', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.ceme
 ```
 
@@ -828,7 +828,7 @@ legend.sz <- get_legend(
   ggplot() + 
   geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, PC1, color = season), size = 5, alpha = .8) +
     labs(color = "Season") +
-    scale_color_manual(values = c('#c1121f', '#669bbc')) + 
+    scale_color_manual(values = c('#c1121f', '#669bbc')) +
     theme(legend.box.margin = margin(0, 0, 0, 0),
           legend.position = "top",
           legend.text = element_text(face = "italic", size = 18),
@@ -894,7 +894,7 @@ mpa.vs.dw.plot <- mpa_rel_df %>%
         axis.title.y = element_text(face = 'bold'),
         axis.title.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 
 mpa.vs.dw.plot
 ```
@@ -1069,7 +1069,7 @@ pc1.vs.lfm.adfa <- szn_lfm_ranis  %>%
         axis.text.x = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = 10, y = 6, label = 'a', size = 12, face = 'bold') +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc1.vs.lfm.adfa
 
 #### CEME
@@ -1107,7 +1107,7 @@ pc1.vs.lfm.ceme <- szn_lfm_ranis  %>%
         axis.text = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = 10, y = 6, label = 'b', size = 12) +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc1.vs.lfm.ceme
 ```
 
@@ -1147,7 +1147,7 @@ pc2.vs.lfm.adfa <- szn_lfm_ranis  %>%
         axis.text = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = 10, y = 4.9, label = 'c', size = 12) +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc2.vs.lfm.adfa
 
 #### CEME
@@ -1184,7 +1184,7 @@ pc2.vs.lfm.ceme <- szn_lfm_ranis  %>%
         axis.text.y = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
   annotate('text', x = 10, y = 4.85, label = 'd', size = 12) +
-  scale_fill_manual(values=c("#c1121f","#669BBC"))
+  scale_color_manual(values=c("#c1121f","#669BBC"))
 pc2.vs.lfm.ceme
 ```
 

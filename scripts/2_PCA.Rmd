@@ -136,7 +136,7 @@ ggplot(PCAvalues, aes(x = PC1, y = PC2)) +
                                               xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
       size = .9, alpha = 0.9,
-     color = "#a56457") +
+     color = "#64A400") +
   geom_segment(data = PCA_consumability, aes(x = 0, y = 0,
                                              xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
@@ -146,7 +146,7 @@ ggplot(PCAvalues, aes(x = PC1, y = PC2)) +
                                              xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
      size = .9, alpha = 0.9,
-     color = "#ffb178") +
+     color = '#669BBC') +
   annotate("text", 
            x = (PCA_combustability$PC1 * 0.7), 
           y = (PCA_combustability$PC2 * 1.15),
@@ -367,7 +367,7 @@ adfa.pca.plot <- ggplot(PCAvalues.adfa, aes(x = PC1, y = PC2)) +
                                               xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
       size = .8, alpha = 0.85,
-     color = "#a56457") +
+     color = "#64A400") +
   geom_segment(data = PCA_consumability, aes(x = 0, y = 0,
                                              xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
@@ -377,7 +377,7 @@ adfa.pca.plot <- ggplot(PCAvalues.adfa, aes(x = PC1, y = PC2)) +
                                              xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
      size = .8, alpha = 0.85,
-     color = "#ffb178") +
+     color = '#669BBC') +
   annotate("text", 
            x = (PCA_combustability$PC1 * 0.95), 
           y = (PCA_combustability$PC2 * 1.325),
@@ -524,7 +524,7 @@ ceme.pca.plot <- ggplot(PCAvalues.ceme, aes(x = PC1, y = PC2)) +
                                               xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
       size = .8, alpha = 0.85,
-     color = "#a56457") +
+     color = "#64A400") +
   geom_segment(data = PCA_consumability, aes(x = 0, y = 0,
                                              xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
@@ -534,7 +534,7 @@ ceme.pca.plot <- ggplot(PCAvalues.ceme, aes(x = PC1, y = PC2)) +
                                              xend = PC1, yend = PC2),
      arrow = arrow(length = unit(1/2, "picas")), 
      size = .8, alpha = 0.85,
-     color = "#ffb178") +
+     color = '#669BBC') +
   annotate("text", 
            x = (PCA_combustability$PC1 * 1.5), 
           y = (PCA_combustability$PC2 * 1.1),

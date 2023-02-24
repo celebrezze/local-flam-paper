@@ -40,8 +40,8 @@ seg.data.subset <- seg.data.subset %>%
 seg.data.subset$color <- 'black'
 
 seg.data.subset$color[seg.data.subset$year.month=='2020_September']="#c1121f"
-seg.data.subset$color[seg.data.subset$year.month=='2020_January']="#64A400"
-seg.data.subset$color[seg.data.subset$year.month=='2019_December']="#669BBC"
+seg.data.subset$color[seg.data.subset$year.month=='2020_January']='#669BBC'
+seg.data.subset$color[seg.data.subset$year.month=='2019_December']="#b08ba5"
 seg.data.subset$color[seg.data.subset$year.month=='2018_January']="#FF7262"
 seg.data.subset$color[seg.data.subset$year.month=='2016_December']="#A4A7DE"
 ```
@@ -175,8 +175,8 @@ wacky <- plot(xvar, yvar, xlim = c(0, max.x), ylim = c(ymin-0.05*ymin, ymax+0.05
               pch = 16, col = alpha(colr, 0.8),
               cex.lab = 1.3)
 polygon(x = c(lower, upper, upper, lower), y = c(ymax + 0.2*ymax, ymax +0.2*ymax, ymin - 30, ymin - 30), col = alpha('gray', 0.3), lty = 2)
-abline(v = tlp, col = alpha('#00C368', 0.7), cex = 3)
-polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +0.2*ymax, ymax +0.2*ymax, ymin -30, ymin -30), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.6))
+abline(v = tlp, col = alpha("#64A400", 0.7), cex = 3)
+polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +0.2*ymax, ymax +0.2*ymax, ymin -30, ymin -30), col = alpha("#64A400", 0.3), border = alpha("#64A400", 0.6))
 legend('topleft', legend=if(species == 'ADFA'){
   c("September 2020", "January 2018", "December 2016")
 }
@@ -187,13 +187,13 @@ else if(species == 'CEME'){
          c("#c1121f","#FF7262","#A4A7DE")
          }
         else if(species == "CEME") {
-        c("#c1121f","#64A400","#669BBC")
+        c("#c1121f",'#669BBC',"#b08ba5")
         }, pch = 16, cex=1)
 for(z in 1:length(xvar)){
   if(z < p){
-    segments(x0 = 0, x1 = p, y0 = b, y1 = m*((b2 - b)/(m - m2))+b, lwd = 3, col = "#9D0208")
+    segments(x0 = 0, x1 = p, y0 = b, y1 = m*((b2 - b)/(m - m2))+b, lwd = 3, col = "black")
   }else{
-    segments(x0 = p, x1 = max.x, y0 = m2*((b - b2)/(m2 - m))+b2 , y1 = m2*max.x + b2, lwd = 3, col = "#9D0208")}}
+    segments(x0 = p, x1 = max.x, y0 = m2*((b - b2)/(m2 - m))+b2 , y1 = m2*max.x + b2, lwd = 3, col = "black")}}
 return(wacky)
 }
 ```
@@ -219,9 +219,9 @@ wacky <- plot(xvar, yvar, xlim = c(-10, 0), ylim = c(ymin-1, ymax+1),
               xlab = x.lab, ylab = y.lab,
               pch = 16, col = colr, cex.lab = 1.1)
 polygon(x = c(lower, upper, upper, lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('gray', 0.3), lty = 2)
-abline(v = tlp, col = alpha('#00C368', 0.8), cex = 3)
-polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.7))
-abline(a = b, b = m, lwd = 3, col = "#9D0208")
+abline(v = tlp, col = alpha("#64A400", 0.8), cex = 3)
+polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +1.5, ymax +1.5, ymin -1.5, ymin -1.5), col = alpha("#64A400", 0.3), border = alpha("#64A400", 0.7))
+abline(a = b, b = m, lwd = 3, col = "black")
 legend(-2, ymax+0.05*ymax, legend=if(species == 'ADFA'){
   c("September 2020", "January 2018", "December 2016")
 }
@@ -232,14 +232,14 @@ else if(species == 'CEME'){
          c("#c1121f","#FF7262","#A4A7DE")
          }
         else if(species == "CEME") {
-        c("#c1121f","#64A400","#669BBC")
+        c("#c1121f",'#669BBC',"#b08ba5")
         }, pch = 16, cex=0.8)
 for(j in 1:length(xvar)){
   if(j < p){
-    segments(x0 = -10, x1 = p, y0 = (-10*m) + b , y1 = m2*((b - b2)/(m2 - m))+b2, lwd = 3, col = "#9D0208")
+    segments(x0 = -10, x1 = p, y0 = (-10*m) + b , y1 = m2*((b - b2)/(m2 - m))+b2, lwd = 3, col = "black")
   }
   else{
-    segments(x0 = p, x1 = max.x, y0 = m2*((b - b2)/(m2 - m))+b2, y1 = b2, lwd = 3, col = "#9D0208")
+    segments(x0 = p, x1 = max.x, y0 = m2*((b - b2)/(m2 - m))+b2, y1 = b2, lwd = 3, col = "black")
   }
     }
 return(wacky)
@@ -269,13 +269,13 @@ wacky <- plot(xvar, yvar, xlim = c(0, max.x), ylim = c(ymin-0.05*ymin, ymax+0.05
               pch = 16, col = alpha(colr, 0.8),
               cex.lab = 1.3)
 polygon(x = c(lower, upper, upper, lower), y = c(ymax + 0.2*ymax, ymax +0.2*ymax, ymin - 30, ymin - 30), col = alpha('gray', 0.3), lty = 2)
-abline(v = tlp, col = alpha('#00C368', 0.7), cex = 3)
-polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +0.2*ymax, ymax +0.2*ymax, ymin -30, ymin -30), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.6))
+abline(v = tlp, col = alpha("#64A400", 0.7), cex = 3)
+polygon(x = c(tlp.lower, tlp.upper, tlp.upper, tlp.lower), y = c(ymax +0.2*ymax, ymax +0.2*ymax, ymin -30, ymin -30), col = alpha("#64A400", 0.3), border = alpha("#64A400", 0.6))
 for(z in 1:length(xvar)){
   if(z < p){
-    segments(x0 = 0, x1 = p, y0 = b, y1 = m*((b2 - b)/(m - m2))+b, lwd = 3, col = "#9D0208")
+    segments(x0 = 0, x1 = p, y0 = b, y1 = m*((b2 - b)/(m - m2))+b, lwd = 3, col = "black")
   }else{
-    segments(x0 = p, x1 = max.x, y0 = m2*((b - b2)/(m2 - m))+b2 , y1 = m2*max.x + b2, lwd = 3, col = "#9D0208")}}
+    segments(x0 = p, x1 = max.x, y0 = m2*((b - b2)/(m2 - m))+b2 , y1 = m2*max.x + b2, lwd = 3, col = "black")}}
 return(wacky)
 }
 ```
@@ -828,15 +828,15 @@ plot(seg.ceme.subset[,'lfm'], seg.ceme.subset[, 'tti'], xlim = c(0, max.lfm), yl
               pch = 16, col = alpha(seg.ceme.subset[,'color'], 0.8),
               cex.lab = 1.3)
 polygon(x = c(lower.b, upper.b, upper.b, lower.b), y = c(86 + 0.2*86, 86 +0.2*86, -30, -30), col = alpha('gray', 0.3), lty = 2)
-abline(v = mean_lfm_ceme, col = alpha('#00C368', 0.7), cex = 3)
-polygon(x = c(lwr_lfm_ceme, upr_lfm_ceme, upr_lfm_ceme, lwr_lfm_ceme), y = c(86 +0.2*86, 86 +0.2*86, 0-22, -22), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.6))
+abline(v = mean_lfm_ceme, col = alpha("#64A400", 0.7), cex = 3)
+polygon(x = c(lwr_lfm_ceme, upr_lfm_ceme, upr_lfm_ceme, lwr_lfm_ceme), y = c(86 +0.2*86, 86 +0.2*86, 0-22, -22), col = alpha("#64A400", 0.3), border = alpha("#64A400", 0.6))
 legend('topleft', legend = c("September 2020", "January 2020", "December 2019"),
-       col = c("#c1121f","#64A400","#669BBC"), pch = 16, cex=1)
+       col = c("#c1121f",'#669BBC',"#b08ba5"), pch = 16, cex=1)
 for(z in 1:length(seg.ceme.subset[,'lfm'])){
   if(z < summary.segmented(os.mod.b)$psi[2]){
-    segments(x0 = 0, x1 = summary.segmented(os.mod.b)$psi[2], y0 = intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]], y1 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]]*((intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] - intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]])/(slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]] - slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]))+intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]], lwd = 3, col = "#9D0208")
+    segments(x0 = 0, x1 = summary.segmented(os.mod.b)$psi[2], y0 = intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]], y1 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]]*((intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] - intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]])/(slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]] - slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]))+intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]], lwd = 3, col = "black")
   }else{
-    segments(x0 = summary.segmented(os.mod.b)$psi[2], x1 = max.lfm, y0 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]*((intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]] - intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]])/(slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] - slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]]))+intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] , y1 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]*max.lfm + intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]], lwd = 3, col = "#9D0208")}}
+    segments(x0 = summary.segmented(os.mod.b)$psi[2], x1 = max.lfm, y0 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]*((intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]] - intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]])/(slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] - slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[1]]))+intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]] , y1 = slope(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]]*max.lfm + intercept(os.mod.b, .coef = fixef(os.mod.b))[[1]][[2]], lwd = 3, col = "black")}}
 draw.circle(91.87861, -7, 2.4, col = 'black') # Prop ignite threshold
 segments(x0 = 80.91828, x1 = 102.83894, y0 = -7, y1 = -7, col = 'black')
 text(x = 93.87861, y = -2, labels = c("Prop. Ig."), cex = 1)
@@ -886,15 +886,15 @@ plot(seg.adfa.subset[,'lfm'], seg.adfa.subset[, 'tti'], xlim = c(0, max.lfm.a), 
               pch = 16, col = alpha(seg.adfa.subset[,'color'], 0.8),
               cex.lab = 1.3)
 polygon(x = c(lower.d, upper.d, upper.d, lower.d), y = c(75 + 0.2*75, 75 +0.2*75, -22, -22), col = alpha('gray', 0.3), lty = 2)
-abline(v = mean_lfm_adfa, col = alpha('#00C368', 0.7), cex = 3)
-polygon(x = c(lwr_lfm_adfa, upr_lfm_adfa, upr_lfm_adfa, lwr_lfm_adfa), y = c(75 +0.2*75, 75 +0.2*75, 0-22, -22), col = alpha('#00C368', 0.3), border = alpha('#00C368', 0.6))
+abline(v = mean_lfm_adfa, col = alpha("#64A400", 0.7), cex = 3)
+polygon(x = c(lwr_lfm_adfa, upr_lfm_adfa, upr_lfm_adfa, lwr_lfm_adfa), y = c(75 +0.2*75, 75 +0.2*75, 0-22, -22), col = alpha("#64A400", 0.3), border = alpha("#64A400", 0.6))
 legend('topleft', legend = c("September 2020", "January 2018", "December 2016"),
        col = c("#c1121f","#FF7262","#A4A7DE"), pch = 16, cex=1)
 for(z in 1:length(seg.adfa.subset[,'lfm'])){
   if(z < summary.segmented(os.mod.d)$psi[2]){
-    segments(x0 = 0, x1 = summary.segmented(os.mod.d)$psi[2], y0 = intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]], y1 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]]*((intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] - intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]])/(slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]] - slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]))+intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]], lwd = 3, col = "#9D0208")
+    segments(x0 = 0, x1 = summary.segmented(os.mod.d)$psi[2], y0 = intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]], y1 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]]*((intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] - intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]])/(slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]] - slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]))+intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]], lwd = 3, col = "black")
   }else{
-    segments(x0 = summary.segmented(os.mod.d)$psi[2], x1 = max.lfm, y0 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]*((intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]] - intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]])/(slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] - slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]]))+intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] , y1 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]*max.lfm + intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]], lwd = 3, col = "#9D0208")}}
+    segments(x0 = summary.segmented(os.mod.d)$psi[2], x1 = max.lfm, y0 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]*((intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]] - intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]])/(slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] - slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[1]]))+intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]] , y1 = slope(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]]*max.lfm + intercept(os.mod.d, .coef = fixef(os.mod.d))[[1]][[2]], lwd = 3, col = "black")}}
 draw.circle(43.14614, -17, 1.25, col = 'black') # Prop ignite threshold
 segments(x0 = 38.84931, x1 = 47.44297, y0 = -17, y1 = -17, col = 'black')
 text(x = 43.14614, y = -12.5, labels = c("Prop. Ig."), cex = 1)
@@ -944,7 +944,7 @@ m.1 <- slope(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[1]]
 b.1 <- intercept(os.mod.a1, .coef = fixef(os.mod.a1))[[1]][[1]]
 
 rsegplot.lfm(os.mod.a1, seg.ceme.s20.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.1, x1 = max.lfm.c, y0 = m2.1*((b.1 - b2.1)/(m2.1 - m.1))+b2.1 , y1 = m2.1*max.lfm.c + b2.1, lwd = 4, col = "#9D0208")
+segments(x0 = p.1, x1 = max.lfm.c, y0 = m2.1*((b.1 - b2.1)/(m2.1 - m.1))+b2.1 , y1 = m2.1*max.lfm.c + b2.1, lwd = 4, col = "black")
 ```
 
 ```{r}
@@ -960,7 +960,7 @@ m.2 <- slope(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[1]]
 b.2 <- intercept(os.mod.a2, .coef = fixef(os.mod.a2))[[1]][[1]]
 
 rsegplot.lfm(os.mod.a2, seg.ceme.d19.subset, 'CEME', y.variable = 'PC1',y.lab = "PC1", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.2, x1 = max.lfm.c, y0 = m2.2*((b.2 - b2.2)/(m2.2 - m.2))+b2.2 , y1 = m2.2*max.lfm.c + b2.2, lwd = 4, col = "#9D0208")
+segments(x0 = p.2, x1 = max.lfm.c, y0 = m2.2*((b.2 - b2.2)/(m2.2 - m.2))+b2.2 , y1 = m2.2*max.lfm.c + b2.2, lwd = 4, col = "black")
 ```
 
 ### Time to Ignition
@@ -977,7 +977,7 @@ m.3 <- slope(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[1]]
 b.3 <- intercept(os.mod.b1, .coef = fixef(os.mod.b1))[[1]][[1]]
 
 rsegplot.lfm(os.mod.b1, seg.ceme.s20.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.3, x1 = max.lfm.c, y0 = m2.3*((b.3 - b2.3)/(m2.3 - m.3))+b2.3 , y1 = m2.3*max.lfm.c + b2.3, lwd = 4, col = "#9D0208")
+segments(x0 = p.3, x1 = max.lfm.c, y0 = m2.3*((b.3 - b2.3)/(m2.3 - m.3))+b2.3 , y1 = m2.3*max.lfm.c + b2.3, lwd = 4, col = "black")
 ```
 
 ```{r}
@@ -993,7 +993,7 @@ m.4 <- slope(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[1]]
 b.4 <- intercept(os.mod.b2, .coef = fixef(os.mod.b2))[[1]][[1]]
 
 rsegplot.lfm(os.mod.b2, seg.ceme.d19.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.4, x1 = max.lfm.c, y0 = m2.4*((b.4 - b2.4)/(m2.4 - m.4))+b2.4 , y1 = m2.4*max.lfm.c + b2.4, lwd = 4, col = "#9D0208")
+segments(x0 = p.4, x1 = max.lfm.c, y0 = m2.4*((b.4 - b2.4)/(m2.4 - m.4))+b2.4 , y1 = m2.4*max.lfm.c + b2.4, lwd = 4, col = "black")
 ```
 
 ### Flame Height
@@ -1088,12 +1088,12 @@ text(labels = c("a"), font = 2, cex = 3, x = 230, y = 4)
 mtext("C. megacarpus", font = 4, cex = 1.8, side = 3, line = 1, at = 100)
 #####################################################
 rsegplot.lfm.nolegend(os.mod.a1, seg.ceme.s20.subset, 'CEME', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.1, x1 = max.lfm.c, y0 = m2.1*((b.1 - b2.1)/(m2.1 - m.1))+b2.1 , y1 = m2.1*max.lfm.c + b2.1, lwd = 4, col = "#9D0208")
+segments(x0 = p.1, x1 = max.lfm.c, y0 = m2.1*((b.1 - b2.1)/(m2.1 - m.1))+b2.1 , y1 = m2.1*max.lfm.c + b2.1, lwd = 4, col = "black")
 text(labels = c("b"), font = 2, cex = 3, x = 230, y = 4.05)
 mtext("September 2020", font = 1, cex = 1, side = 3, line = 0.8, at = 115)
 #####################################################
 rsegplot.lfm.nolegend(os.mod.a2, seg.ceme.d19.subset, 'CEME', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.2, x1 = max.lfm.c, y0 = m2.2*((b.2 - b2.2)/(m2.2 - m.2))+b2.2 , y1 = m2.2*max.lfm.c + b2.2, lwd = 4, col = "#9D0208")
+segments(x0 = p.2, x1 = max.lfm.c, y0 = m2.2*((b.2 - b2.2)/(m2.2 - m.2))+b2.2 , y1 = m2.2*max.lfm.c + b2.2, lwd = 4, col = "black")
 text(labels = c("c"), font = 2, cex = 3, x = 230, y = 1.9)
 mtext("December 2019", font = 1, cex = 1, side = 3, line = 0.8, at = 115)
 #####################################################
@@ -1101,11 +1101,11 @@ rsegplot.lfm(os.mod.b, seg.ceme.subset, 'CEME', y.variable = 'tti',y.lab = "Time
 text(labels = c("d"), font = 2, cex = 3, x = 230, y = 85)
 #####################################################
 rsegplot.lfm.nolegend(os.mod.b1, seg.ceme.s20.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", x.lab = " ", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.3, x1 = max.lfm.c, y0 = m2.3*((b.3 - b2.3)/(m2.3 - m.3))+b2.3 , y1 = m2.3*max.lfm.c + b2.3, lwd = 4, col = "#9D0208")
+segments(x0 = p.3, x1 = max.lfm.c, y0 = m2.3*((b.3 - b2.3)/(m2.3 - m.3))+b2.3 , y1 = m2.3*max.lfm.c + b2.3, lwd = 4, col = "black")
 text(labels = c("e"), font = 2, cex = 3, x = 230, y = 85)
 #####################################################
 rsegplot.lfm.nolegend(os.mod.b2, seg.ceme.d19.subset, 'CEME', y.variable = 'tti',y.lab = "Time to Ignition (s)", x.lab = " ", tlp = mean_lfm_ceme, tlp.lower = lwr_lfm_ceme, tlp.upper = upr_lfm_ceme)
-segments(x0 = p.4, x1 = max.lfm.c, y0 = m2.4*((b.4 - b2.4)/(m2.4 - m.4))+b2.4 , y1 = m2.4*max.lfm.c + b2.4, lwd = 4, col = "#9D0208")
+segments(x0 = p.4, x1 = max.lfm.c, y0 = m2.4*((b.4 - b2.4)/(m2.4 - m.4))+b2.4 , y1 = m2.4*max.lfm.c + b2.4, lwd = 4, col = "black")
 text(labels = c("f"), font = 2, cex = 3, x = 230, y = 70)
 #####################################################
 rsegplot.lfm(os.mod.c, seg.adfa.subset, 'ADFA', y.variable = 'PC1',y.lab = "Ignitability-Combustibility Proxy", x.lab = " ", tlp = mean_lfm_adfa, tlp.lower = lwr_lfm_adfa, tlp.upper = upr_lfm_adfa, max.x = max.lfm.a)

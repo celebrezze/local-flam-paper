@@ -27,7 +27,7 @@ library(GGally) #for corr plots
 require(kimisc) # has the nlist function to create a named list
 require(AICcmodavg) # has the aictab function
 library(psych)
-#devtools::install_github("strengejacke/strengejacke")
+devtools::install_github("strengejacke/strengejacke")
 library(strengejacke)
 library(sjPlot) # table functions
 library(sjmisc) # sample data
