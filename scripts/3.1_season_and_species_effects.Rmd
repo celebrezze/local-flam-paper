@@ -516,7 +516,7 @@ pc1.vs.mpa.adfa <- precip_groups_ranis.adfa  %>%
               show.legend = FALSE) +
   geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') + # CHANGE TO x = 9 if text above!
   #annotate('text', x = -9, y = -2.25, label = 'More \n Combustible \n & Ignitable', fontface = 2) + # THIS IS FOR TEXT ABOVE ARRROW
-  annotate('text', x = -8, y = -4.2, label = 'More \n Combustible \n & Ignitable', fontface = 2) + # THIS IS FOR TEXT TO RIGHT OF ARROW
+  annotate('text', x = -7.3, y = -3.75, label = 'More \n Combustible \n & Ignitable', fontface = 2, size = 6) + # THIS IS FOR TEXT TO RIGHT OF ARROW
   labs(x = "Water Potential (-MPa)", 
        y = "Ignitability-Combustibility Proxy", 
        fill = "Season",
@@ -599,7 +599,7 @@ pc1.vs.mpa.adfa.avgsite <- precip_groups_ranis  %>%
              color = season,
              group = season)) +
     geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
-  annotate('text', x = -8, y = -4.2, label = 'More \n Combustible \n & Ignitable', fontface = 2) +
+  annotate('text', x = -8, y = -3.75, label = 'More \n Combustible \n & Ignitable', fontface = 2, size = 6) +
   geom_point(alpha = .65, aes(color = season), size = 2) +
   geom_abline(slope = -0.137, intercept = 0.0965,
               color = '#c1121f', cex = 1, alpha = .9,
@@ -648,7 +648,7 @@ pc1.vs.mpa.ceme <- precip_groups_ranis.ceme  %>%
               show.legend = FALSE) +
   geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.4), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') + # CHANGE TO x = 9 if text above!
   #annotate('text', x = -9, y = -2.25, label = 'More \n Combustible \n & Ignitable', fontface = 2) + # THIS IS FOR TEXT ABOVE ARROW
-  annotate('text', x = -8, y = -4.2, label = 'More \n Combustible \n & Ignitable', fontface = 2) + # THIS IS FOR TEXT TO RIGHT OF ARROW
+  annotate('text', x = -7.3, y = -3.75, label = 'More \n Combustible \n & Ignitable', fontface = 2, size = 6) + # THIS IS FOR TEXT TO RIGHT OF ARROW
   labs(x = "Water Potential (-MPa)", 
        y = "Ignitability-Combustibility Proxy", 
        fill = "Season",
@@ -690,12 +690,12 @@ pc2.vs.mpa.adfa <- precip_groups_ranis.adfa  %>%
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.3), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
-  annotate('text', x = -8, y = -4.2, label = 'Less \n Consumable', fontface = 2) +
+  annotate('text', x = -7.3, y = -4.2, label = 'Less \n Consumable', fontface = 2, size = 6) +
   labs(x = "Water Potential (-MPa)", 
        y = "Consumability Proxy", 
        fill = "Season",
        color = "Season") +
-  scale_y_continuous(limits=c(-5,5), breaks=c(-5,-2.5,0,2.5,5)) +
+  scale_y_continuous(limits=c(-5,3.25), breaks=c(-5,-2.5,0,2.5,5)) +
   th +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "none", 
@@ -707,7 +707,7 @@ pc2.vs.mpa.adfa <- precip_groups_ranis.adfa  %>%
         axis.text.x = element_blank(),
         axis.text.y = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  annotate('text', x = -9.7, y = 4.9, label = 'c', size = 12, face = 'bold') +
+  annotate('text', x = -9.7, y = 3, label = 'c', size = 12, face = 'bold') +
   scale_color_manual(values=c("#c1121f","#669BBC"))
 pc2.vs.mpa.adfa
 ```
@@ -728,12 +728,12 @@ pc2.vs.mpa.ceme <- precip_groups_ranis.ceme  %>%
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   geom_segment(aes(x = -9.5, xend = -9.5, y = -5, yend = -3.3), arrow = arrow(length = unit(0.15, 'inches')), color = 'black') +
-  annotate('text', x = -8, y = -4.2, label = 'Less \n Consumable', fontface = 2) +
+  annotate('text', x = -7.3, y = -4.2, label = 'Less \n Consumable', fontface = 2, size = 6) +
   labs(x = "Water Potential (-MPa)", 
        y = "Consumability Proxy", 
        fill = "Season",
        color = "Season") +
-  scale_y_continuous(limits=c(-5,5), breaks=c(-5,-2.5,0,2.5,5)) +
+  scale_y_continuous(limits=c(-5,3.25), breaks=c(-5,-2.5,0,2.5,5)) +
   th +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "none", 
@@ -743,7 +743,7 @@ pc2.vs.mpa.ceme <- precip_groups_ranis.ceme  %>%
         axis.title = element_blank(),
         axis.text = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  annotate('text', x = -9.7, y = 4.85, label = 'd', size = 12, face = 'bold') +
+  annotate('text', x = -9.7, y = 3, label = 'd', size = 12, face = 'bold') +
   scale_color_manual(values=c("#c1121f","#669BBC"))
 pc2.vs.mpa.ceme
 ```
@@ -780,7 +780,7 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
         axis.title.x = element_blank(),
         axis.text = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  annotate('text', x = -9.7, y = 1.5, label = 'e', size = 12, face = 'bold') +
+  annotate('text', x = -9.7, y = 1.75, label = 'e', size = 12, face = 'bold') +
   scale_color_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.adfa
 ```
@@ -816,7 +816,7 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
         axis.text.x = element_text(size = 14),
         axis.text.y = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  annotate('text', x = -9.7, y = 1.5, label = 'f', size = 12, face = 'bold') +
+  annotate('text', x = -9.7, y = 1.75, label = 'f', size = 12, face = 'bold') +
   scale_color_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.ceme
 ```
@@ -826,7 +826,9 @@ mpa.vs.lfm.ceme
 legend.sz <- get_legend(
   # create some space to the left of the legend
   ggplot() + 
-  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, PC1, color = season), size = 5, alpha = .8) +
+  geom_point(data= seg.data.subset.alldates, aes(mpa.unscaled, PC1, color = season), 
+             size = 5, 
+             alpha = .8) +
     labs(color = "Season") +
     scale_color_manual(values = c('#c1121f', '#669bbc')) +
     theme(legend.box.margin = margin(0, 0, 0, 0),
@@ -841,25 +843,32 @@ x.grob <- textGrob("Water Potential (MPa)",
                            fontsize=24))
 ?theme
 plot.sz.mem <- cowplot::plot_grid(
-        pc1.vs.mpa.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0.25), "cm")), 
-        pc1.vs.mpa.ceme + theme(plot.margin = unit(c(0, 0.2, 0.25, 0.1), "cm")),
-        pc2.vs.mpa.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0.25), "cm")), 
-        pc2.vs.mpa.ceme + theme(plot.margin = unit(c(0, 0.2, 0.25, 0.1), "cm")),
-        mpa.vs.lfm.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0.25), "cm")),
-        mpa.vs.lfm.ceme + theme(plot.margin = unit(c(0, 0.2, 0.25, 0.1), "cm")),
-        align='vh', vjust=.5, scale = 1,
-        ncol = 2)
+        pc1.vs.mpa.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0), "cm")), 
+        NULL,
+        pc1.vs.mpa.ceme + theme(plot.margin = unit(c(0, -1, 0.25, 0.25), "cm")),
+        pc2.vs.mpa.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0), "cm")), 
+        NULL,
+        pc2.vs.mpa.ceme + theme(plot.margin = unit(c(0, -1, 0.25, 0.25), "cm")),
+        mpa.vs.lfm.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0), "cm")),
+        NULL,
+        mpa.vs.lfm.ceme + theme(plot.margin = unit(c(0, -1, 0.25, 0.25), "cm")),
+        align='vh', 
+        vjust=.5,
+        rel_widths = c(1, 0, 1),
+        scale = 1,
+        ncol = 3)
+plot.sz.mem
 
 #add to plot
 scatterplot.sz.mem <- gridExtra::grid.arrange(arrangeGrob(plot.sz.mem, bottom = x.grob)) 
 scatterplot.sz.mem
 
-plot_legend.sz.mem <- cowplot::plot_grid(legend.sz, scatterplot.sz.mem, ncol = 1, rel_heights = c(1,15))
+plot_legend.sz.mem <- cowplot::plot_grid(legend.sz, scatterplot.sz.mem, ncol = 1, rel_heights = c(1,10))
 plot_legend.sz.mem
 
 ggsave(here("figures", "main-figures", "Fig3_Season.Plot.jpg"),
        plot = plot_legend.sz.mem,
-       width = 10, height = 18, dpi = 300)
+       width = 10, height = 15, dpi = 300)
 ```
 
 ### MPa vs. DW
