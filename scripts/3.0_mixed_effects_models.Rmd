@@ -684,6 +684,7 @@ tab_model(mpa_mod_fig.mpa, m11, m7, m10, m3, m6, m6.5, m12, m15,
 ```
 # ---------------------------------------
 # MAIN MODEL SELECTION
+
 From our first round of model selection, it appears that site, species, and year.month are all important variables to include, and sample.wt should probably be included as well despite worsening the models slightly.
 
 Below, I am going to perform another round of model selection with all possible permutations of the following metrics: mpa, lfm, dw.flam.sample, ww.flam.sample, excess_water.scaled with the caveat that some combinations of metrics absolutely do NOT work. Those combinations are as follows:
