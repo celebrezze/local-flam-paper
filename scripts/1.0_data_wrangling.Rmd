@@ -774,38 +774,62 @@ clean.mem.data.alldates <- mem.data.alldates %>%
   mutate(lfm.unscaled = lfm)%>% 
   mutate(lfm.NAs.imputed.unscaled = lfm.NAs.imputed) %>% 
   mutate(dw.flam.sample.unscaled = dw.flam.sample) %>% 
+  mutate(ww.flam.sample.unscaled = ww.flam.sample) %>% 
+  mutate(flam.sample.wt.unscaled = sample.wt) %>% 
   mutate(excess_water.unscaled = excess_water.scaled)
 
 #Parsing out the variables of interest for the mixed effects modeling including dependent variables and unscaled predictors
 clean.mem.data.alldates <- clean.mem.data.alldates %>% 
-  select(c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd', 'temp.max', 'pfg', 'gti', 'ttfg', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition", 'spp', 'year.month', 'year', 'month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'dw.flam.sample.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration')) %>% 
+  select(c('PC1', 'PC2', 'PC3', 'PC4', 'tti', 'fh', 'gd', 'fd', 'temp.max', 'pfg', 'gti', 'ttfg', 'flam.index', 'year', 'month', 'prop.ignite', 'prop.ignite.bins5', "ignition", 'spp', 'year.month', 'year', 'month', 'individual', 'site', 'start.temp', 'precip.2mo','mpa.unscaled', 'lfm.unscaled', 'dw.flam.sample.unscaled', 'lfm.NAs.imputed.unscaled', 'excess_water.unscaled', 'hydration', 'flam.sample.wt.unscaled', 'ww.flam.sample.unscaled')) %>% 
   arrange(individual)
 
 #Now, splitting by species and then scaling predictors and then using rbind to put back into a single dataframe (scaled.mem.data.predictors.alldates)
 scaled.mem.data.predictors.alldates.adfa <- mem.data.alldates %>%
   filter(spp == "ADFA") %>% 
-  select(lfm.NAs.imputed, lfm.outliers.out, mpa, dw.flam.sample, 
-                sample.wt, ww.flam.sample, lfm, excess_water.scaled,
-                individual) %>%
-  mutate(lfm.NAs.imputed = scale(lfm.NAs.imputed), lfm.outliers.out = 
-            scale(lfm.outliers.out), mpa.scaled = scale(mpa), 
-            dw.flam.sample = scale(dw.flam.sample), sample.wt =
-            scale(sample.wt), ww.flam.sample = scale(ww.flam.sample),
-            lfm = scale(lfm), excess_water.scaled =
-            scale(excess_water.scaled)) %>% 
+  select(
+    lfm.NAs.imputed,
+    lfm.outliers.out,
+    mpa,
+    dw.flam.sample,
+    sample.wt,
+    ww.flam.sample,
+    lfm,
+    excess_water.scaled,
+    individual
+  ) %>%
+  mutate (lfm.NAs.imputed = scale(lfm.NAs.imputed),
+  lfm.outliers.out = scale(lfm.outliers.out),
+  mpa.scaled = scale(mpa),
+  dw.flam.sample = scale(dw.flam.sample),
+  sample.wt = scale(sample.wt),
+  ww.flam.sample = scale(ww.flam.sample),
+  lfm = scale(lfm),
+  excess_water.scaled = scale(excess_water.scaled)) %>% 
   dplyr::rename(individual.a = individual)
   
 scaled.mem.data.predictors.alldates.ceme <- mem.data.alldates %>%
   filter(spp == "CEME") %>% 
-  select(lfm.NAs.imputed, lfm.outliers.out, mpa, dw.flam.sample, 
-                sample.wt, ww.flam.sample, lfm, excess_water.scaled, 
-                individual) %>% 
-  mutate(lfm.NAs.imputed = scale(lfm.NAs.imputed), lfm.outliers.out = 
-            scale(lfm.outliers.out), mpa.scaled = scale(mpa), 
-            dw.flam.sample = scale(dw.flam.sample), sample.wt =
-            scale(sample.wt), ww.flam.sample = scale(ww.flam.sample),
-            lfm = scale(lfm), excess_water.scaled =
-            scale(excess_water.scaled)) %>% 
+  select(
+    lfm.NAs.imputed,
+    lfm.outliers.out,
+    mpa,
+    dw.flam.sample,
+    sample.wt,
+    ww.flam.sample,
+    lfm,
+    excess_water.scaled,
+    individual
+  ) %>% 
+  mutate( lfm.NAs.imputed = scale(lfm.NAs.imputed),
+    lfm.outliers.out = scale(lfm.outliers.out),
+    mpa.scaled = scale(mpa),
+    dw.flam.sample = scale(dw.flam.sample),
+    sample.wt = scale(sample.wt),
+    ww.flam.sample = scale(ww.flam.sample),
+    lfm = scale(lfm),
+    excess_water.scaled =
+      scale(excess_water.scaled)
+  ) %>% 
   dplyr::rename(individual.a = individual)
   
 scaled.mem.data.predictors.alldates <- rbind(scaled.mem.data.predictors.alldates.adfa, scaled.mem.data.predictors.alldates.ceme) %>% 

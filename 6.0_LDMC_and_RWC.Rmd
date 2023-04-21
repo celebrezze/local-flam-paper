@@ -1,0 +1,124 @@
+---
+title: "RWC and LDMC"
+author: "Indra Boving & Joe Celebrezze"
+date: "4/20/2021"
+output: html_document
+---
+
+This script contains data and analysis for calculating RWC and LDMC from rehydrated leaves, and determining if LDMC and/or RWC predict 1) TLP, 2) Flammability in the manner similar to or different from water potential or LFM. 
+
+# Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+# install the package first if you haven't already, then load it
+library(tidyverse)
+library(here)
+library(ggplot2)
+```
+
+#------------------------------------
+# 1. Data wrangling
+
+Reading in data and calculating Saturated Water Content (SWC), Relative Water Content (RWC), and Leaf Dry Matter Content (LDMC)
+
+SWC is based on the samples with the highest LFM or the most hydrated MPa (whichever is higher)
+
+```{r}
+rawscaled.mem.data.alldates.noNAs <- read.csv(here('processed-data', 'mem.data.subset.alldates.csv'))
+
+rwc_raw <- read.csv(here('processed-data', 'mem.data.subset.alldates.csv')) %>% 
+  group_by() %>% 
+  select(individual, spp, mpa, lfm.unscaled, dw.flam.sample.unscaled, ww.flam.sample.unscaled, flam.sample.wt.unscaled) %>%
+  mutate(ldmc = (dw.flam.sample.unscaled/flam.sample.wt.unscaled)) 
+
+rwc_max_lfm_df <- rwc_raw %>% 
+  group_by(individual) %>% 
+  slice_max(lfm.unscaled, with_ties = T) %>% 
+  ungroup() %>% 
+  mutate(ldmc.max = ldmc, 
+         swc = (ww.flam.sample.unscaled/dw.flam.sample.unscaled), 
+         value = lfm.unscaled) %>% 
+  #filter(mpa > -.5) %>% 
+    select(individual, ldmc.max, swc, value) 
+
+rwc_max_mpa_df <- rwc_raw %>% 
+  group_by(individual) %>% 
+  slice_max(mpa, with_ties = T) %>% 
+  ungroup() %>% 
+  mutate(ldmc.max = ldmc, 
+         swc = (ww.flam.sample.unscaled/dw.flam.sample.unscaled), 
+         value = mpa) %>% 
+  #filter(mpa > -.5) %>% 
+    select(individual, ldmc.max, swc, value) 
+
+rwc_max_highest <- bind_rows(rwc_max_lfm_df, rwc_max_mpa_df) %>% 
+  group_by(individual) %>% 
+  slice_max(swc, with_ties = F) 
+
+rwc_df <- merge(rwc_raw, rwc_max_highest, by = c("individual"), all = T) %>% 
+  mutate(water.content = (ww.flam.sample.unscaled/dw.flam.sample.unscaled), 
+         rwc = (water.content/swc))
+
+rwc_df %>% 
+  ggplot(aes(y = mpa, x = rwc, color = spp)) +
+  geom_point()
+
+rwc_df %>% 
+  ggplot(aes(y = mpa, x = lfm.unscaled, color = spp)) +
+  geom_point()
+```
+The highest SWC is always the most hydrated LFM, which makes more sense to use as using MPa nearly always gives us RWC > 100%. 
+
+```{r}
+rwc_max_mpa_df <- rwc_raw %>% 
+  group_by(individual) %>% 
+  slice_max(mpa, with_ties = T) %>% 
+  ungroup() %>% 
+  mutate(ldmc.max = ldmc, 
+         swc = (ww.flam.sample.unscaled/dw.flam.sample.unscaled), 
+         value = mpa) %>% 
+  #filter(mpa > -.5) %>% 
+    select(individual, ldmc.max, swc, value) 
+
+rwc_mpa_df <- merge(rwc_raw, rwc_max_mpa_df , by = c("individual"), all = T) %>% 
+  mutate(water.content = (ww.flam.sample.unscaled/dw.flam.sample.unscaled), 
+         rwc = (water.content/swc))
+
+rwc_mpa_df %>% 
+  ggplot(aes(y = mpa, x = rwc, color = spp)) +
+  geom_point()
+
+rwc_mpa_df %>% 
+  ggplot(aes(y = mpa, x = lfm.unscaled, color = spp)) +
+  geom_point()
+```
+Okay, so use the one with LFM favored: rwc_df
+
+#Comment 1: Does LDMC or RWC correspond to TLP?
+
+"One suggestion I have for the authors is for them to also included discussion (and likely data) of
+relative water content. Relative water content and live fuel moisture should be related
+(considering that both rely on fresh and dry weight, though RWC also requires saturated water
+content) and the authors should have all of the raw data to be able to also determine RWC. This
+would be a further link between fire scientists and eco-physiologists. I see they report the
+pressure-volume curve TLP, but I believe they could also determine a RWC for each LFM data
+point they have. If so, this might best fit in the Discussion section “4.2 | Both plant hydration
+and dry matter content affect flammability.”
+
+      - Reviewer 3
+      
+Combine rwc_df with TLP:
+
+```{r}
+rwc_pv_raw <- read.csv(here("processed-data", "pv_summary_df_timing.csv")) %>% 
+  filter(timing == "fall")
+
+rwc_pv_df <- merge(rwc_df, rwc_pv_raw, by = c("spp"))
+```
+
+
+#Comment 2: 
+
+"We also think there is a potential opportunity to broaden the utility of this approach by looking at a more commonly (and easily) measured plant functional trait that has also been linked to drought response: Leaf dry matter content (LDMC).  Stears et al. 2022 (Ecology 103 (11) Water availability dictates how plant traits predict demographic rates) found that TLP and LDMC were strongly correlated for sixteen grass and forb species (pearson correlation of 0.831).  It would be neat to check whether TLP and LDMC were also strongly correlated for the study species you encountered.  Since water potential and TLP were very predictive of flammability and thresholds, it would be great to understand whether the more easily measured and commonly available LDMC is equally as predictive and shows a similar threshold like behavior.  One potential complication, and fundamental way that LDMC measures differ from LFM is that LDMC is measured at “full hydration”, meaning leaves were fully hydrated in the lab.  We don’t know whether the authors took these types of measurements.  We see in the methods that branchlets were fully hydrated and LFM then measured periodically, so this might be a potential source for an LDMC comparison."
+
+      - Reviewer 1
