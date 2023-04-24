@@ -801,6 +801,7 @@ tab_model(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12,
 
 ## P Values
 The p values in the MEM tables is incorrect, and the Kenward-Roger approximation should be used via 'lmerTest' as follows
+
 ```{r}
 m1 <- lmer(PC1 ~ lfm + spp + site + year.month + sample.wt + (1 | individual), data = scaled.mem.data.alldates.noNAs, REML = T)
 summary(m1, ddf = 'Kenward-Roger')
