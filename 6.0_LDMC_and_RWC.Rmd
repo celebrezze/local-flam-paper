@@ -16,6 +16,20 @@ library(here)
 library(ggplot2)
 ```
 
+Set global options for color palettes and themes: 
+
+```{r}
+th <- theme(panel.background = element_rect(fill='white', colour='black'), # Make background white and border black
+          panel.grid.major = element_blank(),  # Hide major gridlines
+          panel.grid.minor = element_blank())
+
+th.spp.wrap <- theme(legend.position = "bottom", 
+        strip.text = element_text(face = "italic", size = 12) +
+  scale_color_manual(values=met.brewer("Morgenstern", 7)))
+
+Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db8872", "#a56457"), c(7, 5, 4, 6, 3, 2, 1), colorblind=TRUE)
+```
+
 #------------------------------------
 # 1. Data wrangling
 
@@ -71,6 +85,7 @@ rwc_df <- merge(rwc_raw, rwc_max_highest, by = c("individual"), all = T) %>%
 ```
 
 The highest SWC is always the most hydrated LFM, which makes more sense to use as using MPa nearly always gives us RWC > 100%. 
+
 #------
 
 Try with the intercept of the relationship between water.content and mpa:
@@ -88,7 +103,7 @@ rwc_int_subset <- rwc_df %>%
 swc_mod <- lmer(water.content ~ mpa.unscaled + (1|individual), data = rwc_int_subset)
 
 ind_ints <- as.data.frame(coef(swc_mod)$individual) %>% 
-  rownames_to_column( var = "individual") %>% 
+  rownames_to_column(var = "individual") %>% 
   rename(slope = mpa.unscaled, 
          intercept = '(Intercept)') %>% 
   select(individual, 
@@ -106,12 +121,15 @@ rwc_swc_df %>%
   ggplot(aes(y = rwc.unscaled, x = rwc.int.unscaled))+
   geom_point()
 ```
+
+
 When we extrapolate, we get a lot of RWCs that are greater than 100...which is a bit strange? Force those to be 100 and make that will help? 
 
 ```{r}
 rwc_swc_df2 <- rwc_swc_df %>% 
   mutate(rwc.int.unscaled = case_when(
-    rwc.int.unscaled > 1 ~ 1, 
+    #rwc.int.unscaled > 1.001 ~ NA_real_, 
+    rwc.int.unscaled > 1.001 ~ 1, 
     TRUE ~ rwc.int.unscaled
   )) 
 
@@ -133,7 +151,19 @@ rwc_pv_df <- merge(rwc_pv_raw, rwc_swc_df2, by = c("spp")) %>%
   group_by(spp) %>% 
   mutate(rwc.noint = scale(rwc.unscaled), 
          rwc = scale(rwc.int.unscaled),
-         ldmc = scale(ldmc))
+         ldmc = scale(ldmc)) %>% 
+  mutate(season = case_when(
+    precip.2mo < 0.5 ~ "Dry", 
+    precip.2mo > 0.5 ~ "Wet")
+  ) %>% 
+  mutate(site.test = case_when( 
+    site == "St. Marys" ~ 1,
+    site == "Painted Caves" ~ 2
+  )) %>%
+  mutate(season = case_when(
+    timing %in% c("Dec. 2019", "Dec. 2016", "Jan. 2018", "Jan. 2020") ~ "Wet", 
+    timing == "Sept. 2020" ~ "Dry"
+  ))
 ```
 
 # ---------------------------------------
@@ -150,7 +180,6 @@ and dry matter content affect flammability.”
 
       - Reviewer 3
       
-
 
 # MAIN MODEL SELECTION - RWC
 
@@ -240,8 +269,6 @@ m2 <- PC1 ~ mpa + spp + site + year.month + sample.wt + (1 | individual)
 summary(m14.5, ddf = 'Kenward-Roger')
 
 summary(m2, ddf = 'Kenward-Roger')
-
-anova(m2, m14.5)
 ```
 
 
@@ -333,6 +360,7 @@ Conclusion: For FH, model with RWC along and RWC + Mpa both performed equally we
 ```{r}
 m2.5
 m5.5
+m5
 
 anova(m2.5, m5.5)
 ```
@@ -584,39 +612,274 @@ m1
 ```
 #CONCLUSIONS: 
 
-We calculated each burned samples relative water content as the water content (grams water) relative to the grams of water at saturation (after rehydration treatment, when water potentials were > -0.5 or when LFM was the highest). 
+Methods: 
+To determine relative water content, we performed an extrapolated linear regression on points more hydrated than the TLP (~-3.0 MPa) as is done in PC curve analysis. Unlike PV Curves, our dry down utilized different leaves of varying dry masses, leading to occasional estimates of RWC that were greater than 100% (e.g., when samples measured at water potentials closest to zero had lower overall dry matter than samples measured at less hydrated water potentials); in these cases RWC was assumed to be 100% and was notated accordingly. Results were similar when we used the highest observed LFM or MPa as the saturated water content.
 
-For both PC1 and for composite metrics, RWC was 
+
+Results: 
+
+Relative water content was a covariate in the top performing models for linear estimates of flammability. In the top models of all flammability metrics (including composite metric PC1), RWC was included when combined in models with water potential and generally performed as well as or slightly better than models that included water potential and another metric of sample weight or wet and/or dry matter (SI).
 
 
 #3.0 RWC dynamics: 
 
+#####3.1 Remef
 ```{r}
-rwc_pv_df %>% 
-  ggplot(aes(y =  rwc.int.unscaled, x = lfm.unscaled, color = spp, shape = year.month)) +
-  geom_point()+
-  geom_smooth(method = 'lm')+
-  ylim(0, 1)
+mparwc_mod <- lmer(rwc ~ mpa + spp + season + site + (1 | individual), data = rwc_pv_df)
 
-rwc_pv_df %>% 
-  ggplot(aes(y = rwc.int.unscaled, x = mpa.unscaled, color = individual, shape = year.month)) +
-  geom_point()+
-  geom_smooth(method = 'lm', se = F) +
-  ylim(0, 1) +
-  #facet_wrap(~year.month) +
-  theme(legend.position = "none")
+summary(mparwc_mod)
 
-rwc_pv_df %>% 
-  ggplot(aes(y = rwc.unscaled, x = rwc.int.unscaled, color = individual, shape = year.month)) +
-  geom_point()+
-  geom_smooth(method = 'lm', se = F) +
-  ylim(0, 1) +
-  #facet_wrap(~year.month) +
-  theme(legend.position = "none") +
-  geom_abline() +
-  coord_equal()
+r1_rwc <- remef(mparwc_mod, fix = c('sppCEME', 'siteSt. Marys'),  ran = "all", keep.intercept = FALSE)
+
+scaled_r1_rwc_df <- as.data.frame(r1_rwc)
+###
+
+rwc_rel_df <- cbind(scaled_r1_rwc_df, rwc_pv_df)
+
+rwc_rel_df.adfa <- rwc_rel_df %>% 
+  filter(spp == 'ADFA')
+rwc_rel_df.ceme <- rwc_rel_df %>% 
+  filter(spp == 'CEME')
 ```
+
+####3.1 Figures
+
+with remef: 
+
+```{r}
+mean_tlp_all <- rwc_pv_df %>% 
+  mutate(mean_tlp_all = mean(mean_tlp)) %>% 
+  select(mean_tlp_all)
+  
+lfm_rwc_plot<- rwc_rel_df  %>% 
+ # mutate(mean_tlp_all = mean(mean_tlp)) %>% 
+  ggplot(aes(
+    y = 100 * r1_rwc,
+    x = lfm.unscaled,
+    color = season,
+    shape = season
+  )) +
+  geom_point(alpha = .5,size = 2, )+
+  geom_smooth(method = 'lm', se = F)+
+  ylim(0, 100) +
+ # geom_abline() +
+ # geom_vline(xintercept = mean_tlp_all)+
+  facet_wrap(~Species) +
+  theme(legend.position = "none",
+        #axis.text.x = element_blank(),
+        axis.text = element_text(size = 14)) +
+  labs(x="Live Fuel Moisture (%)", y="Relative Water Content (%)") +
+  annotate('text', x = 0, y = 97, label = 'a', size = 12) +
+  th +
+  scale_color_manual(values= c("#9D0208","#F48C06"))
+lfm_rwc_plot
+
+mpa_rwc_plot <- rwc_rel_df  %>% 
+  ggplot(aes(
+    y = 100 * r1_rwc,
+    x = mpa.unscaled,
+    color = season,
+    shape = season,
+  )) +
+  geom_point(alpha = .5,size = 2)+
+  geom_smooth(method = 'lm', se = F) +
+  ylim(0, 100) +
+  facet_wrap(~Species) +
+  theme(legend.position = "none",
+        #axis.text.x = element_blank(),
+        axis.text = element_text(size = 14)) +
+  labs(x="Water Potential (-Mpa)", y="") +
+  annotate('text', x = -10, y = 97, label = 'b', size = 12) +
+  th +
+  scale_color_manual(values= c("#9D0208","#F48C06"))
+
+# rwc_rwc_plot <-rwc_pv_df %>% 
+#   ggplot(aes(
+#     x = 100 * rwc.unscaled,
+#     y = 100 * rwc.int.unscaled,
+#     color = spp,
+#    # shape = year.month
+#   )) +
+#   geom_point(alpha = .5)+
+#   geom_smooth(method = 'lm', se = F) +
+#   ylim(0, 100) +
+#   geom_abline() +
+#   #coord_equal() +
+#   theme(legend.position = "none",
+#         #axis.text.x = element_blank(),
+#         axis.text.y = element_text(size = 14)) +
+#   labs(y="Relative Water Content (%)", x="RWClfm (%)") +
+#   annotate('text', x = 0, y = 97, label = 'a', size = 12) +
+#   th +
+#   scale_color_manual(values= c("#9D0208","#F48C06"))
+
+
+# lfm_mpa_plot <-rwc_pv_df %>% 
+#   ggplot(aes(
+#     x = lfm.unscaled,
+#     y = mpa.unscaled,
+#     color = Species,
+#     shape = Species
+#   )) +
+#   geom_point(alpha = .5)+
+#   geom_smooth(method = 'lm', se = F) +
+#  # ylim(0, 100) +
+#   #geom_abline() +
+#   #coord_equal() +
+#   theme(legend.position = "none",
+#         #axis.text.x = element_blank(),
+#         axis.text.y = element_text(size = 14)) +
+#   labs(y="MPa", x="Live Fuel Moisture (%)") +
+#   #scale_y_reverse()+
+#   ylim(-10, 0)+
+#   annotate('text', x = -.03, y = -0, label = 'c', size = 12) +
+#   th +
+#   scale_color_manual(values= c("#9D0208","#F48C06"))
+
+rwc_plot1 <- cowplot::plot_grid(lfm_rwc_plot, mpa_rwc_plot, nrow = 1)
+
+rwc_plot1
+
+legend <- get_legend(
+  # create some space to the left of the legend
+  ggplot() + 
+    geom_point(data= scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = Species, shape = Species), size = 5, alpha = .8) +
+    color_panels +
+    theme(legend.box.margin = margin(0, 0, 0, 0),
+          legend.position = "top",
+          legend.text = element_text(face = "italic", size = 18),
+          legend.title = element_text(face = 'bold', size = 22),
+          legend.key = element_rect(fill = "white"))
+)
+
+rwc_plot2 <- cowplot::plot_grid (legend, rwc_plot1, ncol = 1, rel_heights = c(1,12), rel_widths = c(1,.5))
+rwc_plot2
+
+ggsave(here("figures", 'reviewer-figures', "Fig1_RWC_LFM_MPa.jpg"),
+       plot = rwc_plot2, 
+       width = 6, height = 3, dpi = 300)
+```
+```{r}
+mean_tlp_all <- rwc_pv_df %>% 
+  mutate(mean_tlp_all = mean(mean_tlp)) %>% 
+  select(mean_tlp_all)
+  
+lfm_rwc_plot<- rwc_pv_df  %>% 
+ # mutate(mean_tlp_all = mean(mean_tlp)) %>% 
+  ggplot(aes(
+    y = 100 * rwc.int.unscaled,
+    x = lfm.unscaled,
+    color = season,
+    shape = season
+  )) +
+  geom_point(alpha = .5,size = 2, )+
+  geom_smooth(method = 'lm', se = F)+
+  ylim(0, 100) +
+  facet_wrap(~Species)+
+ # geom_abline() +
+ # geom_vline(xintercept = mean_tlp_all)+
+  #facet_wrap(~year.month) +
+  theme(legend.position = "none",
+        #axis.text.x = element_blank(),
+        axis.text = element_text(size = 14)) +
+  labs(x="Live Fuel Moisture (%)", y="Relative Water Content (%)") +
+  annotate('text', x = 0, y = 97, label = 'a', size = 12) +
+  th +
+  scale_color_manual(values= c("#9D0208","#F48C06"))
+lfm_rwc_plot
+```
+
+
+```{r}
+mpa_rwc_plot <- rwc_pv_df %>% 
+  ggplot(aes(
+    y = 100 * rwc.int.unscaled,
+    x = mpa.unscaled,
+    color = Species,
+    shape = Species
+  )) +
+  geom_point(alpha = .5,size = 2)+
+  geom_smooth(method = 'lm', se = F) +
+  ylim(0, 100) +
+  #facet_wrap(~year.month) +
+  theme(legend.position = "none",
+        #axis.text.x = element_blank(),
+        axis.text = element_text(size = 14)) +
+  labs(x="Water Potential (-Mpa)", y="") +
+  annotate('text', x = -10, y = 97, label = 'b', size = 12) +
+  th +
+  scale_color_manual(values= c("#9D0208","#F48C06"))
+
+# rwc_rwc_plot <-rwc_pv_df %>% 
+#   ggplot(aes(
+#     x = 100 * rwc.unscaled,
+#     y = 100 * rwc.int.unscaled,
+#     color = spp,
+#    # shape = year.month
+#   )) +
+#   geom_point(alpha = .5)+
+#   geom_smooth(method = 'lm', se = F) +
+#   ylim(0, 100) +
+#   geom_abline() +
+#   #coord_equal() +
+#   theme(legend.position = "none",
+#         #axis.text.x = element_blank(),
+#         axis.text.y = element_text(size = 14)) +
+#   labs(y="Relative Water Content (%)", x="RWClfm (%)") +
+#   annotate('text', x = 0, y = 97, label = 'a', size = 12) +
+#   th +
+#   scale_color_manual(values= c("#9D0208","#F48C06"))
+
+
+# lfm_mpa_plot <-rwc_pv_df %>% 
+#   ggplot(aes(
+#     x = lfm.unscaled,
+#     y = mpa.unscaled,
+#     color = Species,
+#     shape = Species
+#   )) +
+#   geom_point(alpha = .5)+
+#   geom_smooth(method = 'lm', se = F) +
+#  # ylim(0, 100) +
+#   #geom_abline() +
+#   #coord_equal() +
+#   theme(legend.position = "none",
+#         #axis.text.x = element_blank(),
+#         axis.text.y = element_text(size = 14)) +
+#   labs(y="MPa", x="Live Fuel Moisture (%)") +
+#   #scale_y_reverse()+
+#   ylim(-10, 0)+
+#   annotate('text', x = -.03, y = -0, label = 'c', size = 12) +
+#   th +
+#   scale_color_manual(values= c("#9D0208","#F48C06"))
+
+rwc_plot1 <- cowplot::plot_grid(lfm_rwc_plot, mpa_rwc_plot, nrow = 1)
+
+rwc_plot1
+
+legend <- get_legend(
+  # create some space to the left of the legend
+  ggplot() + 
+    geom_point(data= scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = Species, shape = Species), size = 5, alpha = .8) +
+    color_panels +
+    theme(legend.box.margin = margin(0, 0, 0, 0),
+          legend.position = "top",
+          legend.text = element_text(face = "italic", size = 18),
+          legend.title = element_text(face = 'bold', size = 22),
+          legend.key = element_rect(fill = "white"))
+)
+
+rwc_plot2 <- cowplot::plot_grid (legend, rwc_plot1, ncol = 1, rel_heights = c(1,12), rel_widths = c(1,.5))
+rwc_plot2
+
+ggsave(here("figures", 'reviewer-figures', "Fig1_NOREMEF_RWC_LFM_MPa.jpg"),
+       plot = rwc_plot2, 
+       width = 6, height = 3, dpi = 300)
+```
+
 #CONCLUSIONS:
+
+Results: RWC showed a similar relationship with MPa as LFM
 
 # ---------------------------------------
 
@@ -650,7 +913,7 @@ Reviewer 3:
 
 "We also think there is a potential opportunity to broaden the utility of this approach by looking at a more commonly (and easily) measured plant functional trait that has also been linked to drought response: Leaf dry matter content (LDMC). 
 
-# MAIN MODEL SELECTION - LDMC
+# MAIN LINEAR MODEL SELECTION - LDMC
 
 #2.0 PC1
 
