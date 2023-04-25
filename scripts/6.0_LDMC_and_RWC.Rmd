@@ -898,17 +898,100 @@ Reviewer 1:
 
 Stears et al. 2022 (Ecology 103 (11) Water availability dictates how plant traits predict demographic rates) found that TLP and LDMC were strongly correlated for sixteen grass and forb species (pearson correlation of 0.831).  It would be neat to check whether TLP and LDMC were also strongly correlated for the study species you encountered.  
 
+####Data wrangling:
+
+```{r}
+local_pv_curves <- read_csv(here::here("raw-data", "allcurves.csv"), show_col_types = FALSE) %>% 
+  clean_names() %>% 
+  filter(#spp %in% c("CEME", "ADFA"), 
+         tlp < -1.5 ) %>% 
+  mutate(fresh_weight_saturated = as.numeric(fresh_weight_saturated), 
+         ldmc = dry_weight/fresh_weight_saturated, 
+         date = mdy(date), 
+         year = year(date)) 
+
+summary_pv_curves <- local_pv_curves %>% 
+  group_by(spp, timing) %>% 
+  summarise(mean_tlp = mean(tlp), 
+            mean_rwc = mean(rwc_at_tlp), 
+            mean_lfm = mean(lfm_at_tlp, na.rm = T))
+
+local_pv_curves %>% 
+  #filter(year != 2016)%>% 
+  ggplot(aes(y = ldmc, x = tlp, color = date)) +
+  geom_point() +
+  facet_wrap(~spp)+
+  geom_smooth(method = "lm")
+
+local_pv_curves %>% 
+  #filter(year != 2016)%>% 
+  ggplot(aes(y = ldmc, x = tlp, color = date, shape = spp)) +
+  geom_point() +
+ # facet_wrap(~spp)+
+  geom_smooth(method = "lm")
+```
+The code below is maybe what we actually used in the paper? Mean values are slightly different when I use the above. Starting to think I might have taken the PV parameters straight from the excel sheet (which is fine, but then need to get all that data in proper order too).
+
+```{r, include = F, eval=FALSE}
+# Section 1: Pressure Volume Curves
+pv_data_all <- read_csv(here("raw-data", "allcurves_clean.csv"), show_col_types = FALSE) %>% 
+  mutate(sample = as.factor(sample),
+         date = lubridate::dmy(date),
+         month = month(date),
+         dataset = "pv") %>% 
+  janitor::clean_names()
+
+#by timing:
+pv_summary_df_timing_mpa <- pv_data_all %>% 
+  group_by(spp, timing) %>% 
+  dplyr::summarise(ci = list(mean_cl_normal(tlp) %>% 
+                        dplyr::rename(mean_tlp=y, lwr=ymin, upr=ymax))) %>% 
+  unnest
+
+pv_summary_df_timing_lfm <- pv_data_all %>% 
+  drop_na(lfm_at_tlp) %>% 
+  group_by(spp, timing) %>% 
+  dplyr::summarise(ci = list(mean_cl_normal(lfm_at_tlp) %>% 
+                        dplyr::rename(mean_lfm=y, lwr_lfm=ymin, upr_lfm=ymax))) %>% 
+  unnest
+
+pv_summary_df_timing <- merge(pv_summary_df_timing_mpa, pv_summary_df_timing_lfm, by = c("spp", "timing"), all = T)
+
+write_csv(pv_summary_df_timing, here("processed-data", "pv_summary_df_timing1.csv"))
+
+#by species:
+
+pv_summary_df_spp_mpa <- pv_data_all %>% 
+  group_by(spp) %>% 
+  dplyr::summarise(ci = list(mean_cl_normal(tlp) %>% 
+                        dplyr::rename(mean_tlp=y, lwr=ymin, upr=ymax)), 
+            ci = list(mean_cl_normal(lfm_at_tlp))) %>% 
+  unnest
+
+pv_summary_df_spp_lfm <- pv_data_all %>% 
+  drop_na(lfm_at_tlp) %>% 
+  group_by(spp) %>% 
+  dplyr::summarise(ci = list(mean_cl_normal(lfm_at_tlp) %>% 
+                        dplyr::rename(mean_lfm=y, lwr_lfm=ymin, upr_lfm=ymax))) %>% 
+  unnest
+
+pv_summary_spp_timing <- merge(pv_summary_df_spp_mpa, pv_summary_df_spp_lfm, by = c("spp"), all = T)
+
+write_csv(pv_summary_spp_timing, here("processed-data", "pv_summary_df_spp1.csv"))
+```
+
 
 ```{r}
 rwc_pv_df %>% 
   ggplot(aes(y = ldmc.max, x = mean_tlp, color = spp)) +
   geom_point()
 ```
+
+
 #CONCLUSIONS: 
 
-This is an interesting idea for further application of our dataset, but with only two species we are unable to really dig into this idea. There is large variaability in the 
+This is an interesting idea for further application of our dataset, but with only two species we are unable to really dig into this idea. There is large variability in both measured TLP and LDMC (across years, mostly). IF LDMC changes across seasons and TLP doesn't, then they wouldn't be strongly related. 
 
-...not enough data! But we can do this with the Sierra dataset!
 
 # ---------------------------------------
 
