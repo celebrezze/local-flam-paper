@@ -14,6 +14,14 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(here)
 library(ggplot2)
+library(MetBrewer)
+library(lme4)
+library(sjPlot)
+library(AICcmodavg)
+library(remef)
+library(ggpubr)
+library(janitor)
+library(lubridate)
 ```
 
 Set global options for color palettes and themes: 
@@ -757,7 +765,7 @@ legend <- get_legend(
           legend.text = element_text(face = "italic", size = 18),
           legend.title = element_text(face = 'bold', size = 22),
           legend.key = element_rect(fill = "white"))
-)
+) # NOTE: CAUSING ERROR!! SCALED.MEM.DATA.SEPT2020 NOT FOUND; COLOR_PANELS NOT FOUND
 
 rwc_plot2 <- cowplot::plot_grid (legend, rwc_plot1, ncol = 1, rel_heights = c(1,12), rel_widths = c(1,.5))
 rwc_plot2
@@ -869,7 +877,7 @@ rwc_plot1
 legend <- get_legend(
   # create some space to the left of the legend
   ggplot() + 
-    geom_point(data= scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = season, shape = season), size = 5, alpha = .8) +
+    geom_point(data=scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = season, shape = season), size = 5, alpha = .8) +
     color_panels +
     theme(legend.box.margin = margin(0, 0, 0, 0),
           legend.position = "top",
@@ -909,6 +917,8 @@ local_pv_curves <- read_csv(here::here("raw-data", "allcurves.csv"), show_col_ty
          ldmc = dry_weight/fresh_weight_saturated, 
          date = mdy(date), 
          year = year(date)) 
+
+
 
 summary_pv_curves <- local_pv_curves %>% 
   group_by(spp, timing) %>% 
@@ -980,7 +990,7 @@ pv_summary_spp_timing <- merge(pv_summary_df_spp_mpa, pv_summary_df_spp_lfm, by 
 write_csv(pv_summary_spp_timing, here("processed-data", "pv_summary_df_spp1.csv"))
 ```
 
-
+#ERROR
 ```{r}
 rwc_pv_df %>% 
   ggplot(aes(y = ldmc.max, x = mean_tlp, color = spp)) +
