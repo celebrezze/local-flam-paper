@@ -38,6 +38,19 @@ th.spp.wrap <- theme(legend.position = "bottom",
 Morgenstern = list(c("#7c668c", "#b08ba5", "#dfbbc8", "#ffc680", "#ffb178", "#db8872", "#a56457"), c(7, 5, 4, 6, 3, 2, 1), colorblind=TRUE)
 ```
 
+
+Plotting options
+```{r}
+color_panels <- scale_color_manual(values=c("#9D0208",'#669bbc')) 
+
+th_panels <- theme(
+        axis.title.x=element_blank(),
+        axis.title.y=element_text(face = 'bold', size = 18),
+        legend.position = "none", 
+        aspect.ratio = 1, 
+        plot.margin = unit(c(0,0,0,0), "cm")
+        )
+```
 #------------------------------------
 # 1. Data wrangling
 
@@ -639,8 +652,13 @@ Relative water content is a more physiologically-focused metric of water loss th
 #3.0 RWC dynamics: 
 
 #####3.1 Remef
+
+Try scaling MPa from 0-1 and not changing RWC (since it's already on that 0-1 scale). 
 ```{r}
-mparwc_mod <- lmer(rwc ~ mpa.scaled+ spp + season + site + (1 | individual), data = rwc_pv_df)
+mparwc_mod <- lmer(rwc.int.unscaled ~ mpa.scaled + spp + season + site + (1 | individual), data = rwc_pv_df)
+
+temp_woohooo <- rwc_pv_df %>% 
+  select(rwc,rwc.int.unscaled, mpa, mpa.scaled, spp, season, site)
 
 summary(mparwc_mod)
 
@@ -656,6 +674,12 @@ rwc_rel_df.adfa <- rwc_rel_df %>%
 rwc_rel_df.ceme <- rwc_rel_df %>% 
   filter(spp == 'CEME')
 ```
+```{r}
+rwc_pv_df %>% 
+  ggplot(aes(y = rwc.int.unscaled, x = year.month, fill = spp))+
+  geom_boxplot()
+```
+
 
 ####3.1 Figures
 
@@ -676,7 +700,7 @@ lfm_rwc_plot<- rwc_rel_df  %>%
   )) +
   geom_point(alpha = .5,size = 2, )+
   geom_smooth(method = 'lm', se = F)+
-  ylim(0, 100) +
+ # ylim(0, 100) +
  # geom_abline() +
  # geom_vline(xintercept = mean_tlp_all)+
   facet_wrap(~Species) +
@@ -698,7 +722,7 @@ mpa_rwc_plot <- rwc_rel_df  %>%
   )) +
   geom_point(alpha = .5,size = 2)+
   geom_smooth(method = 'lm', se = F) +
-  ylim(0, 100) +
+ # ylim(0, 100) +
   facet_wrap(~Species) +
   theme(legend.position = "none",
         #axis.text.x = element_blank(),
@@ -758,7 +782,7 @@ rwc_plot1
 legend <- get_legend(
   # create some space to the left of the legend
   ggplot() + 
-    geom_point(data= scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = season, shape = season), size = 5, alpha = .8) +
+    geom_point(data= rwc_rel_df, aes(mpa.unscaled, PC1, color = season, shape = season), size = 5, alpha = .8) +
     color_panels +
     theme(legend.box.margin = margin(0, 0, 0, 0),
           legend.position = "top",
@@ -989,14 +1013,6 @@ pv_summary_spp_timing <- merge(pv_summary_df_spp_mpa, pv_summary_df_spp_lfm, by 
 
 write_csv(pv_summary_spp_timing, here("processed-data", "pv_summary_df_spp1.csv"))
 ```
-
-#ERROR
-```{r}
-rwc_pv_df %>% 
-  ggplot(aes(y = ldmc.max, x = mean_tlp, color = spp)) +
-  geom_point()
-```
-
 
 #CONCLUSIONS: 
 
