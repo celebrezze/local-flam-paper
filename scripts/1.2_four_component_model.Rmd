@@ -1,0 +1,42 @@
+---
+title: "4-Component Model Table"
+author: "Indra Boving & Joe Celebrezze"
+date: "2023-04-26"
+output: html_document
+---
+
+# Setup
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(kableExtra)
+library(tidyverse)
+library(here)
+```
+
+# Table Text
+```{r}
+flam.axis <- c('Ignitability', ' ', ' ', 'Combustibility', ' ', 'Consumability', ' ', ' ', 'Sustainability')
+flam.metric <- c('Time to Ignition', 'Glow to Ignition', 'Temp. at Ignition', 'Max. Temp.', 'Flame Height', 'Time to First Glow', 'Glow Duration', 'Post-flame Glow', 'Flame Duration')
+defn <- c('Time (sec.) from sample placement to first flaming',
+'Time (sec.) from first glow to first flaming',
+'Temperature (C) at first flaming',
+'Maximum temperature (C) between ignition and 5 seconds post-flame extinction',
+'Height (cm) of tallest flame',
+'Time (sec.) between sample placement to first glow',
+'Time (sec.) from first glow to extinguishment of final ember', 
+'Time (sec.) from last flame to extinguishment of final ember',
+'Time (sec.) from first flame to last flame')
+
+four.components.df <- data.frame(flam.axis, flam.metric, defn)
+```
+
+# Kable Table
+```{r}
+four.components.df %>%
+  kable(format = 'html', escape = F, col.names = c('Flammability Axis', 'Flammability Metric', 'Definition')) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, stripe_color = "black") %>% 
+  row_spec(c(1:9), color = "black") %>%
+  column_spec(c(1), bold = T, border_right = T) %>% 
+  row_spec(c(4:5, 9), background = '#D3D3D3') %>% 
+  save_kable(here('figures', 'main-figures', 'Tab1_Four_Component_Model_kable.html'))
+```
