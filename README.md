@@ -64,6 +64,8 @@ This folder includes scripts that we used to wrangle data, complete analyses, an
   
   *5.0_comparing_MEM_with_seg_reg.Rmd*: this script compares R^2 values, AIC scores, and BIC scores for the mixed effects models and the segmented regressions with random effects to get a sense of which one predicts the data better. This was used to inform our interpretations of the segmented regression results.
   
+  *6.0_LDMC_and_RWC.Rmd*: this script contains code to calculate relative water content (RWC) and leaf dry matter content (LDMC) from the branchlets used for flammability benchtop drydowns using extrapolated saturated water contents. LDMC is compared to TLP to see if these are correlated, RWC is modeled as a predictor of flammability (for both linear and segmented mix-effects regressions), as is LDMC. 
+  
   *extra-analyses*: this folder contains scripts for exploratory or extra analyses that we deemed unnecessary for the interpretation of the main text or the supplementary index. They are numbered similarly to the above scripts and belong in those groups. Because these are *extra* analyses, the descriptions of each script as follows will be abridged.
   
   *3.2_pre_post_tlp_MEM.Rmd*: this script contains an extra analysis looking at the results of linear mixed effects models if the data was split by the turgor loss point (TLP) prior to running the linear mixed effects models.

@@ -1151,8 +1151,6 @@ local_pv_curves <- read_csv(here::here("raw-data", "allcurves.csv"), show_col_ty
          date = mdy(date), 
          year = year(date)) 
 
-
-
 summary_pv_curves <- local_pv_curves %>% 
   group_by(spp, timing) %>% 
   summarise(mean_tlp = mean(tlp), 
