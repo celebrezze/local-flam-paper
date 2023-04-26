@@ -281,32 +281,159 @@ border: 0;
 </head>
 <body>
 <table class="table table-hover table-bordered table-condensed" style="margin-left: auto; margin-right: auto;">
+<caption>RWC</caption>
  <thead>
   <tr>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Dependent Variable </th>
    <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Species </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> TLP (MPa) </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> RWC at TLP </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> LFM at TLP </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Po (MPa) </th>
-   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> e (MPa) </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Significant? </th>
+   <th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"> Threshold (RWC) </th>
   </tr>
  </thead>
 <tbody>
   <tr>
-   <td style="text-align:left;font-style: italic;border-right:1px solid;color: black !important;"> A. fasciculatum </td>
-   <td style="text-align:left;color: black !important;"> -3.31 +/- 0.15 </td>
-   <td style="text-align:left;color: black !important;"> 80.33  +/- 8.48 </td>
-   <td style="text-align:left;color: black !important;"> 74.33 +/- 7.37 </td>
-   <td style="text-align:left;color: black !important;"> -1.79 +/- 0.31 </td>
-   <td style="text-align:left;color: black !important;"> 8.85 +/- 3.28 </td>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">PC1</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">52.70</span> </td>
   </tr>
   <tr>
-   <td style="text-align:left;font-style: italic;border-right:1px solid;color: black !important;"> C. megacarpus </td>
-   <td style="text-align:left;color: black !important;"> -2.62 +/- 0.18 </td>
-   <td style="text-align:left;color: black !important;"> 84.82 +/- 2.13 </td>
-   <td style="text-align:left;color: black !important;"> 88.96 +/-  2.53 </td>
-   <td style="text-align:left;color: black !important;"> -1.58 +/- 0.33 </td>
-   <td style="text-align:left;color: black !important;"> 8.03 +/- 2.57 </td>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PC2</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0005)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">69.80</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">TTI</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No </span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">51.28 </span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">Prop Ignite (5%)</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">53.28</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">GTI</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">52.70</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">FH</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0001)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">93.14</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">Max Temp.</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.0185)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">66.38</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">FD</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">48.45</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">GD</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.0151)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">97.52</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PFG</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0001)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">94.80</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">TTFG</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">ADFA</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0001)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">96.77</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;font-weight: bold;background-color: #D3D3D3 !important;"> <span style=" font-weight: bold;    color: black !important;">Summary</span> </td>
+   <td style="text-align:left;font-weight: bold;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">TLP: 80.33 +/- 8.48 </span> </td>
+   <td style="text-align:left;font-weight: bold;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">6/11 Significant</span> </td>
+   <td style="text-align:left;font-weight: bold;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">Avg: 86.57 +/- 14.45</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">PC1</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">50.93</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">PC2</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.0181)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">59.10</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">TTI</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0001)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">98.55 </span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">Prop Ignite (5%)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0001)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">89.85</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">GTI</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">37.38</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">FH</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0001)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">54.94</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">Max Temp.</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p = 0.0241)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">42.00</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">FD</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">54.59</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">GD</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">NA</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;"> <span style=" font-weight: bold;    color: black !important;">PFG</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">No</span> </td>
+   <td style="text-align:left;"> <span style="     color: black !important;">NA</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;"> <span style=" font-weight: bold;    color: black !important;">TTFG</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">CEME</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">Yes (p &lt; 0.0098)</span> </td>
+   <td style="text-align:left;font-weight: bold;"> <span style="     color: black !important;">50.00</span> </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;font-weight: bold;background-color: #D3D3D3 !important;"> <span style=" font-weight: bold;    color: black !important;">Summary</span> </td>
+   <td style="text-align:left;font-weight: bold;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">TLP: 84.82 +/- 2.13</span> </td>
+   <td style="text-align:left;font-weight: bold;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">6/11 Significant</span> </td>
+   <td style="text-align:left;font-weight: bold;font-weight: bold;background-color: #D3D3D3 !important;"> <span style="     color: black !important;">Avg: 65.74 +/- 22.93</span> </td>
   </tr>
 </tbody>
 </table>

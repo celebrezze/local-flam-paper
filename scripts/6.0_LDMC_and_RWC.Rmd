@@ -301,6 +301,33 @@ CONCLUSION: The best model that includes RWC as a covariate is m14.5, which incl
 # 2.1. Predicting raw metrics (part 2)
 
 ## Time to Ignition
+
+```{r}
+rwc_pv_df %>% 
+  ggplot(aes(y = tti, x = rwc.int.unscaled, color = spp)) +
+  geom_point()
+
+rwc_pv_df %>% 
+  ggplot(aes(y = PC1, x = rwc.int.unscaled, color = spp)) +
+  geom_point()
+
+rwc_pv_df %>% 
+  ggplot(aes(y = PC2, x = rwc.int.unscaled, color = spp)) +
+  geom_point()
+
+rwc_pv_df %>% 
+  ggplot(aes(y = gd, x = rwc.int.unscaled, color = spp)) +
+  geom_point()
+
+rwc_pv_df %>% 
+  ggplot(aes(y = fh, x = rwc.int.unscaled, color = spp)) +
+  geom_point()
+
+rwc_pv_df %>% 
+  ggplot(aes(y = fd, x = rwc.int.unscaled, color = spp)) +
+  geom_point()
+```
+
 Models
 ```{r}
 m1 <- lmer(tti ~ mpa.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
@@ -697,7 +724,8 @@ mean_tlp_all <- rwc_pv_df %>%
   mutate(mean_tlp_all = mean(mean_tlp)) %>% 
   select(mean_tlp_all)
   
-lfm_rwc_plot<- rwc_rel_df  %>% 
+lfm_rwc_plot_adfa<- rwc_rel_df  %>% 
+  filter(spp == "ADFA") %>% 
  # mutate(mean_tlp_all = mean(mean_tlp)) %>% 
   ggplot(aes(
     y = 100 * r1_rwc,
@@ -705,96 +733,112 @@ lfm_rwc_plot<- rwc_rel_df  %>%
     color = season,
     shape = season
   )) +
-  geom_point(alpha = .5,size = 2, )+
-  geom_smooth(method = 'lm', se = F)+
+  geom_point(alpha = .5,size = 1)+
+ # geom_smooth(method = 'lm', se = F)+
  # ylim(0, 100) +
  # geom_abline() +
  # geom_vline(xintercept = mean_tlp_all)+
-  facet_wrap(~Species) +
+ # facet_wrap(~Species) +
   theme(legend.position = "none",
         #axis.text.x = element_blank(),
-        axis.text = element_text(size = 14)) +
+        axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16)) +
   labs(x="Live Fuel Moisture (%)", y="Relative Water Content (%)") +
-  annotate('text', x = 0, y = 97, label = 'a', size = 12) +
+  annotate('text', x = 0, y = 95, label = 'a', size = 10) +
+  th +
+  scale_color_manual(values= c("#9D0208",'#669bbc'))
+
+
+lfm_rwc_plot_ceme<- rwc_rel_df  %>% 
+  filter(spp == "CEME") %>% 
+ # mutate(mean_tlp_all = mean(mean_tlp)) %>% 
+  ggplot(aes(
+    y = 100 * r1_rwc,
+    x = lfm.unscaled,
+    color = season,
+    shape = season
+  )) +
+  geom_point(alpha = .5,size = 1)+
+ # geom_smooth(method = 'lm', se = F)+
+ # ylim(0, 100) +
+ # geom_abline() +
+ # geom_vline(xintercept = mean_tlp_all)+
+ # facet_wrap(~Species) +
+ theme(legend.position = "none",
+        #axis.text.x = element_blank(),
+        axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16)) +
+  labs(x="Live Fuel Moisture (%)", y="Relative Water Content (%)") +
+  annotate('text', x = 0, y = 95, label = 'b', size = 10) +
   th +
   scale_color_manual(values= c("#9D0208",'#669bbc'))
 lfm_rwc_plot
 
-mpa_rwc_plot <- rwc_rel_df  %>% 
+
+lfm_rwc_plot <- cowplot::plot_grid(lfm_rwc_plot_adfa, lfm_rwc_plot_ceme, nrow = 1)
+
+
+
+mpa_rwc_plot_adfa <- rwc_rel_df  %>% 
+  filter(spp == "ADFA") %>% 
   ggplot(aes(
     y = 100 * r1_rwc,
     x = mpa.unscaled,
     color = season,
     shape = season,
   )) +
-  geom_point(alpha = .5,size = 2)+
-  geom_smooth(method = 'lm', se = F) +
+  geom_point(alpha = .5,size = 1)+
+ # geom_smooth(method = 'lm', se = F) +
  # ylim(0, 100) +
-  facet_wrap(~Species) +
-  theme(legend.position = "none",
+ # facet_wrap(~Species) +
+ theme(legend.position = "none",
         #axis.text.x = element_blank(),
-        axis.text = element_text(size = 14)) +
-  labs(x="Water Potential (-Mpa)", y="") +
-  annotate('text', x = -10, y = 97, label = 'b', size = 12) +
+        axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16)) +
+  labs(x="Water Potential (-Mpa)", y="Relative Water Content (%)") +
+  annotate('text', x = -10, y = 95, label = 'c', size = 10) +
   th +
   scale_color_manual(values= c("#9D0208",'#669bbc'))
 
-# rwc_rwc_plot <-rwc_pv_df %>% 
-#   ggplot(aes(
-#     x = 100 * rwc.unscaled,
-#     y = 100 * rwc.int.unscaled,
-#     color = spp,
-#    # shape = year.month
-#   )) +
-#   geom_point(alpha = .5)+
-#   geom_smooth(method = 'lm', se = F) +
-#   ylim(0, 100) +
-#   geom_abline() +
-#   #coord_equal() +
-#   theme(legend.position = "none",
-#         #axis.text.x = element_blank(),
-#         axis.text.y = element_text(size = 14)) +
-#   labs(y="Relative Water Content (%)", x="RWClfm (%)") +
-#   annotate('text', x = 0, y = 97, label = 'a', size = 12) +
-#   th +
-#   scale_color_manual(values= c("#9D0208","#F48C06"))
+mpa_rwc_plot_ceme <- rwc_rel_df  %>% 
+  filter(spp == "CEME") %>% 
+  ggplot(aes(
+    y = 100 * r1_rwc,
+    x = mpa.unscaled,
+    color = season,
+    shape = season,
+  )) +
+  geom_point(alpha = .5,size = 1)+
+ # geom_smooth(method = 'lm', se = F, size = 1) +
+ # ylim(0, 100) +
+ # facet_wrap(~Species) +
+  theme(legend.position = "none",
+        #axis.text.x = element_blank(),
+        axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16)) +
+  labs(x="Water Potential (-Mpa)", y="Relative Water Content (%)") +
+  annotate('text', x = -10, y = 95, label = 'd', size = 10) +
+  th +
+  scale_color_manual(values= c("#9D0208",'#669bbc'))
 
+mpa_rwc_plot <- cowplot::plot_grid(mpa_rwc_plot_ceme, mpa_rwc_plot_adfa, nrow = 1)
 
-# lfm_mpa_plot <-rwc_pv_df %>% 
-#   ggplot(aes(
-#     x = lfm.unscaled,
-#     y = mpa.unscaled,
-#     color = Species,
-#     shape = Species
-#   )) +
-#   geom_point(alpha = .5)+
-#   geom_smooth(method = 'lm', se = F) +
-#  # ylim(0, 100) +
-#   #geom_abline() +
-#   #coord_equal() +
-#   theme(legend.position = "none",
-#         #axis.text.x = element_blank(),
-#         axis.text.y = element_text(size = 14)) +
-#   labs(y="MPa", x="Live Fuel Moisture (%)") +
-#   #scale_y_reverse()+
-#   ylim(-10, 0)+
-#   annotate('text', x = -.03, y = -0, label = 'c', size = 12) +
-#   th +
-#   scale_color_manual(values= c("#9D0208","#F48C06"))
-
-rwc_plot1 <- cowplot::plot_grid(lfm_rwc_plot, mpa_rwc_plot, nrow = 1)
+rwc_plot1 <- cowplot::plot_grid(lfm_rwc_plot, mpa_rwc_plot, nrow = 2)
 
 rwc_plot1
+
+rwc_rel_df <-rwc_rel_df %>% 
+  mutate(Season = season)
 
 legend <- get_legend(
   # create some space to the left of the legend
   ggplot() + 
-    geom_point(data= rwc_rel_df, aes(mpa.unscaled, PC1, color = season, shape = season), size = 5, alpha = .8) +
+    geom_point(data= rwc_rel_df, aes(mpa.unscaled, PC1, color = Season, shape = Season), size = 3, alpha = .8) +
     color_panels +
     theme(legend.box.margin = margin(0, 0, 0, 0),
           legend.position = "top",
-          legend.text = element_text(face = "italic", size = 18),
-          legend.title = element_text(face = 'bold', size = 22),
+          legend.text = element_text(face = "italic", size = 14),
+          legend.title = element_text(face = 'bold', size = 18),
           legend.key = element_rect(fill = "white"))
 ) # NOTE: CAUSING ERROR!! SCALED.MEM.DATA.SEPT2020 NOT FOUND; COLOR_PANELS NOT FOUND
 
@@ -803,8 +847,134 @@ rwc_plot2
 
 ggsave(here("figures", 'reviewer-figures', "Fig1_RWC_LFM_MPa.jpg"),
        plot = rwc_plot2, 
-       width = 6, height = 3, dpi = 300)
+       width = 5, height = 3, dpi = 300)
 ```
+
+
+without remef: 
+
+```{r}
+mean_tlp_all <- rwc_pv_df %>% 
+  mutate(mean_tlp_all = mean(mean_tlp)) %>% 
+  select(mean_tlp_all)
+  
+lfm_rwc_plot_adfa<- rwc_rel_df  %>% 
+  filter(spp == "ADFA") %>% 
+ # mutate(mean_tlp_all = mean(mean_tlp)) %>% 
+  ggplot(aes(
+    y = 100 * rwc.int.unscaled,
+    x = lfm.unscaled,
+    color = season,
+    shape = season
+  )) +
+  geom_point(alpha = .5,size = 1)+
+  ylim(20, 100)+
+ # geom_smooth(method = 'lm', se = F)+
+ # ylim(0, 100) +
+ # geom_abline() +
+ # geom_vline(xintercept = mean_tlp_all)+
+ # facet_wrap(~Species) +
+  theme(legend.position = "none",
+        #axis.text.x = element_blank(),
+        axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16)) +
+  labs(x="Live Fuel Moisture (%)", y="Relative Water Content (%)") +
+  annotate('text', x = 0, y = 95, label = 'a', size = 10) +
+  th +
+  scale_color_manual(values= c("#9D0208",'#669bbc'))
+
+
+lfm_rwc_plot_ceme<- rwc_rel_df  %>% 
+  filter(spp == "CEME") %>% 
+ # mutate(mean_tlp_all = mean(mean_tlp)) %>% 
+  ggplot(aes(
+    y = 100 * rwc.int.unscaled,
+    x = lfm.unscaled,
+    color = season,
+    shape = season
+  )) +
+  geom_point(alpha = .5,size = 1)+
+   ylim(20, 100)+
+ theme(legend.position = "none",
+        #axis.text.x = element_blank(),
+        axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16)) +
+  labs(x="Live Fuel Moisture (%)", y="Relative Water Content (%)") +
+  annotate('text', x = 0, y = 95, label = 'b', size = 10) +
+  th +
+  scale_color_manual(values= c("#9D0208",'#669bbc'))
+lfm_rwc_plot
+
+
+lfm_rwc_plot <- cowplot::plot_grid(lfm_rwc_plot_adfa, lfm_rwc_plot_ceme, nrow = 1)
+
+
+
+mpa_rwc_plot_adfa <- rwc_rel_df  %>% 
+  filter(spp == "ADFA") %>% 
+  ggplot(aes(
+    y = 100 * rwc.int.unscaled,
+    x = mpa.unscaled,
+    color = season,
+    shape = season,
+  )) +
+  geom_point(alpha = .5,size = 1)+
+   ylim(20, 100)+
+ theme(legend.position = "none",
+        axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16)) +
+  labs(x="Water Potential (-Mpa)", y="Relative Water Content (%)") +
+  annotate('text', x = -10, y = 95, label = 'c', size = 10) +
+  th +
+  scale_color_manual(values= c("#9D0208",'#669bbc'))
+
+mpa_rwc_plot_ceme <- rwc_rel_df  %>% 
+  filter(spp == "CEME") %>% 
+  ggplot(aes(
+    y = 100 * rwc.int.unscaled,
+    x = mpa.unscaled,
+    color = season,
+    shape = season,
+  )) +
+  geom_point(alpha = .5,size = 1)+
+ ylim(20, 100)+
+  theme(legend.position = "none",
+        axis.text = element_text(size = 14), 
+        axis.title = element_text(size = 16)) +
+  labs(x="Water Potential (-Mpa)", y="Relative Water Content (%)") +
+  annotate('text', x = -10, y = 95, label = 'd', size = 10) +
+  th +
+  scale_color_manual(values= c("#9D0208",'#669bbc'))
+
+mpa_rwc_plot <- cowplot::plot_grid(mpa_rwc_plot_ceme, mpa_rwc_plot_adfa, nrow = 1)
+
+rwc_plot1 <- cowplot::plot_grid(lfm_rwc_plot, mpa_rwc_plot, nrow = 2)
+
+rwc_plot1
+
+rwc_rel_df <-rwc_rel_df %>% 
+  mutate(Season = season)
+
+legend <- get_legend(
+  # create some space to the left of the legend
+  ggplot() + 
+    geom_point(data= rwc_rel_df, aes(mpa.unscaled, PC1, color = Season, shape = Season), size = 3, alpha = .8) +
+    color_panels +
+    theme(legend.box.margin = margin(0, 0, 0, 0),
+          legend.position = "top",
+          legend.text = element_text(face = "italic", size = 14),
+          legend.title = element_text(face = 'bold', size = 18),
+          legend.key = element_rect(fill = "white"))
+) # NOTE: CAUSING ERROR!! SCALED.MEM.DATA.SEPT2020 NOT FOUND; COLOR_PANELS NOT FOUND
+
+rwc_plot2 <- cowplot::plot_grid (legend, rwc_plot1, ncol = 1, rel_heights = c(1,12), rel_widths = c(1,.5))
+rwc_plot2
+
+ggsave(here("figures", 'reviewer-figures', "Fig1_RWC_LFM_MPa_NOREMEF.jpg"),
+       plot = rwc_plot2, 
+       width = 5, height = 3, dpi = 300)
+```
+
 Without remef: 
 
 ```{r}
@@ -858,49 +1028,6 @@ mpa_rwc_plot <- rwc_pv_df %>%
   th +
   scale_color_manual(values= c("#9D0208",'#669bbc'))
 
-# rwc_rwc_plot <-rwc_pv_df %>% 
-#   ggplot(aes(
-#     x = 100 * rwc.unscaled,
-#     y = 100 * rwc.int.unscaled,
-#     color = spp,
-#    # shape = year.month
-#   )) +
-#   geom_point(alpha = .5)+
-#   geom_smooth(method = 'lm', se = F) +
-#   ylim(0, 100) +
-#   geom_abline() +
-#   #coord_equal() +
-#   theme(legend.position = "none",
-#         #axis.text.x = element_blank(),
-#         axis.text.y = element_text(size = 14)) +
-#   labs(y="Relative Water Content (%)", x="RWClfm (%)") +
-#   annotate('text', x = 0, y = 97, label = 'a', size = 12) +
-#   th +
-#   scale_color_manual(values= c("#9D0208","#F48C06"))
-
-
-# lfm_mpa_plot <-rwc_pv_df %>% 
-#   ggplot(aes(
-#     x = lfm.unscaled,
-#     y = mpa.unscaled,
-#     color = Species,
-#     shape = Species
-#   )) +
-#   geom_point(alpha = .5)+
-#   geom_smooth(method = 'lm', se = F) +
-#  # ylim(0, 100) +
-#   #geom_abline() +
-#   #coord_equal() +
-#   theme(legend.position = "none",
-#         #axis.text.x = element_blank(),
-#         axis.text.y = element_text(size = 14)) +
-#   labs(y="MPa", x="Live Fuel Moisture (%)") +
-#   #scale_y_reverse()+
-#   ylim(-10, 0)+
-#   annotate('text', x = -.03, y = -0, label = 'c', size = 12) +
-#   th +
-#   scale_color_manual(values= c("#9D0208","#F48C06"))
-
 rwc_plot1 <- cowplot::plot_grid(lfm_rwc_plot, mpa_rwc_plot, nrow = 1)
 
 rwc_plot1
@@ -927,7 +1054,7 @@ ggsave(here("figures", 'reviewer-figures', "Fig1_NOREMEF_RWC_LFM_MPa.jpg"),
 
 #CONCLUSIONS:
 
-Results: RWC showed a similar relationship with mpa.scaledas LFM, but with much less distinguishment between species (maybe because of remef??). Need to think on this more.. 
+Results: RWC showed a similar relationship with MPa LFM, but with much less distinguishment between species (maybe because of remef??). Need to think on this more.. 
 
 #4.0 Segmented regression: 
 
@@ -946,7 +1073,7 @@ seg.adfa.subset <- rwc_pv_df %>%
 
 ### PC1
 
-n.s.
+n.s., 0.5039579
 ```{r}
 o.mod.a<-lme(PC1~rwc.int.unscaled + year.month , random=~1|id, data=seg.ceme.subset)
 
@@ -969,7 +1096,7 @@ summary.segmented(os.mod.a)
 ```
 
 ###TTI
-p = 3.692689e-07, Est = 0.985 (98.5% RWC)
+p = 3.692689e-07, Est = 0.9855 (98.5% RWC)
 ```{r}
 o.mod.a<-lme(tti~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
 
@@ -990,7 +1117,7 @@ os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscal
 summary.segmented(os.mod.a)
 ```
 ###GD
-n.s.
+n.s.0.3738128
 ```{r}
 o.mod.a<-lme(gd~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
 
@@ -1013,7 +1140,7 @@ summary.segmented(os.mod.a)
 ```
 
 ###Flame duration
-n.s.
+n.s.0.5458679 
 ```{r}
 o.mod.a<-lme(fd~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
 
@@ -1024,7 +1151,7 @@ summary.segmented(os.mod.a)
 ```
 ###PFG
 
-n.s.
+n.s. 0.3738128
 ```{r}
 o.mod.a<-lme(pfg~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
 
@@ -1033,12 +1160,49 @@ os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscal
 #m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
 summary.segmented(os.mod.a)
 ```
+###Prop ignite
+
+3.269609e-07, Est = 89.85%
+
+```{r}
+o.mod.a<-lme(prop.ignite~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+##GTI
+n.s. 0.3738128
+```{r}
+o.mod.a<-lme(gti~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+##TTFG
+
+0.009771142, Est = 0.5009272
+
+```{r}
+o.mod.a<-lme(ttfg~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+````
+
+
 
 #ADFA: 
 
 ### PC1
 
-Not able to do version with random effects; also n.s. 
+n.s. 0.527 
+
 ```{r}
 o.mod.a<-lm(PC1~rwc.int.unscaled + site + year.month, #random=~1|id, 
              data=seg.adfa.subset)
@@ -1061,7 +1225,7 @@ summary.segmented(os.mod.a)
 ```
 
 ###TTI
-n.s.
+n.s. 0.5128414
 ```{r}
 o.mod.a<-lme(tti~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
 
@@ -1070,9 +1234,19 @@ os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscal
 #m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
 summary.segmented(os.mod.a)
 ```
+###FD
+0.4844877, n.s. 
+```{r}
+o.mod.a<-lme(fd~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
 
 ###FH
-p = 2.239756e-07, Est. = 93%
+p = 2.239756e-07, Est. = 93.14%
 ```{r}
 o.mod.a<-lme(fh~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
 
@@ -1103,7 +1277,7 @@ summary.segmented(os.mod.a)
 ```
 
 ###Flame duration
-n.s.
+n.s. 0.4844877
 ```{r}
 o.mod.a<-lme(fd~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
 
@@ -1123,13 +1297,191 @@ os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscal
 summary.segmented(os.mod.a)
 ```
 
+###Prop ignite
+
+5.328317e-01, Est = 46%
+
+```{r}
+o.mod.a<-lme(prop.ignite~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+##TTFG
+
+3.544659e-05, Est = 0.9676977
+
+```{r}
+o.mod.a<-lme(ttfg~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+##GTI
+n.s. 0.527
+
+
+```{r}
+o.mod.a<-lm(gti~rwc.int.unscaled + year.month + site, data=seg.adfa.subset)
+
+os.mod.a<-segmented(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
 #CONCLUSIONS: 
 
-For CEME, RWC showed significant thresholds for PC2 (98%), FH (54%), and maximum temperature (42%), with no significant thresholds for PC1 or other flammability metrics and with no thresholds lining up with the TLP (75.82% +/- 15.75). 
 
-For ADFA, there were significant thresholds for PC2 (93%), Glow Duration (97%) and Flame Height (93%), Post Flame Glow (95%), and for Maximum Temperature (66%). Of these none were close to the identified RWC at TLP (79.93% +/- 4.74). 
 
-In terms of showing a threshold-like relationship with flammability, RWC shows more tendency to thresholding than water potential but not as much as LFM and not in a manner that would appear to align with leaf-level physiological adjustments. As RWC is a metric of physiology that does account for water status, but not dry matter content to the degree that LFM does, these results bolster our conclusion that both physiology and dry matter content are important for understanding of flammability. 
+# Kable Table
+Setup:
+```{r}
+dep.var <- c(
+  'PC1',
+  'PC2',
+  'TTI',
+  'Prop Ignite (5%)',
+  'GTI',
+  'FH',
+  'Max Temp.',
+  'FD',
+  'GD',
+  'PFG',
+  'TTFG',
+  'Summary',
+  'PC1',
+  'PC2',
+  'TTI',
+  'Prop Ignite (5%)',
+  'GTI',
+  'FH',
+  'Max Temp.',
+  'FD',
+  'GD',
+  'PFG',
+  'TTFG',
+  'Summary'
+)
+spp <- c(rep('ADFA', 11), 'TLP: 80.33 +/- 8.48 ', rep('CEME', 11), 'TLP: 84.82 +/- 2.13')
+sig.p <- c(
+  'No', #PC1
+  'Yes (p < 0.0005)', #PC2
+  'No ', #TTI
+  'No', #prop.ignite
+  'No', #GTI
+  'Yes (p < 0.0001)', #FH
+  'Yes (p = 0.0185)', #Max temp
+  'No', #FD
+  'Yes (p = 0.0151)', #GD
+  'Yes (p < 0.0001)', #PFG
+  'Yes (p < 0.0001)', #TTFG
+  '6/11 Significant',
+  'No', #PC1
+  'Yes (p = 0.0181)', #PC2
+  'Yes (p < 0.0001)', #TTI
+  'Yes (p < 0.0001)', #prop.ignite
+  'No', #GTI
+  'Yes (p < 0.0001)', #FH
+  'Yes (p = 0.0241)', #Max temp
+  'No', #FD
+  'No', #GD
+  'No', #PFG
+  'Yes (p < 0.0098)', #TTFG
+  '6/11 Significant'
+)
+threshold <- c(
+  '52.70', #PC1
+  '69.80', #PC2
+  '51.28 ', #TTI
+  '53.28', #prop.ignite
+  '52.70', #GTI
+  '93.14', #FH
+  '66.38', #Max temp
+  '48.45', #FD
+  '97.52', #GD
+  '94.80', #PFG
+  '96.77', #TTFG
+  'Avg: 86.57 +/- 14.45',
+  '50.93', #PC1
+  '59.10', #PC2
+  '98.55 ', #TTI
+  '89.85', #prop.ignite
+  '37.38', #GTI
+  '54.94', #FH
+  '42.00', #Max temp
+  '54.59', #FD
+  'NA', #GD
+  'NA', #PFG
+  '50.00', #TTFG
+  'Avg: 65.74 +/- 22.93'
+)
+
+
+seg.reg.table.df <- data.frame(dep.var, spp, sig.p, threshold)
+```
+
+```{r}
+mean.adfa <- mean(c(#52.70,
+                    69.80,
+                   # 51.28,
+                   # 53.28,
+                    #52.70,
+                    93.14,
+                    66.38,
+                   # 48.45,
+                    97.52,
+                    94.80,
+                    97.77))
+
+sd.adfa <- sd(c(#52.70,
+                    69.80,
+                   # 51.28,
+                   # 53.28,
+                    #52.70,
+                    93.14,
+                    66.38,
+                   # 48.45,
+                    97.52,
+                    94.80,
+                    97.77))
+
+mean.adfa
+sd.adfa
+
+mean.ceme <- mean(c(#50.92, 
+                    59.1, 98.55, 89.85, #37.38,
+                    54.94, 42, 
+                    #54.59, 
+                    50.00))
+
+sd.ceme <- sd(c(#50.92, 
+                    59.1, 98.55, 89.85, #37.38,
+                    54.94, 42, 
+                    #54.59, 
+                    50.00))
+
+mean.ceme
+sd.ceme
+
+```
+
+Kable:
+```{r}
+seg.reg.table.df %>% 
+   mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), spp = cell_spec(spp, 'html', color = 'black'), sig.p = cell_spec(sig.p, 'html', color = 'black'), threshold = cell_spec(threshold, 'html', color = 'black')) %>% 
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Species', 'Significant?','Threshold (RWC)'), caption = 'RWC') %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  row_spec(c(2, 6, 7, 9:11, 12, 14:16, 18:19, 23:24), bold = T) %>% 
+  row_spec(c(1, 3, 4,5,8,13,17,20:22), bold = F) %>% 
+  row_spec(c(12, 24), background = "#D3D3D3", bold = T) %>%
+  save_kable(here('figures', 'supp-figures', 'TabS5_rwc.segreg.summary.html'))
+```
 
 # ---------------------------------------
 
@@ -1144,18 +1496,23 @@ Stears et al. 2022 (Ecology 103 (11) Water availability dictates how plant trait
 ```{r}
 local_pv_curves <- read_csv(here::here("raw-data", "allcurves.csv"), show_col_types = FALSE) %>% 
   clean_names() %>% 
-  filter(#spp %in% c("CEME", "ADFA"), 
+  filter(spp %in% c("CEME", "ADFA"), 
          tlp < -1.5 ) %>% 
   mutate(fresh_weight_saturated = as.numeric(fresh_weight_saturated), 
          ldmc = dry_weight/fresh_weight_saturated, 
          date = mdy(date), 
          year = year(date)) 
 
-summary_pv_curves <- local_pv_curves %>% 
+summary_pv_curves_notclean <- local_pv_curves %>% 
   group_by(spp, timing) %>% 
   summarise(mean_tlp = mean(tlp), 
+            sd = sd(tlp), 
             mean_rwc = mean(rwc_at_tlp), 
-            mean_lfm = mean(lfm_at_tlp, na.rm = T))
+            sd_rwc = sd(rwc_at_tlp),
+            mean_lfm = mean(lfm_at_tlp, na.rm = T), 
+            sd_lfm = sd(lfm_at_tlp, na.rm = T),
+            mean_po = mean(po, na.rm = T), 
+            sd_po = sd(po, na.rm = T))
 
 local_pv_curves %>% 
   #filter(year != 2016)%>% 
@@ -1247,6 +1604,23 @@ rwc_pv_df %>%
   ggplot(aes(x = year.month, y = ldmc, fill = season)) +
   geom_boxplot() +
   facet_wrap(~spp)
+
+rwc_pv_df %>% 
+  ggplot(aes(x = year.month, y = ldmc.unscaled, fill = season)) +
+  geom_boxplot() +
+  facet_wrap(~spp)
+```
+Are they statistically different?
+
+```{r}
+ldmc_mod <- lm(ldmc ~ spp*season, data = rwc_pv_df)
+
+aov(ldmc_mod)
+
+summary(aov(ldmc_mod))
+
+
+TukeyHSD(aov(ldmc_mod))
 ```
 
 
@@ -1938,5 +2312,5 @@ summary.segmented(os.mod.a)
 
 #CONCLUSIONS: 
 
-Not enough data (LDMC only present for each individual), and inclusion of LDMC as a covariate with water potential also did not increase the likelihood of a significant breakpoint. 
+Not enough data for LDMC alone (LDMC only present for each individual), and inclusion of LDMC as a covariate with water potential also did not increase the likelihood of a significant/realistic breakpoint. 
 
