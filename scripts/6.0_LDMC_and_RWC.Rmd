@@ -1058,10 +1058,13 @@ Results: RWC showed a similar relationship with MPa LFM, but with much less dist
 
 #4.0 Segmented regression: 
 
+Note: does not seem to make a difference if the 100% (i.e. some that had LFMs that were very high) are excluded - detected threshold is the same.
+
 # Splitting by Species
 ```{r}
 seg.ceme.subset <- rwc_pv_df %>% 
-  filter(spp == "CEME")
+  filter(spp == "CEME") %>% 
+  filter(rwc.int.unscaled < 99)
 ```
 
 ```{r}
