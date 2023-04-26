@@ -21,7 +21,8 @@ library(AICcmodavg)
 library(remef)
 library(ggpubr)
 library(janitor)
-library(lubridate)
+library(lubridate)                             # Install & load scales
+library("scales")
 ```
 
 Set global options for color palettes and themes: 
@@ -655,10 +656,11 @@ Relative water content is a more physiologically-focused metric of water loss th
 
 Try scaling MPa from 0-1 and not changing RWC (since it's already on that 0-1 scale). 
 ```{r}
-mparwc_mod <- lmer(rwc.int.unscaled ~ mpa.scaled + spp + season + site + (1 | individual), data = rwc_pv_df)
-
-temp_woohooo <- rwc_pv_df %>% 
-  select(rwc,rwc.int.unscaled, mpa, mpa.scaled, spp, season, site)
+rwc_pv_df <- rwc_pv_df %>% 
+  group_by(spp) %>% 
+  mutate(mpa.0.1.scaled = rescale(mpa))
+  
+mparwc_mod <- lmer(rwc.int.unscaled ~ mpa.0.1.scaled + spp + season + site + (1 | individual), data = rwc_pv_df)
 
 summary(mparwc_mod)
 
@@ -674,9 +676,14 @@ rwc_rel_df.adfa <- rwc_rel_df %>%
 rwc_rel_df.ceme <- rwc_rel_df %>% 
   filter(spp == 'CEME')
 ```
+
 ```{r}
 rwc_pv_df %>% 
   ggplot(aes(y = rwc.int.unscaled, x = year.month, fill = spp))+
+  geom_boxplot()
+
+rwc_pv_df %>% 
+  ggplot(aes(y = rwc, x = year.month, fill = spp))+
   geom_boxplot()
 ```
 
@@ -901,7 +908,7 @@ rwc_plot1
 legend <- get_legend(
   # create some space to the left of the legend
   ggplot() + 
-    geom_point(data=scaled.mem.data.sept2020, aes(mpa.unscaled, PC1, color = season, shape = season), size = 5, alpha = .8) +
+    geom_point(data=rwc_pv_df, aes(mpa.unscaled, PC1, color = season, shape = season), size = 5, alpha = .8) +
     color_panels +
     theme(legend.box.margin = margin(0, 0, 0, 0),
           legend.position = "top",
@@ -921,6 +928,208 @@ ggsave(here("figures", 'reviewer-figures', "Fig1_NOREMEF_RWC_LFM_MPa.jpg"),
 #CONCLUSIONS:
 
 Results: RWC showed a similar relationship with mpa.scaledas LFM, but with much less distinguishment between species (maybe because of remef??). Need to think on this more.. 
+
+#4.0 Segmented regression: 
+
+# Splitting by Species
+```{r}
+seg.ceme.subset <- rwc_pv_df %>% 
+  filter(spp == "CEME")
+```
+
+```{r}
+seg.adfa.subset <- rwc_pv_df %>% 
+  filter(spp == "ADFA")
+```
+
+#CEME
+
+### PC1
+
+n.s.
+```{r}
+o.mod.a<-lme(PC1~rwc.int.unscaled + year.month , random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###PC2
+0.01812 , Est =0.591 
+```{r}
+o.mod.a<-lm(PC2~rwc.int.unscaled + site + year.month, random=~1|id, 
+             data=seg.ceme.subset)
+
+os.mod.a<-segmented(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###TTI
+p = 3.692689e-07, Est = 0.985 (98.5% RWC)
+```{r}
+o.mod.a<-lme(tti~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###FH
+p = 5.459356e-04, Est = 0.5494623 (55%)
+```{r}
+o.mod.a<-lme(fh~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###GD
+n.s.
+```{r}
+o.mod.a<-lme(gd~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###Temp Max. 
+2.407598e-01, Est = 0.4200656  (42%)
+
+```{r}
+o.mod.a<-lme(temp.max~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###Flame duration
+n.s.
+```{r}
+o.mod.a<-lme(fd~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###PFG
+
+n.s.
+```{r}
+o.mod.a<-lme(pfg~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+#ADFA: 
+
+### PC1
+
+Not able to do version with random effects; also n.s. 
+```{r}
+o.mod.a<-lm(PC1~rwc.int.unscaled + site + year.month, #random=~1|id, 
+             data=seg.adfa.subset)
+
+os.mod.a<-segmented(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###PC2
+7.68e-05, Est = 0.698 (69.8%)
+```{r}
+o.mod.a<-lm(PC2~rwc.int.unscaled + site + year.month, random=~1|id, 
+             data=seg.adfa.subset)
+
+os.mod.a<-segmented(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###TTI
+n.s.
+```{r}
+o.mod.a<-lme(tti~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###FH
+p = 2.239756e-07, Est. = 93%
+```{r}
+o.mod.a<-lme(fh~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###GD
+p = 1.507566e-01, Est = 0.9752026 (97.5%)
+```{r}
+o.mod.a<-lme(gd~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###Temp Max. 
+p = 1.848159e-02, Est = 0.6638564  (63%)
+```{r}
+o.mod.a<-lme(temp.max~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###Flame duration
+n.s.
+```{r}
+o.mod.a<-lme(fd~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###PFG
+6.712821e-04, Est = 0.9479989 
+```{r}
+o.mod.a<-lme(pfg~rwc.int.unscaled + year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~rwc.int.unscaled, npsi=list(rwc.int.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+#CONCLUSIONS: 
+
+For CEME, RWC showed significant thresholds for PC2 (98%), FH (54%), and maximum temperature (42%), with no significant thresholds for PC1 or other flammability metrics and with no thresholds lining up with the TLP (75.82% +/- 15.75). 
+
+For ADFA, there were significant thresholds for PC2 (93%), Glow Duration (97%) and Flame Height (93%), Post Flame Glow (95%), and for Maximum Temperature (66%). Of these none were close to the identified RWC at TLP (79.93% +/- 4.74). 
+
+In terms of showing a threshold-like relationship with flammability, RWC shows more tendency to thresholding than water potential but not as much as LFM and not in a manner that would appear to align with leaf-level physiological adjustments. As RWC is a metric of physiology that does account for water status, but not dry matter content to the degree that LFM does, these results bolster our conclusion that both physiology and dry matter content are important for understanding of flammability. 
 
 # ---------------------------------------
 
@@ -1548,7 +1757,188 @@ Models with LDMC were generally top-performing, but only when combined with wate
 
 #3.0 SEGMENTED REGRESSION: 
 
-Do we have to do this???
+#CEME
 
+### PC1
 
+n.s.
+```{r}
+o.mod.a<-lme(PC1~ldmc.unscaled + mpa.unscaled +year.month , random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###PC2
+n.s.
+```{r}
+o.mod.a<-lme(PC2~ldmc.unscaled + mpa.unscaled +site + year.month, random=~1|id, 
+             data=seg.ceme.subset)
+
+os.mod.a<-segmented(o.mod.a, ~mpa.unscaled, npsi=list(mpa.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###TTI
+n.s.
+```{r}
+o.mod.a<-lme(tti~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~ mpa.unscaled, npsi=list(mpa.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###FH
+n.s.
+```{r}
+o.mod.a<-lme(fh~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~mpa.unscaled, npsi=list(mpa.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###GD
+n.s.
+```{r}
+o.mod.a<-lme(gd~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~mpa.unscaled, npsi=list(mpa.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###Temp Max. 
+2.407598e-01, Est = 0.4200656  (42%)
+
+```{r}
+o.mod.a<-lme(temp.max~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~mpa.unscaled, npsi=list(mpa.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###Flame duration
+n.s.
+```{r}
+o.mod.a<-lme(fd~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~mpa.unscaled, npsi=list(mpa.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###PFG
+
+n.s.
+```{r}
+o.mod.a<-lme(pfg~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.ceme.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~mpa.unscaled, npsi=list(mpa.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+#ADFA: 
+
+### PC1
+
+Not able to do version with random effects; also n.s. 
+```{r}
+o.mod.a<-lm(PC1~ldmc.unscaled + mpa.unscaled +site + year.month, #random=~1|id, 
+             data=seg.adfa.subset)
+
+os.mod.a<-segmented(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###PC2
+7.68e-05, Est = 0.698 (69.8%)
+```{r}
+o.mod.a<-lm(PC2~ldmc.unscaled + mpa.unscaled +site + year.month, random=~1|id, 
+             data=seg.adfa.subset)
+
+os.mod.a<-segmented(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###TTI
+n.s.
+```{r}
+o.mod.a<-lme(tti~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###FH
+p = 2.239756e-07, Est. = 93%
+```{r}
+o.mod.a<-lme(fh~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###GD
+p = 1.507566e-01, Est = 0.9752026 (97.5%)
+```{r}
+o.mod.a<-lme(gd~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###Temp Max. 
+p = 1.848159e-02, Est = 0.6638564  (63%)
+```{r}
+o.mod.a<-lme(temp.max~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+###Flame duration
+n.s.
+```{r}
+o.mod.a<-lme(fd~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+###PFG
+6.712821e-04, Est = 0.9479989 
+```{r}
+o.mod.a<-lme(pfg~ldmc.unscaled + mpa.unscaled +year.month + site, random=~1|id, data=seg.adfa.subset)
+
+os.mod.a<-segmented.default(o.mod.a, ~ldmc.unscaled, npsi=list(ldmc.unscaled=1))
+#summarizing results (note the '.coef' argument)
+#m <- slope(os.mod.a, .coef = fixef(os.mod.a))[[1]][[1]]
+summary.segmented(os.mod.a)
+```
+
+#CONCLUSIONS: 
+
+Not enough data (LDMC only present for each individual), and inclusion of LDMC as a covariate with water potential also did not increase the likelihood of a significant breakpoint. 
 
