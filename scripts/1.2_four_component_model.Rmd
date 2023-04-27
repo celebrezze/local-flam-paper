@@ -36,7 +36,9 @@ four.components.df %>%
   kable(format = 'html', escape = F, col.names = c('Flammability Axis', 'Flammability Metric', 'Definition')) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, stripe_color = "black") %>% 
   row_spec(c(1:9), color = "black") %>%
-  column_spec(c(1), bold = T, border_right = T) %>% 
-  row_spec(c(4:5, 9), background = '#D3D3D3') %>% 
+  column_spec(c(1), bold = T, border_right = T, border_left = T) %>% 
+  column_spec(c(2,3), border_right = T) %>% 
+  row_spec(c(0), background = '#D3D3D3') %>% 
+  row_spec(c(3,5,8,9), extra_css = "border-bottom: 1px solid") %>% 
   save_kable(here('figures', 'main-figures', 'Tab1_Four_Component_Model_kable.html'))
 ```
