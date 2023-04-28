@@ -201,9 +201,9 @@ and dry matter content affect flammability.”
       - Reviewer 3
       
 
-# MAIN MODEL SELECTION - RWC
+# MAIN MODEL SELECTION - RWC and LDMC
 
-#2.0 PC1
+#2.0 Compare to prev. identified top models
 
 From previous analysis: 
 
@@ -226,81 +226,394 @@ Additionally, in this second analysis, the following combinations will not work:
   - rwc and ww.flam.sample
   - rwc and dw.flam.sample
   - rwc and excess.water.scaled
-  
-Run models: 
+
+##PC1
 
 ```{r}
-m1 <- lmer(PC1 ~ lfm + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+m01 <- lmer(PC1 ~ mpa + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #Mpa
 
-m1.5 <- lmer(PC1 ~ lfm + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
+m02 <- lmer(PC1 ~ mpa + dw.flam.sample + ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #composite
 
-performance::multicollinearity(m1.5)
+m03 <- lmer(PC1 ~ ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #WW
 
-m2 <- lmer(PC1 ~ mpa.scaled+ spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+m04 <- lmer(PC1 ~ dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #DW
 
-m2.5 <- lmer(PC1 ~ mpa.scaled+ spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
+m05 <- lmer(PC1 ~ lfm + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #LFM
 
-performance::multicollinearity(m2.5)
+m06 <- lmer(PC1 ~ rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
 
-m3 <- lmer(PC1 ~ dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+m07 <- lmer(PC1 ~ mpa + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
 
-m4 <- lmer(PC1 ~ ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+m06 <- lmer(PC1 ~ mpa + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
 
+m08 <- lmer(PC1 ~ mpa + ldmc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
 
-m5 <- lmer(PC1 ~ excess_water.scaled + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+m09 <- lmer(PC1 ~ ldmc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
 
-m6 <- lmer(PC1 ~ lfm + mpa.scaled+ spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+m010 <- lmer(PC1 ~ ldmc + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
 
-#performance::multicollinearity(m6)
-
-m6.5 <- lmer(PC1 ~ lfm + mpa.scaled+ spp + site + year.month + sample.wt + rwc +(1 | individual), data = rwc_pv_df)
-
-m7 <- lmer(PC1 ~ mpa.scaled+ dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
-
-m8 <- lmer(PC1 ~ mpa.scaled+ ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
-
-
-m9 <- lmer(PC1 ~ mpa.scaled+ excess_water.scaled + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
-
-m10 <- lmer(PC1 ~ mpa.scaled+ dw.flam.sample + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m11 <- lmer(PC1 ~ dw.flam.sample + excess_water.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m12 <- lmer(PC1 ~ dw.flam.sample + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-##
-
-m13.5 <- lmer(PC1 ~ spp + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-m14.5 <- lmer(PC1 ~ spp + mpa.scaled+ site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-m15.5 <- lmer(PC1 ~ spp + lfm + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-```
-
-```{r}
-model_list <- c(m1, m2, m3, m4, m5, m6, m7, m8, m9, m10, m11, m12, m13.5, m14.5, m15.5, m1.5, m2.5)
+model_list <- c(m01, m02, m03, m04, m05, m06, m07, m08, m09, m010)
 
 aictab(model_list)
 ```
 
-With RWC included in the model, one of the new top models is m14.5, which includes RWC
-
-m14.5 <- PC1 ~ spp + mpa.scaled+ site + year.month + rwc + (1 | individual)
-
-m2 <- PC1 ~ mpa.scaled+ spp + site + year.month + sample.wt + (1 | individual)
-
+Table
 ```{r}
-summary(m14.5, ddf = 'Kenward-Roger')
-
-summary(m2, ddf = 'Kenward-Roger')
+tab_model(m08, m01, m06, m010, m04,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('figures','MEM.figures','mem2.PC1.html')) # saving .html into figures folder
 ```
 
+##TTI
 
-CONCLUSION: The best model that includes RWC as a covariate is m14.5, which includes both mpa.scaledand RWC. This is not a significantly better or worse model than the previously identified top model (m2). 
+```{r}
+m01 <- lmer(tti ~ mpa.scaled + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #Mpa
 
-# 2.1. Predicting raw metrics (part 2)
+m02 <- lmer(tti ~ mpa.scaled + dw.flam.sample + ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #composite
 
-## Time to Ignition
+m03 <- lmer(tti ~ ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #WW
+
+m04 <- lmer(tti ~ dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #DW
+
+m05 <- lmer(tti ~ lfm + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #LFM
+
+m06 <- lmer(tti ~ rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m07 <- lmer(tti ~ mpa.scaled + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m06 <- lmer(tti ~ mpa.scaled + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m08 <- lmer(tti ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m09 <- lmer(tti ~ ldmc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m010 <- lmer(tti ~ ldmc + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m011 <- lmer(tti ~ ldmc + lfm + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+summary(m011)
+
+model_list <- c(m01, m02, m03, m04, m05, m06, m07, m08, m09, m010, m011)
+
+aictab(model_list)
+```
+
+Table
+```{r}
+tab_model(m08, m06, m01, m010, m04,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('figures','MEM.figures','mem2.TTI.html')) # saving .html into figures folder
+```
+
+##FD
+
+```{r}
+m01 <- lmer(fd ~ mpa + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #Mpa
+
+m02 <- lmer(fd ~ mpa + dw.flam.sample + ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #composite
+
+m03 <- lmer(fd ~ ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #WW
+
+m04 <- lmer(fd ~ dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #DW
+
+m05 <- lmer(fd ~ lfm + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #LFM
+
+m06 <- lmer(fd ~ rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m07 <- lmer(fd ~ mpa + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m06 <- lmer(fd ~ mpa + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m08 <- lmer(fd ~ mpa + ldmc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m09 <- lmer(fd ~ ldmc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m010 <- lmer(fd ~ ldmc + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m011 <- lmer(fd ~ ldmc + lfm + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+summary(m011)
+
+model_list <- c(m01, m02, m03, m04, m05, m06, m07, m08, m09, m010, m011)
+
+aictab(model_list)
+```
+
+Table
+```{r}
+tab_model(m04, m03, m01, m05, m08,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('figures','MEM.figures','mem2.FD.html')) # saving .html into figures folder
+```
+##GD
+
+```{r}
+m01 <- lmer(gd ~ mpa + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #Mpa
+
+m02 <- lmer(gd ~ mpa + dw.flam.sample + ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #composite
+
+m03 <- lmer(gd ~ ww.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #WW
+
+m04 <- lmer(gd ~ dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #DW
+
+m05 <- lmer(gd ~ lfm + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df) #LFM
+
+m06 <- lmer(gd ~ rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m07 <- lmer(gd ~ mpa + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m06 <- lmer(gd ~ mpa + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m08 <- lmer(gd ~ mpa + ldmc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m09 <- lmer(gd ~ ldmc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m010 <- lmer(gd ~ ldmc + rwc + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+m011 <- lmer(gd ~ ldmc + lfm + spp + site + year.month + sample.wt + (1 | individual), data = rwc_pv_df)
+
+summary(m011)
+
+model_list <- c(m01, m02, m03, m04, m05, m06, m07, m08, m09, m010, m011)
+
+aictab(model_list)
+```
+
+Table
+```{r}
+tab_model(m010, m011, m08, m09, m04,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('figures','MEM.figures','mem2.GD.html')) # saving .html into figures folder
+```
+
+# MAIN TABLE
+
+All data below is from above MEM tables (2.1; for TTI, FD, GD) and from MAIN MODEL SELECTION (for PC1)
+
+## BIC, AIC included
+```{r}
+dep.var <- c(
+  "PC1",
+  " ",
+  " ",
+  " ",
+  " ",
+  "Time to Ignition (s)",
+  " ",
+  " ",
+  " ",
+#  " ",
+  "Flame Duration (s)",
+  " ",
+  " ",
+  " ",
+  " ",
+  " ",
+  "Glow Duration (s)",
+  " ",
+  " ",
+  " ",
+  " ",
+  " "
+)
+fix.fx <- c(
+  " ", #PC1
+  "Water Potential + LDMC",
+  "Water Potential",
+  "Water Potential + RWC",
+  "RWC",  #DONE
+  " ", #TTI
+  "Water Potential + LDMC",
+  "Water Potential + RWC",
+  "Water Potential",
+ # "RWC + LDMC", #DONE
+  " ", #FD
+  "Dry Weight",
+  "Wet Weight",
+  "Water Potential",
+  "LFM",
+  "Water Potential + LDMC",
+  " ", #GD
+  "RWC + LDMC",
+  "LFM + LDMC",
+  "Water Potential + LDMC",
+  "LDMC",
+  "Dry Weight"
+)
+est1 <- c(
+  " ",
+  '-0.151***',  #MPa
+  '-0.150***', #Mpa
+  '-0.122*** + -0.117', #MPa
+  '-0.400**', #DONE
+  " ",
+  '4.940***',
+  '4.240*** + 0.929',
+  '4.927***',
+#  '4.174***', #DONE
+  " ",
+  ' ',
+  '-0.753**',
+  '-0.223***',
+  '-0.658 **',
+  '-0.222 ***', #DONE
+  " ",
+  '-1.866',
+  '-1.585',
+  '-0.668',
+  ' ',
+  ' '
+)
+est2 <- c(
+  " ",
+  '-0.269*',  #ldmc
+  ' ', #Mpa
+  ' ', #MPa
+  '-0.318', #DONE
+  " ",
+  '2.988**', #ldmc
+  ' ',
+  ' ',
+#  '2.439*', #DONE #ldmc
+  " ",
+  '0.762**',
+  ' ',
+  ' ',
+  ' ',
+  '0.272', #DONE
+  " ",
+  '4.942', #ldmc, and all below
+  '4.204',
+  '4.722',
+  '4.853',
+  '2.732' #dw
+)
+aic.values <- c(
+  " ",
+  '1530.660',
+  '1531.568', #.908
+  '1535.015', #4.335
+  '1538.774', #8.114
+  " ",
+  '3023.799',
+  '3030.336', #6.557
+  '3031.106', #7.327
+ # '3055.093', #DONE 31.314
+  " ",
+  '2325.127',
+  '2325.391', #.264
+  '2325.615', #.488
+  '2325.764', #.637
+  '2327.018', #DONE 1.891
+  " ",
+  '3778.262', 
+  '3778.930', #.668
+  '3780.012', #1.75
+  '3780.707', #2.445
+  '3781.647' #3.385
+)
+r2.values <- c(
+  " ",
+  '0.259 / 0.305',
+  '0.242 / 0.305',
+  '0.244 / 0.305',
+  '0.241 / 0.285', #DONE
+  " ",
+  '0.382 / 0.412',
+  '0.364 / 0.416',
+  '0.362 / 0.416',
+ # '0.335 / 0.360', #DONE
+  " ",
+  '0.072 / 0.121',
+  '0.071 / 0.120',
+  '0.076 / 0.131',
+  '0.071 / 0.121',
+  '0.078 / 0.137', #DONE
+  " ",
+  '0.252 / 0.311',
+  '0.251 / 0.308',
+  '0.253 / 0.312',
+  '0.248 / 0.309',
+  '0.244 / 0.304' #DONE
+)
+d.aic <- c(
+  " ",
+  '0',
+  '0.908',
+  '4.335',
+  '8.114', #DONE
+  " ",
+  '0',
+  '6.557',
+  '7.327',
+#  '31.314',
+  " ",
+  '0',
+  '0.264',
+  '0.488',
+  '0.637',
+  '1.891',
+  " ",
+  '0',
+  '0.668',
+  '0.175',
+  '2.445',
+  '3.385'
+)
+deltaAIC <- c('\U0394 AIC')
+
+mem.table.df <- data.frame(dep.var, fix.fx, est1, est2, d.aic, aic.values, r2.values)
+
+mem.table.df %>%
+  mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'),  est2 = cell_spec(est2, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), aic.values = cell_spec(aic.values, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
+  kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimates', "Dry Matter Estimate", '\U0394 AIC', 'AIC', expression('Marginal R2/Conditional R2'))) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
+  row_spec(c(1, 6, 10, 16), background = "#D3D3D3", bold = T, font_size = 16) %>% 
+  row_spec(c(2, 3, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19), bold = T) %>% 
+  save_kable(here('figures', 'extra-figures', 'expanded_MEM_kable2.html'))
+```
+
+## View:
 
 ```{r}
 rwc_pv_df %>% 
@@ -328,353 +641,17 @@ rwc_pv_df %>%
   geom_point()
 ```
 
-Models
-```{r}
-m1 <- lmer(tti ~ mpa.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2 <- lmer(tti ~ lfm + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m3 <- lmer(tti ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m4 <- lmer(tti ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m5 <- lmer(tti ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-# Adding in mpa.scaled+ WW and mpa.scaled+ LFM despite their moderate collinearity to see how they affect model selection
-m6 <- lmer(tti ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m7 <- lmer(tti ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-#rwc models: 
-m2.5 <- lmer(tti ~ mpa.scaled + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-m3.5 <- lmer(tti ~ spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m2.5)
-m4.5 <- lmer(tti ~ spp + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-m5.5 <- lmer(tti ~ spp + mpa.scaled + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-```
-
-```{r}
-model_list <- c(m1, m2, m3, m4, m5, m6, m7, m2.5, m3.5, m4.5, m5.5)
-
-aictab(model_list)
-```
-
-conclusion: For TTI, RWC models are in the top, and the inclusion of RWC does improve the model. However, RWC is a non-significant addition to the model, while mpa.scaledis still the more signficant predictor. 
-
-New top model by AIC:
-
-m2.5 <- lmer(tti ~ mpa.scaled + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-
-## Flame Height
-Models
-```{r}
-m1 <- lmer(fh ~ mpa.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2 <- lmer(fh ~ lfm + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m3 <- lmer(fh ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m4 <- lmer(fh ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m5 <- lmer(fh ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-# Adding in mpa.scaled+ WW and mpa.scaled+ LFM despite their moderate collinearity to see how they affect model selection
-m6 <- lmer(fh ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m7 <- lmer(fh ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2.5 <- lmer(fh ~ mpa.scaled + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m2.5)
-
-m3.5 <- lmer(fh ~ spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m3.5)
-m4.5 <- lmer(fh ~ spp + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-m5.5 <- lmer(fh ~ spp + mpa.scaled + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-```
-
-
-```{r}
-model_list <- c(m1, m2, m3, m4, m5, m6, m7, m2.5, m3.5, m4.5, m5.5)
-
-aictab(model_list)
-```
-Conclusion: For FH, model with RWC along and RWC + mpa.scaledboth performed equally well by AIC, with model with mpa.scaledand RWC performing equally. 
-
-```{r}
-m2.5
-m5.5
-m5
-
-anova(m2.5, m5.5)
-```
-
-
-## Glow Duration
-Models
-```{r}
-m1 <- lmer(gd ~ mpa.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2 <- lmer(gd ~ lfm + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m3 <- lmer(gd ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m4 <- lmer(gd ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m5 <- lmer(gd ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-# Adding in mpa.scaled+ WW and mpa.scaled+ LFM despite their moderate collinearity to see how they affect model selection
-m6 <- lmer(gd ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m7 <- lmer(gd ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2.5 <- lmer(gd ~ mpa.scaled + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m2.5)
-
-
-m3.5 <- lmer(gd ~ spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m3.5)
-m4.5 <- lmer(gd ~ spp + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-m5.5 <- lmer(gd ~ spp + mpa.scaled + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-```
-
-
-```{r}
-model_list <- c(m1, m2, m3, m4, m5, m6, m7, m2.5, m3.5, m4.5, m5.5)
-
-aictab(model_list)
-```
-Conclusion: Like TTI and FH, one of top model includes mpa.scaledand RWC. (RWC does a better job catching the dry weight and wet weigh dynamics than LFM? Even though it does technically have dry weight?)
-
-```{r}
-m2.5
-m5
-m7
-
-anova(m2.5, m5, m7)
-```
-
-
-
-## Flame Duration
-
-
-Models
-```{r}
-m1 <- lmer(fd ~ mpa.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2 <- lmer(fd ~ lfm + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m3 <- lmer(fd ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m4 <- lmer(fd ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m5 <- lmer(fd ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-# Adding in mpa.scaled+ WW and mpa.scaled+ LFM despite their moderate collinearity to see how they affect model selection
-m6 <- lmer(fd ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m7 <- lmer(fd ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2.5 <- lmer(fd ~ mpa.scaled + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-m3.5 <- lmer(fd ~ spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-#performance::multicollinearity(m3.5)
-m4.5 <- lmer(fd ~ spp + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-m5.5 <- lmer(fd ~ spp + mpa.scaled + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-```
-
-
-```{r}
-model_list <- c(m1, m2, m3, m4, m5, m6, m7, m2.5, m3.5, m4.5, m5.5)
-
-aictab(model_list)
-```
-Conclusion: For flame duration, the following models were within the top models, all of which included mpa.scaled(either with RWC or mpa.scaledalone). One also included dry weight.
-
-
-```{r}
-m5.5
-m1
-m2.5
-m4
-```
-
-## Max. Temp.
-
-Models
-```{r}
-m1 <- lmer(temp.max ~ mpa.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2 <- lmer(temp.max ~ lfm + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m3 <- lmer(temp.max ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m4 <- lmer(temp.max ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m5 <- lmer(temp.max ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-# Adding in mpa.scaled+ WW and mpa.scaled+ LFM despite their moderate collinearity to see how they affect model selection
-m6 <- lmer(temp.max ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m7 <- lmer(temp.max ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2.5 <- lmer(temp.max ~ mpa.scaled + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m2.5)
-
-
-
-m3.5 <- lmer(temp.max ~ spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m3.5)
-
-m4.5 <- lmer(temp.max ~ spp + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-m5.5 <- lmer(temp.max ~ spp + mpa.scaled + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-```
-
-
-```{r}
-model_list <- c(m1, m2, m3, m4, m5, m6, m7, m2.5, m3.5, m4.5, m5.5)
-
-aictab(model_list)
-```
-Conclusion: Top model for max temp includes RWC, MPa, and sample weight. 
-
-```{r}
-m2.5
-m5
-```
-
-## Post-Flame Glow
-Models
-```{r}
-m1 <- lmer(pfg ~ mpa.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2 <- lmer(pfg ~ lfm + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m3 <- lmer(pfg ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m4 <- lmer(pfg ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m5 <- lmer(pfg ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-# Adding in mpa.scaled+ WW and mpa.scaled+ LFM despite their moderate collinearity to see how they affect model selection
-m6 <- lmer(pfg ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m7 <- lmer(pfg ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2.5 <- lmer(pfg ~ mpa.scaled + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m2.5)
-
-
-
-m3.5 <- lmer(pfg ~ spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m3.5)
-
-m4.5 <- lmer(pfg ~ spp + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-m5.5 <- lmer(pfg ~ spp + mpa.scaled + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-```
-
-
-```{r}
-model_list <- c(m1, m2, m3, m4, m5, m6, m7, m2.5, m3.5, m4.5, m5.5)
-
-aictab(model_list)
-```
-conclusion: top model again for PfG includes RWC and mpa.scaledor mpa.scaledand sample weights or mpa.scaledand LFM
-
-```{r}
-m2.5
-m5
-m7
-```
-
-
-## Time to First Glow
-Models
-```{r}
-m1 <- lmer(ttfg ~ mpa.scaled + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m2 <- lmer(ttfg ~ lfm + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m3 <- lmer(ttfg ~ ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m4 <- lmer(ttfg ~ dw.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m5 <- lmer(ttfg ~ mpa.scaled + dw.flam.sample + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-# Adding in mpa.scaled+ WW and mpa.scaled+ LFM despite their moderate collinearity to see how they affect model selection
-
-m6 <- lmer(ttfg ~ mpa.scaled + ww.flam.sample + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-
-m7 <- lmer(ttfg ~ mpa.scaled + lfm + sample.wt + spp + site + year.month + (1 | individual), data = rwc_pv_df)
-m2.5 <- lmer(ttfg ~ mpa.scaled + spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m2.5)
-
-m3.5 <- lmer(ttfg ~ spp + site + year.month + sample.wt + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m3.5)
-
-m4.5 <- lmer(ttfg ~ spp + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m4.5)
-
-m5.5 <- lmer(ttfg ~ spp + mpa.scaled + site + year.month + rwc + (1 | individual), data = rwc_pv_df)
-
-performance::multicollinearity(m5.5)
-```
-
-
-```{r}
-model_list <- c(m1, m2, m3, m4, m5, m6, m7, m2.5, m3.5, m4.5, m5.5)
-
-aictab(model_list)
-```
-conclusion: for TTFG, RWC was a covariate in 1/5 top performing models - does not do meaningfully better than other top metrics of physiology or dry weights. 
-
-```{r}
-m2.5
-m6
-m5
-m11
-m1
-```
 #CONCLUSIONS: 
 
 Methods: 
 
 To determine relative water content, we performed an extrapolated linear regression on points more hydrated than the TLP (~-3.0 MPa) as is done in PC curve analysis. Unlike PV Curves, our dry down utilized different leaves of varying dry masses, leading to occasional estimates of RWC that were greater than 100% (e.g., when samples measured at water potentials closest to zero had lower overall dry matter than samples measured at less hydrated water potentials); in these cases RWC was assumed to be 100% and was notated accordingly. Results were similar when we used the highest observed LFM or mpa.scaledas the saturated water content.
 
-
 Results: 
 
-Relative water content was a covariate in the top performing models for linear estimates of flammability. In the top models of all flammability metrics (including composite metric PC1), RWC was included when combined in models with water potential and generally performed as well as or slightly better than models that included water potential and another metric of sample weight or wet and/or dry matter (SI).
+'top' models changed a bit
 
-Discussion: 
-
-Relative water content is a more physiologically-focused metric of water loss than LFM. RWC takes into account the amount of water relative to the maximum amount of water a plant may hold, which will be informed by the overall tissue in a plant. 
+#REMAKE TABLE: 
 
 
 #3.0 RWC dynamics: 
