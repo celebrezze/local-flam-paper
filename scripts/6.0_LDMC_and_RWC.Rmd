@@ -254,6 +254,8 @@ m010 <- lmer(PC1 ~ ldmc + rwc + spp + site + year.month + sample.wt + (1 | indiv
 
 model_list <- c(m01, m02, m03, m04, m05, m06, m07, m08, m09, m010)
 
+performance::multicollinearity(m06)
+
 aictab(model_list)
 ```
 
@@ -428,19 +430,18 @@ tab_model(m010, m011, m08, m09, m04,
 
 # MAIN TABLE
 
-All data below is from above MEM tables (2.1; for TTI, FD, GD) and from MAIN MODEL SELECTION (for PC1)
+All data below is from above MEM tables:
 
-## BIC, AIC included
 ```{r}
 dep.var <- c(
   "PC1",
   " ",
   " ",
-  " ",
+ # " ",
   " ",
   "Time to Ignition (s)",
   " ",
-  " ",
+ # " ",
   " ",
 #  " ",
   "Flame Duration (s)",
@@ -460,11 +461,11 @@ fix.fx <- c(
   " ", #PC1
   "Water Potential + LDMC",
   "Water Potential",
-  "Water Potential + RWC",
+ # "Water Potential + RWC",
   "RWC",  #DONE
   " ", #TTI
   "Water Potential + LDMC",
-  "Water Potential + RWC",
+ # "Water Potential + RWC",
   "Water Potential",
  # "RWC + LDMC", #DONE
   " ", #FD
@@ -484,11 +485,11 @@ est1 <- c(
   " ",
   '-0.151***',  #MPa
   '-0.150***', #Mpa
-  '-0.122*** + -0.117', #MPa
+#  '-0.122*** + -0.117', #MPa
   '-0.400**', #DONE
   " ",
   '4.940***',
-  '4.240*** + 0.929',
+ # '4.240*** + 0.929',
   '4.927***',
 #  '4.174***', #DONE
   " ",
@@ -508,11 +509,11 @@ est2 <- c(
   " ",
   '-0.269*',  #ldmc
   ' ', #Mpa
-  ' ', #MPa
+ # ' ', #MPa
   '-0.318', #DONE
-  " ",
+ " ",
   '2.988**', #ldmc
-  ' ',
+ # ' ',
   ' ',
 #  '2.439*', #DONE #ldmc
   " ",
@@ -532,11 +533,11 @@ aic.values <- c(
   " ",
   '1530.660',
   '1531.568', #.908
-  '1535.015', #4.335
+#  '1535.015', #4.335
   '1538.774', #8.114
   " ",
   '3023.799',
-  '3030.336', #6.557
+ # '3030.336', #6.557
   '3031.106', #7.327
  # '3055.093', #DONE 31.314
   " ",
@@ -556,11 +557,11 @@ r2.values <- c(
   " ",
   '0.259 / 0.305',
   '0.242 / 0.305',
-  '0.244 / 0.305',
+ # '0.244 / 0.305',
   '0.241 / 0.285', #DONE
   " ",
   '0.382 / 0.412',
-  '0.364 / 0.416',
+ # '0.364 / 0.416',
   '0.362 / 0.416',
  # '0.335 / 0.360', #DONE
   " ",
@@ -579,12 +580,12 @@ r2.values <- c(
 d.aic <- c(
   " ",
   '0',
-  '0.908',
+ # '0.908',
   '4.335',
   '8.114', #DONE
   " ",
   '0',
-  '6.557',
+ # '6.557',
   '7.327',
 #  '31.314',
   " ",
@@ -608,12 +609,11 @@ mem.table.df %>%
   mutate(dep.var = cell_spec(dep.var, 'html', color = 'black', bold = T), fix.fx = cell_spec(fix.fx, 'html', color = 'black'), est1 = cell_spec(est1, 'html', color = 'black'),  est2 = cell_spec(est2, 'html', color = 'black'), d.aic = cell_spec(d.aic, 'html', color = 'black'), aic.values = cell_spec(aic.values, 'html', color = 'black'), r2.values = cell_spec(r2.values, 'html', color = 'black')) %>% 
   kable(format = 'html', escape = F, col.names = c('Dependent Variable', 'Model Fixed Effects', 'Water Estimates', "Dry Matter Estimate", '\U0394 AIC', 'AIC', expression('Marginal R2/Conditional R2'))) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1, 6, 10, 16), background = "#D3D3D3", bold = T, font_size = 16) %>% 
-  row_spec(c(2, 3, 7, 11, 12, 13, 14, 15, 16, 17, 18, 19), bold = T) %>% 
+  row_spec(c(1, 5, 8, 14), background = "#D3D3D3", bold = T, font_size = 16) %>% 
+  row_spec(c(2, 6, 9, 10, 11, 12, 13, 15, 16, 17), bold = T) %>% 
   save_kable(here('figures', 'extra-figures', 'expanded_MEM_kable2.html'))
 ```
 
-## View:
 
 ```{r}
 rwc_pv_df %>% 
@@ -641,17 +641,11 @@ rwc_pv_df %>%
   geom_point()
 ```
 
-#CONCLUSIONS: 
-
 Methods: 
 
 To determine relative water content, we performed an extrapolated linear regression on points more hydrated than the TLP (~-3.0 MPa) as is done in PC curve analysis. Unlike PV Curves, our dry down utilized different leaves of varying dry masses, leading to occasional estimates of RWC that were greater than 100% (e.g., when samples measured at water potentials closest to zero had lower overall dry matter than samples measured at less hydrated water potentials); in these cases RWC was assumed to be 100% and was notated accordingly. Results were similar when we used the highest observed LFM or mpa.scaledas the saturated water content.
 
-Results: 
 
-'top' models changed a bit
-
-#REMAKE TABLE: 
 
 
 #3.0 RWC dynamics: 
