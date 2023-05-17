@@ -337,6 +337,23 @@ model_list <- c(m01, m02, m03, m04, m05, m06, m07, m08, m09, m010, m011)
 aictab(model_list)
 ```
 ```{r}
+tab_model(m08, m01, m06, m07, m02,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
+         string.pred = "Coeffcient", 
+         title = "models with no collinearity",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('figures','MEM.figures','mem2.TTI.noreml.html')) # saving .html into figures folder
+```
+
+
+```{r}
 m08 <- lmer(tti ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
 
 m01 <- lmer(tti ~ mpa.scaled + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #Mpa
