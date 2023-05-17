@@ -769,7 +769,7 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
        y = "Live Fuel Moisture (Scaled, Effects Removed)", 
        fill = "Season",
        color = "Season") +
-  scale_y_continuous(limits=c(-2.5,2), breaks=c(-2,-1,0,1,2)) +
+  scale_y_continuous(limits=c(-2.5,2), breaks=c(-2.5, -2, -1.5, -1,-.5, 0, 1, .5, 1.5, 2, 2.5 )) +
   th +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "none", 
@@ -805,7 +805,7 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
        y = "Live Fuel Moisture (Scaled, Effects Removed)", 
        fill = "Season",
        color = "Season") +
-  scale_y_continuous(limits=c(-2.5,2), breaks=c(-2,-1,0,1,2)) +
+  scale_y_continuous(limits=c(-2.5,2), breaks=c(-2.5, -2, -1.5, -1,-.5, 0, 1, .5, 1.5, 2, 2.5 )) +
   th +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "none", 
@@ -842,21 +842,27 @@ x.grob <- textGrob("Water Potential (MPa)",
                            col="black", 
                            fontsize=24))
 ?theme
+```
+
+
+```{r}
 plot.sz.mem <- cowplot::plot_grid(
-        pc1.vs.mpa.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0), "cm")), 
-        NULL,
-        pc1.vs.mpa.ceme + theme(plot.margin = unit(c(0, -1, 0.25, 0.25), "cm")),
-        pc2.vs.mpa.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0), "cm")), 
-        NULL,
-        pc2.vs.mpa.ceme + theme(plot.margin = unit(c(0, -1, 0.25, 0.25), "cm")),
-        mpa.vs.lfm.adfa + theme(plot.margin = unit(c(0, 0.1, 0.25, 0), "cm")),
-        NULL,
-        mpa.vs.lfm.ceme + theme(plot.margin = unit(c(0, -1, 0.25, 0.25), "cm")),
+        pc1.vs.mpa.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")), 
+       # NULL,
+        pc1.vs.mpa.ceme + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
+        pc2.vs.mpa.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")), 
+      #  NULL,
+        pc2.vs.mpa.ceme + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
+        mpa.vs.lfm.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
+      #  NULL,
+        mpa.vs.lfm.ceme + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
         align='vh', 
+        axis = 'lr',
         vjust=.5,
-        rel_widths = c(1, 0, 1),
+        rel_widths = c(1, 1),
+        rel_heights = c(1, .6, 1),
         scale = 1,
-        ncol = 3)
+        ncol = 2)
 plot.sz.mem
 
 #add to plot
