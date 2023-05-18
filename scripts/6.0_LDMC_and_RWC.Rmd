@@ -275,32 +275,35 @@ tab_model(m08, m01, m06, m07, m02, m05,
 ```
 
 ```{r}
-m08 <- lmer(PC1 ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+m08_pc1 <- lmer(PC1 ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+performance::multicollinearity(m08_pc1)
 
-m01 <- lmer(PC1 ~ mpa.scaled + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #mpa.scaled
+m01_pc1 <- lmer(PC1 ~ mpa.scaled + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #mpa.scaled
+performance::multicollinearity(m01_pc1)
 
-m06 <- lmer(PC1 ~ rwc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+m06_pc1 <- lmer(PC1 ~ rwc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+performance::multicollinearity(m06_pc1)
 
-m07 <- lmer(PC1 ~ rwc + spp + site + year.month + sample.wt +  mpa.scaled + (1 | individual), REML = T, data = rwc_pv_df)
+m02_pc1 <- lmer(PC1 ~ mpa.scaled + dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #composite
+performance::multicollinearity(m02_pc1)
 
-m02 <- lmer(PC1 ~ mpa.scaled + dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #composite
-
-m05 <- lmer(PC1 ~ lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #LFM
+m05_pc1 <- lmer(PC1 ~ lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #LFM
+performance::multicollinearity(m05_pc1)
 
 ```
 
 Table
 ```{r}
-tab_model(m08, m01, m06, m07, m02, m05,
+tab_model(m08_pc1, m01_pc1, m06_pc1, m02_pc1, m05_pc1,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
           show.ci = FALSE,
           show.icc = FALSE, 
           pred.labels = c(),
-         # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
+          dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4"),
          string.pred = "Coeffcient", 
-         title = "models with no collinearity",
+         title = "PC1",
   string.p = "P-Value", 
   p.style = "stars",
   file = here('figures','MEM.figures','mem2.PC1.html')) # saving .html into figures folder
@@ -321,10 +324,6 @@ m05 <- lmer(tti ~ lfm + spp + site + year.month + sample.wt + (1 | individual), 
 
 m06 <- lmer(tti ~ rwc + spp + site + year.month + sample.wt + (1 | individual), REML = F, data = rwc_pv_df)
 
-m07 <- lmer(tti ~ mpa.scaled + rwc + spp + site + year.month + sample.wt + (1 | individual), REML = F, data = rwc_pv_df)
-
-m06 <- lmer(tti ~ mpa.scaled + rwc + spp + site + year.month + sample.wt + (1 | individual), REML = F, data = rwc_pv_df)
-
 m08 <- lmer(tti ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = F, data = rwc_pv_df)
 
 m09 <- lmer(tti ~ ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = F, data = rwc_pv_df)
@@ -335,12 +334,12 @@ m011 <- lmer(tti ~ ldmc + lfm + spp + site + year.month + sample.wt + (1 | indiv
 
 summary(m011)
 
-model_list <- c(m01, m02, m03, m04, m05, m06, m07, m08, m09, m010, m011)
+model_list <- c(m01, m02, m03, m04, m05, m06, m08, m09, m010, m011)
 
 aictab(model_list)
 ```
 ```{r}
-tab_model(m08, m01, m06, m07, m02,
+tab_model(m08, m01, m06, m02,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -357,22 +356,20 @@ tab_model(m08, m01, m06, m07, m02,
 
 
 ```{r}
-m08 <- lmer(tti ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+m08_tti <- lmer(tti ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
 
-m01 <- lmer(tti ~ mpa.scaled + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #Mpa
+m01_tti <- lmer(tti ~ mpa.scaled + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #Mpa
 
-m07 <- lmer(tti ~ mpa.scaled + rwc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+m06_tti <- lmer(tti ~ mpa.scaled + rwc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
 
-m06 <- lmer(tti ~ mpa.scaled + rwc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+m02_tti <- lmer(tti ~ mpa.scaled + dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #composite
 
-m02 <- lmer(tti ~ mpa.scaled + dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #composite
-
-m05 <- lmer(tti ~ lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #LFM
+m05_tti <- lmer(tti ~ lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #LFM
 ```
 
 Table
 ```{r}
-tab_model(m08, m01, m06, m07, m02, m05,
+tab_model(m08_tti, m01_tti, m06_tti, m02_tti, m05_tti,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -381,7 +378,7 @@ tab_model(m08, m01, m06, m07, m02, m05,
           pred.labels = c(),
          # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
-         title = "models with no collinearity",
+         title = "Time to Ignition",
   string.p = "P-Value", 
   p.style = "stars",
   file = here('figures','MEM.figures','mem2.TTI.html')) # saving .html into figures folder
@@ -441,20 +438,20 @@ tab_model(m01, m02, m08, m04, m07, m03, m05, m06, m011, m010,
 ```
 
 ```{r}
-m01 <- lmer(fd ~ mpa.scaled + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #mpa.scaled
+m01_fd <- lmer(fd ~ mpa.scaled + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #mpa.scaled
 
-m02 <- lmer(fd ~ mpa.scaled + dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #composite
+m02_fd <- lmer(fd ~ mpa.scaled + dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #composite
 
-m08 <- lmer(fd ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+m08_fd <- lmer(fd ~ mpa.scaled + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
 
-m04 <- lmer(fd ~ dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #DW
+m04_fd <- lmer(fd ~ dw.flam.sample + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #DW
 
-m05 <- lmer(fd ~ lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #LFM
+m05_fd <- lmer(fd ~ lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #LFM
 ```
 
 Table
 ```{r}
-tab_model(m01, m02, m08, m04, m05,
+tab_model(m01_fd, m02_fd, m08_fd, m04_fd, m05_fd,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -511,29 +508,29 @@ tab_model(m08, m04, m010, m03, m09, m01, m011, m05, m06,
           pred.labels = c(),
          # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
-         title = "models with no collinearity",
+         title = "Flame Duration",
   string.p = "P-Value", 
   p.style = "stars",
   file = here('figures','MEM.figures','mem2.GD.noreml.html')) # saving .html into figures folder
 ```
 
 ```{r}
-m01 <- lmer(gd ~ mpa + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #Mpa
+m01_gd <- lmer(gd ~ mpa + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #Mpa
 
-m05 <- lmer(gd ~ lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #LFM
-
-
-m011 <- lmer(gd ~ ldmc + lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
-
-m08 <- lmer(gd ~ mpa + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+m05_gd  <- lmer(gd ~ lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df) #LFM
 
 
-m010 <- lmer(gd ~ ldmc + rwc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+m011_gd  <- lmer(gd ~ ldmc + lfm + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+
+m08_gd  <- lmer(gd ~ mpa + ldmc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
+
+
+m010_gd  <- lmer(gd ~ ldmc + rwc + spp + site + year.month + sample.wt + (1 | individual), REML = T, data = rwc_pv_df)
 
 ```
 
 ```{r}
-tab_model(m010, m011, m08, m05, m01,
+tab_model(m010_gd , m011_gd , m08_gd , m05_gd , m01_gd ,
           show.reflvl = FALSE, 
           digits = 3, 
           show.aic = TRUE, 
@@ -542,10 +539,30 @@ tab_model(m010, m011, m08, m05, m01,
           pred.labels = c(),
          # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
          string.pred = "Coeffcient", 
-         title = "models with no collinearity",
+         title = "Glow Duration",
   string.p = "P-Value", 
   p.style = "stars",
   file = here('figures','MEM.figures','mem2.GD.html')) # saving .html into figures folder
+```
+
+#SI Table: 
+```{r}
+tab_model(m08_tti, m01_tti, m06_tti, m02_tti,m05_tti,
+          m08_pc1, m01_pc1, m06_pc1, m02_pc1, m05_pc1,
+          m01_fd, m02_fd, m08_fd, m04_fd, m05_fd,
+          m010_gd , m011_gd , m08_gd, m01_gd,  m05_gd,
+          show.reflvl = FALSE, 
+          digits = 3, 
+          show.aic = TRUE, 
+          show.ci = FALSE,
+          show.icc = FALSE, 
+          pred.labels = c(),
+         # dv.labels = c("Model 5", "Model 1", "Model 3", "Model 2", "Model 4", "Model 6", "Model 7"),
+         string.pred = "Coeffcient", 
+         title = "All Top Models",
+  string.p = "P-Value", 
+  p.style = "stars",
+  file = here('figures','MEM.figures','mem2.ALL.html'))
 ```
 
 
@@ -570,7 +587,7 @@ dep.var <- c(
   " ",
   " ",
  " ",
- # " ",
+  " ",
   "Glow Duration (s)",
   " ",
   " ",
@@ -591,8 +608,9 @@ fix.fx <- c(
  # "RWC + LDMC", #DONE
   " ", #FD---------------
   "Water Potential",
- # "Water Potential + Dry Weight",
+ "Water Potential + Dry Weight",
   "Water Potential + LDMC",
+  #"Water Potential + Dry Weight",
   "Dry Weight",
   "LFM",
   " ", #GD---------------
@@ -616,6 +634,7 @@ est1 <- c(
   '3.259***', #DONE
   " ",#---------------
   '-0.677**',
+  "-0.494",
   '-0.674***',
   '',
   '-0.658**', #DONE
@@ -640,6 +659,7 @@ est2 <- c(
 #  '2.439*', #DONE #ldmc
   " ", #---------------
   ' ',
+  "0.331",
   '0.272',
   '0.762**',
   ' ',
@@ -688,6 +708,7 @@ r2.values <- c(
  # '0.335 / 0.360', #DONE
   " ",#---------------
   '0.076 / 0.131',
+ "0.078 / 0.131",
   '0.078 / 0.137', #DONE
   '0.072 / 0.121',
   '0.071 / 0.121',
@@ -711,6 +732,7 @@ d.aic <- c(
 #  '31.314',
   " ",#---------------
   '0',
+  "1.369",
   '1.404',
   '1.758',
   '2.395',
@@ -746,10 +768,10 @@ mem.table.df %>%
     expression('Marg. R2/Cond. R2')
   )) %>% 
   kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T) %>% 
-  row_spec(c(1, 5, 9, 14), background = "#e5e5e5", bold = T, font_size = 16) %>% 
+  row_spec(c(1, 5, 9, 15), background = "#e5e5e5", bold = T, font_size = 16) %>% 
   row_spec(c(0), background = "lightgrey", bold = T, font_size = 16) %>% 
   column_spec (1:6, border_left = T, border_right = T) %>%
-  row_spec(c(1,2,3,5, 6,9,10,11,12, 15, 16, 17), bold = T) %>% 
+  row_spec(c(1,2,3,5, 6,9,10,11,12, 13, 16, 17,18), bold = T) %>% 
   save_kable(here('figures', 'extra-figures', 'expanded_MEM_kable2.html'))
 ```
 

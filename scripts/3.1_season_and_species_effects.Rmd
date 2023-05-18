@@ -766,7 +766,7 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
               color = '#669bbc', cex = 1, alpha = 0.9,
               show.legend = FALSE) +
   labs(x = "Water Potential (MPa)", 
-       y = "Live Fuel Moisture (Scaled, Effects Removed)", 
+       y = "LFM (Scaled, Effects Removed)", 
        fill = "Season",
        color = "Season") +
   scale_y_continuous(limits=c(-2.5,2), breaks=c(-2.5, -2, -1.5, -1,-.5, 0, 1, .5, 1.5, 2, 2.5 )) +
@@ -846,30 +846,43 @@ x.grob <- textGrob("Water Potential (MPa)",
 
 
 ```{r}
-plot.sz.mem <- cowplot::plot_grid(
-        pc1.vs.mpa.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")), 
-       # NULL,
-        pc1.vs.mpa.ceme + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
-        pc2.vs.mpa.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")), 
+library(patchwork)
+
+plot.sz.mem <- pc1.vs.mpa.adfa +
+        pc1.vs.mpa.ceme + 
+        pc2.vs.mpa.adfa + 
       #  NULL,
-        pc2.vs.mpa.ceme + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
-        mpa.vs.lfm.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
+        pc2.vs.mpa.ceme + 
+        mpa.vs.lfm.adfa + 
       #  NULL,
-        mpa.vs.lfm.ceme + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
-        align='vh', 
-        axis = 'lr',
-        vjust=.5,
-        rel_widths = c(1, 1),
-        rel_heights = c(1, .6, 1),
-        scale = 1,
-        ncol = 2)
-plot.sz.mem
+        mpa.vs.lfm.ceme + 
+  plot_layout(ncol = 2, heights = c(1, 1, 1), widths = c(1, 1))
+plot.sz.mem <- as_grob(plot.sz.mem)
+
+# plot.sz.mem <- cowplot::plot_grid(
+#         pc1.vs.mpa.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")), 
+#        # NULL,
+#         pc1.vs.mpa.ceme + theme(plot.margin = unit(c(.25, 0, 0, .25), "cm")),
+#         pc2.vs.mpa.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")), 
+#       #  NULL,
+#         pc2.vs.mpa.ceme + theme(plot.margin = unit(c(.25, 0, 0, .25), "cm")),
+#         mpa.vs.lfm.adfa + theme(plot.margin = unit(c(.25, 0, 0, 0), "cm")),
+#       #  NULL,
+#         mpa.vs.lfm.ceme + theme(plot.margin = unit(c(.25, 0, 0, .25), "cm")),
+#         align='vh', 
+#         axis = 'lr',
+#         vjust=0,
+#         rel_widths = c(1, 1),
+#         rel_heights = c(1, 1, 1),
+#         scale = 1,
+#         ncol = 2)
+# plot.sz.mem
 
 #add to plot
 scatterplot.sz.mem <- gridExtra::grid.arrange(arrangeGrob(plot.sz.mem, bottom = x.grob)) 
 scatterplot.sz.mem
 
-plot_legend.sz.mem <- cowplot::plot_grid(legend.sz, scatterplot.sz.mem, ncol = 1, rel_heights = c(1,10))
+plot_legend.sz.mem <- cowplot::plot_grid(legend.sz, scatterplot.sz.mem, ncol = 1, rel_heights = c(.7,10))
 plot_legend.sz.mem
 
 ggsave(here("figures", "main-figures", "Fig3_Season.Plot.jpg"),
@@ -1205,14 +1218,22 @@ pc2.vs.lfm.ceme
 
 ## SUPP Figure: Arranging Plots
 ```{r}
-plot.sz.lfm <- cowplot::plot_grid(
-        pc1.vs.lfm.adfa + theme(plot.margin = unit(c(0.1, 0, 0.1, 0.3), "cm")), 
-        pc1.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
-        pc2.vs.lfm.adfa + theme(plot.margin = unit(c(0.1, 0, 0.1, 0.3), "cm")), 
-        pc2.vs.lfm.ceme + theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0), "cm")),
-        align='vh', vjust=.5, scale = 1,
-        ncol = 2
-          )
+# plot.sz.lfm <- cowplot::plot_grid(
+#         pc1.vs.lfm.adfa + theme(plot.margin = unit(c(0.1, 0, 0.1, 0.3), "cm")), 
+#         pc1.vs.lfm.ceme + theme(plot.margin = unit(c(0.25, 0.25, 0.25, 0.25), "cm")),
+#         pc2.vs.lfm.adfa + theme(plot.margin = unit(c(0.1, 0, 0.1, 0.3), "cm")), 
+#         pc2.vs.lfm.ceme + theme(plot.margin = unit(c(0.1, 0.1, 0.1, 0), "cm")),
+#         align='vh', vjust=.5, scale = 1,
+#         ncol = 2
+#           )
+
+plot.sz.lfm <- pc1.vs.lfm.adfa +
+        pc1.vs.lfm.ceme + 
+        pc2.vs.lfm.ceme + 
+        pc2.vs.lfm.adfa + 
+  plot_layout(ncol = 2, heights = c(1, 1, 1), widths = c(1, 1))
+
+plot.sz.mem <- as_grob(plot.sz.lfm)
 
 lfm.grob <- textGrob("Live Fuel Moisture (%)", 
                    gp=gpar(fontface="bold", 
