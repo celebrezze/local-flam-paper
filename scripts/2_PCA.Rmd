@@ -249,7 +249,9 @@ pca.table.df %>%
   mutate(eig2 = cell_spec(eig2, 'html', bold = ifelse(abs(eig2) > 0.5, T, F), color = 'black')) %>% 
   mutate(eig3 = cell_spec(eig3, 'html', bold = ifelse(abs(eig3) > 0.5, T, F), color = 'black')) %>% 
   kable(format = 'html', escape = F, col.names = c(' ', 'Component 1', 'Component 2', 'Component 3')) %>% 
-  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, font_size = 30) %>% 
+  kable_styling(bootstrap_options = c('hover', 'bordered', 'condensed'), fixed_thead = T, font_size = 16) %>% 
+   row_spec(c(0), background = "#e5e5e5", bold = T, font_size = 16) %>% 
+  #row_spec(c(0), background = "lightgrey", bold = T, font_size = 16) %>% 
   row_spec(c(9:10), background = '#D3D3D3') %>% 
   save_kable(here('figures', 'main-figures', 'Tab1_pca_table.html'))
 ```

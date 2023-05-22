@@ -769,7 +769,7 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
        y = "LFM (Scaled, Effects Removed)", 
        fill = "Season",
        color = "Season") +
-  scale_y_continuous(limits=c(-2.5,2), breaks=c(-2.5, -2, -1.5, -1,-.5, 0, 1, .5, 1.5, 2, 2.5 )) +
+  scale_y_continuous(limits=c(-2.5,2.5), breaks=c(-2.5,  0,  2.5 )) +
   th +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "none", 
@@ -780,7 +780,7 @@ mpa.vs.lfm.adfa <- mpa_rel_df %>%
         axis.title.x = element_blank(),
         axis.text = element_text(size = 14)) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  annotate('text', x = -9.7, y = 1.75, label = 'e', size = 12, face = 'bold') +
+  annotate('text', x = -9.7, y = 2.25, label = 'e', size = 12, face = 'bold') +
   scale_color_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.adfa
 ```
@@ -805,7 +805,7 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
        y = "Live Fuel Moisture (Scaled, Effects Removed)", 
        fill = "Season",
        color = "Season") +
-  scale_y_continuous(limits=c(-2.5,2), breaks=c(-2.5, -2, -1.5, -1,-.5, 0, 1, .5, 1.5, 2, 2.5 )) +
+  scale_y_continuous(limits=c(-2.5,2.5), breaks=c(-2.5,  0,  2.5 )) +
   th +
   guides(color = guide_legend(override.aes = list(linetype = 0, shape = 16))) +
   theme(legend.position = "none", 
@@ -816,7 +816,7 @@ mpa.vs.lfm.ceme <- mpa_rel_df %>%
         axis.text.x = element_text(size = 14),
         axis.text.y = element_blank()) +
   guides(color = guide_legend(override.aes = list(size = 3))) +
-  annotate('text', x = -9.7, y = 1.75, label = 'f', size = 12, face = 'bold') +
+  annotate('text', x = -9.7, y = 2.25, label = 'f', size = 12, face = 'bold') +
   scale_color_manual(values=c("#c1121f","#669BBC"))
 mpa.vs.lfm.ceme
 ```

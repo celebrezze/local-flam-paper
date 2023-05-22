@@ -804,7 +804,7 @@ upr.psi
 
 
 ```{r}
-jpeg(here('figures', 'main-figures', 'Fig2_segmented.regressions.jpg'), width = 1200, height = 900, res = 100)
+jpeg(here('figures', 'main-figures', 'Fig2_segmented.regressionsNEW.jpg'), width = 1200, height = 900, res = 300)
 par(mfrow = c(2,2))
 par(mar = c(4,5,3,2))
 par(font.lab = 2)
